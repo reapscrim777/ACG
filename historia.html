@@ -1,389 +1,413 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Historia Scrimów</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    /* Minimalne style żeby ikony i tabela ładnie wyglądały */
-    .champion-icon {
-      width: 24px;
-      height: 24px;
-      margin-right: 2px;
-      vertical-align: middle;
-      border-radius: 3px;
-      border: 1px solid #ccc;
-    }
-    .champion-icons-container {
-      display: flex;
-      gap: 2px;
-      flex-wrap: wrap;
-    }
-    .win {
-      color: green;
-      font-weight: bold;
-    }
-    .lose {
-      color: red;
-      font-weight: bold;
-    }
-    button.delete-btn {
-      background-color: #f44336;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button.delete-btn:hover {
-      background-color: #d32f2f;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Historia Scrimów</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
+        .champion-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 2px;
+            vertical-align: middle;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .champion-icons-container {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+        .win {
+            color: green;
+            font-weight: bold;
+        }
+        .lose {
+            color: red;
+            font-weight: bold;
+        }
+        button.delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button.delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo-section">
-      <img src="logo.png" alt="Logo" class="logo" />
-      <span class="site-name"></span>
-    </div>
-    <nav class="nav-links">
-      <a href="index.html">STRONA GŁÓWNA</a>
-      <a href="historia.html">HISTORIA GIER</a>
-      <a href="#test3">test3</a>
-      <a href="#test4">test4</a>
-      <a href="#test5">test5</a>
-    </nav>
-  </header>
-
-  <main>
-    <h1>Historia Scrimów</h1>
-
-    <section class="stats-summary">
-      <div class="stats-item">Ilość scrimów: <span id="totalScrims">0</span></div>
-      <div class="stats-item">Wygrane: <span id="wins">0</span></div>
-      <div class="stats-item">Przegrane: <span id="losses">0</span></div>
-      <div class="stats-item">% zwycięstw: <span id="winRate">0%</span></div>
-    </section>
-
-    <section class="add-scrim-form">
-      <h2>Dodaj nowy Scrim</h2>
-      <form id="scrimForm">
-        <div class="form-group">
-          <label for="scrimDate">Data:</label>
-          <input type="date" id="scrimDate" required />
+    <header class="navbar">
+        <div class="logo-section">
+            <img src="logo.png" alt="Logo" class="logo" />
+            <span class="site-name"></span>
         </div>
-        <div class="form-group">
-          <label for="scrimResult">Wynik:</label>
-          <select id="scrimResult" required>
-            <option value="">Wybierz wynik</option>
-            <option value="WIN">WIN</option>
-            <option value="LOSE">LOSE</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="scrimTime">Czas Gry:</label>
-          <input type="text" id="scrimTime" placeholder="np. 35:12" required />
-        </div>
+        <nav class="nav-links">
+            <a href="index.html">STRONA GŁÓWNA</a>
+            <a href="historia.html">HISTORIA GIER</a>
+            <a href="#test3">test3</a>
+            <a href="#test4">test4</a>
+            <a href="#test5">test5</a>
+        </nav>
+    </header>
 
-        <div class="form-group team-champions">
-          <label>Nasze Postacie:</label>
-          <input type="text" class="our-champion-input" placeholder="Top" required />
-          <input type="text" class="our-champion-input" placeholder="Jungle" required />
-          <input type="text" class="our-champion-input" placeholder="Mid" required />
-          <input type="text" class="our-champion-input" placeholder="Adc" required />
-          <input type="text" class="our-champion-input" placeholder="Support" required />
-        </div>
+    <main>
+        <h1>Historia Scrimów</h1>
 
-        <div class="form-group team-champions">
-          <label>Postacie Przeciwników:</label>
-          <input type="text" class="enemy-champion-input" placeholder="Top" required />
-          <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
-          <input type="text" class="enemy-champion-input" placeholder="Mid" required />
-          <input type="text" class="enemy-champion-input" placeholder="Adc" required />
-          <input type="text" class="enemy-champion-input" placeholder="Support" required />
-        </div>
+        <section class="stats-summary">
+            <div class="stats-item">Ilość scrimów: <span id="totalScrims">0</span></div>
+            <div class="stats-item">Wygrane: <span id="wins">0</span></div>
+            <div class="stats-item">Przegrane: <span id="losses">0</span></div>
+            <div class="stats-item">% zwycięstw: <span id="winRate">0%</span></div>
+        </section>
 
-        <button type="submit">Dodaj Scrim</button>
-      </form>
-    </section>
+        <section class="add-scrim-form">
+            <h2>Dodaj nowy Scrim</h2>
+            <form id="scrimForm">
+                <div class="form-group">
+                    <label for="scrimDate">Data:</label>
+                    <input type="date" id="scrimDate" required />
+                </div>
+                <div class="form-group">
+                    <label for="scrimResult">Wynik:</label>
+                    <select id="scrimResult" required>
+                        <option value="">Wybierz wynik</option>
+                        <option value="WIN">WIN</option>
+                        <option value="LOSE">LOSE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scrimTime">Czas Gry:</label>
+                    <input type="text" id="scrimTime" placeholder="np. 35:12" required />
+                </div>
 
-    <section class="scrim-history">
-      <h2>Poprzednie Scrimy</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Wynik</th>
-            <th>Czas Gry</th>
-            <th>Nasze Postacie</th>
-            <th>Postacie Przeciwników</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody id="scrimTableBody"></tbody>
-      </table>
-    </section>
-  </main>
+                <div class="form-group team-champions">
+                    <label>Nasze Postacie:</label>
+                    <input type="text" class="our-champion-input" placeholder="Top" required />
+                    <input type="text" class="our-champion-input" placeholder="Jungle" required />
+                    <input type="text" class="our-champion-input" placeholder="Mid" required />
+                    <input type="text" class="our-champion-input" placeholder="Adc" required />
+                    <input type="text" class="our-champion-input" placeholder="Support" required />
+                </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      push,
-      onValue,
-      remove,
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+                <div class="form-group team-champions">
+                    <label>Postacie Przeciwników:</label>
+                    <input type="text" class="enemy-champion-input" placeholder="Top" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Mid" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Adc" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Support" required />
+                </div>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
-      authDomain: "acg-skrimy.firebaseapp.com",
-      databaseURL:
-        "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "acg-skrimy",
-      storageBucket: "acg-skrimy.firebasestorage.app",
-      messagingSenderId: "78237268518",
-      appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-      measurementId: "G-6VDFPFX560",
-    };
+                <button type="submit">Dodaj Scrim</button>
+            </form>
+        </section>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getDatabase(app);
-    const scrimsRef = ref(db, "scrims");
+        <section class="scrim-history">
+            <h2>Poprzednie Scrimy</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Wynik</th>
+                        <th>Czas Gry</th>
+                        <th>Nasze Postacie</th>
+                        <th>Postacie Przeciwników</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="scrimTableBody"></tbody>
+            </table>
+        </section>
+    </main>
 
-    const scrimForm = document.getElementById("scrimForm");
-    const scrimTableBody = document.getElementById("scrimTableBody");
-    const scrimDateInput = document.getElementById("scrimDate");
-    const scrimResultInput = document.getElementById("scrimResult");
-    const scrimTimeInput = document.getElementById("scrimTime");
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            push,
+            onValue,
+            remove,
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
-    const ourChampionInputs = document.querySelectorAll(".our-champion-input");
-    const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL:
+                "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebasestorage.app",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
 
-    const totalScrimsSpan = document.getElementById("totalScrims");
-    const winsSpan = document.getElementById("wins");
-    const lossesSpan = document.getElementById("losses");
-    const winRateSpan = document.getElementById("winRate");
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const scrimsRef = ref(db, "scrims");
 
-    let scrimsData = [];
+        const scrimForm = document.getElementById("scrimForm");
+        const scrimTableBody = document.getElementById("scrimTableBody");
+        const scrimDateInput = document.getElementById("scrimDate");
+        const scrimResultInput = document.getElementById("scrimResult");
+        const scrimTimeInput = document.getElementById("scrimTime");
 
-    // Config do ikon League of Legends
-    const DDRAGON_VERSION = "14.22.1";
-    const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-    const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
+        const ourChampionInputs = document.querySelectorAll(".our-champion-input");
+        const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
 
-    function getChampionIconUrl(championName) {
-      if (!championName) return FALLBACK_ICON_URL;
+        const totalScrimsSpan = document.getElementById("totalScrims");
+        const winsSpan = document.getElementById("wins");
+        const lossesSpan = document.getElementById("losses");
+        const winRateSpan = document.getElementById("winRate");
 
-      let cleanedName = championName.trim().toLowerCase().replace(/'/g, "");
+        let scrimsData = [];
 
-      const nameMap = {
-        "aurelion sol": "AurelionSol",
-        chogath: "Chogath",
-        "dr. mundo": "DrMundo",
-        drmundo: "DrMundo",
-        kaisa: "Kaisa",
-        kogmaw: "KogMaw",
-        "lee sin": "LeeSin",
-        "miss fortune": "MissFortune",
-        "nunu & willump": "Nunu",
-        nunu: "Nunu",
-        "renata glasc": "Renata",
-        renataglasc: "Renata",
-        "tahm kench": "TahmKench",
-        "twisted fate": "TwistedFate",
-        "xin zhao": "XinZhao",
-        belveth: "BelVeth",
-        fiddlesticks: "Fiddlesticks",
-        blitzcrank: "Blitzcrank",
-        "master yi": "MasterYi",
-        masteryi: "MasterYi",
-        rengar: "Rengar",
-        reksai: "RekSai",
-        viego: "Viego",
-        kled: "Kled",
-        "jarvan iv": "JarvanIV",
-        jarvaniv: "JarvanIV",
-        "monkey king": "Wukong",
-        wukong: "Wukong",
-        velkoz: "Velkoz",
-        ksante: "KSante",
-      };
+        // Config do ikon League of Legends
+        // Upewnij się, że to jest aktualna wersja! (Sprawdź: https://ddragon.leagueoflegends.com/api/versions.json)
+        const DDRAGON_VERSION = "14.11.1"; 
+        const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
 
-      let dataDragonName = nameMap[cleanedName];
+        // *** POPRAWIONA FUNKCJA GETCHAMPIONICONURL ***
+        function getChampionIconUrl(championName) {
+            if (!championName) return FALLBACK_ICON_URL;
 
-      if (!dataDragonName) {
-        dataDragonName = cleanedName.replace(/\s+/g, "");
-        if (dataDragonName.length > 0) {
-          dataDragonName =
-            dataDragonName.charAt(0).toUpperCase() + dataDragonName.slice(1);
+            // Normalizacja nazwy: usuń apostrofy, zmień na małe litery, usuń spacje na końcach
+            let cleanedName = championName.trim().toLowerCase().replace(/'/g, "");
+
+            // Mapa specjalnych przypadków i nazw, które różnią się od prostego PascalCase
+            const nameMap = {
+                // Bohaterowie z wieloczłonowymi nazwami, spacjami, kropkami, apostrofami
+                "aurelion sol": "AurelionSol",
+                "dr. mundo": "DrMundo",
+                "lee sin": "LeeSin",
+                "miss fortune": "MissFortune",
+                "nunu & willump": "Nunu",
+                "tahm kench": "TahmKench",
+                "twisted fate": "TwistedFate",
+                "xin zhao": "XinZhao",
+                "jarvan iv": "JarvanIV",
+                "renata glasc": "Renata",
+                "bel'veth": "BelVeth", 
+                "cho'gath": "Chogath",
+                "kai'sa": "Kaisa",
+                "kha'zix": "Khazix",
+                "kog'maw": "KogMaw",
+
+                // *** KLUCZOWA ZMIANA TUTAJ: WUKONG MAPUJE NA MONKEYKING ***
+                "wukong": "MonkeyKing", 
+                "monkey king": "MonkeyKing", // Na wypadek, gdyby ktoś wpisał "Monkey King"
+
+                "fiddlesticks": "Fiddlesticks",
+                "blitzcrank": "Blitzcrank",
+                "rengar": "Rengar",
+                "reksai": "RekSai",
+                "viego": "Viego",
+                "kled": "Kled",
+                "velkoz": "Velkoz",
+                "ksante": "KSante",
+                "master yi": "MasterYi", 
+                "cassiopeia": "Cassiopeia", 
+
+                // Krótsze aliasy, które mapują na pełne nazwy pliku DDragon
+                "drmundo": "DrMundo",
+                "nunu": "Nunu",
+                "renataglasc": "Renata",
+                "jarvaniv": "JarvanIV",
+                "masteryi": "MasterYi",
+            };
+
+            // 1. Spróbuj znaleźć w mapie (najwyższy priorytet)
+            let dataDragonName = nameMap[cleanedName];
+
+            // 2. Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
+            // To złapie większość championów bez specjalnych znaków i spacji, których nie ma w nameMap
+            if (!dataDragonName) {
+                // Konwertuje "miss fortune" na "MissFortune" lub "garen" na "Garen"
+                dataDragonName = cleanedName
+                    .split(" ") 
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) 
+                    .join(""); 
+            }
+            
+            // Jeszcze jedno sprawdzenie dla pojedynczych słów, które nie miały spacji (np. "garen" -> "Garen")
+            // Ta sekcja jest na wypadek, gdyby `cleanedName` był pojedynczym słowem, a nie został znaleziony w `nameMap`
+            if (!dataDragonName && cleanedName.length > 0) {
+                 dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
+            }
+
+
+            // --- Logi do debugowania (pozostaw je włączone, dopóki wszystko nie zadziała idealnie!) ---
+            console.log(`Input: "${championName}"`);
+            console.log(`Cleaned (po normalizacji): "${cleanedName}"`);
+            console.log(`DataDragonName (finalny): "${dataDragonName}"`);
+            console.log(`Generated URL: ${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`);
+            // --- Koniec logów ---
+
+            return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
         }
-        if (cleanedName.includes(" ")) {
-          dataDragonName = cleanedName
-            .split(" ")
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join("");
+        // *** KONIEC POPRAWIONEJ FUNKCJI ***
+
+        function updateStats() {
+            const total = scrimsData.length;
+            const wins = scrimsData.filter((s) => s.result === "WIN").length;
+            const losses = total - wins;
+            const winRate = total === 0 ? 0 : Math.round((wins / total) * 100);
+
+            totalScrimsSpan.textContent = total;
+            winsSpan.textContent = wins;
+            lossesSpan.textContent = losses;
+            winRateSpan.textContent = `${winRate}%`;
         }
-      }
 
-      return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
-    }
+        function renderTable() {
+            scrimTableBody.innerHTML = "";
 
-    function updateStats() {
-      const total = scrimsData.length;
-      const wins = scrimsData.filter((s) => s.result === "WIN").length;
-      const losses = total - wins;
-      const winRate = total === 0 ? 0 : Math.round((wins / total) * 100);
+            scrimsData.forEach((scrim) => {
+                const tr = document.createElement("tr");
 
-      totalScrimsSpan.textContent = total;
-      winsSpan.textContent = wins;
-      lossesSpan.textContent = losses;
-      winRateSpan.textContent = `${winRate}%`;
-    }
+                // Data
+                const dateTd = document.createElement("td");
+                dateTd.textContent = scrim.date || "";
+                tr.appendChild(dateTd);
 
-    function renderTable() {
-      scrimTableBody.innerHTML = "";
+                // Wynik
+                const resultTd = document.createElement("td");
+                resultTd.textContent = scrim.result || "";
+                resultTd.className = scrim.result === "WIN" ? "win" : "lose";
+                tr.appendChild(resultTd);
 
-      scrimsData.forEach((scrim) => {
-        const tr = document.createElement("tr");
+                // Czas gry
+                const timeTd = document.createElement("td");
+                timeTd.textContent = scrim.time || "";
+                tr.appendChild(timeTd);
 
-        // Data
-        const dateTd = document.createElement("td");
-        dateTd.textContent = scrim.date || "";
-        tr.appendChild(dateTd);
+                // Nasze postacie z ikonami
+                const ourTd = document.createElement("td");
+                const ourContainer = document.createElement("div");
+                ourContainer.className = "champion-icons-container";
+                if (scrim.our) {
+                    scrim.our.split(",").forEach((champ) => {
+                        const trimmed = champ.trim();
+                        const img = document.createElement("img");
+                        img.className = "champion-icon";
+                        img.src = getChampionIconUrl(trimmed); 
+                        img.title = trimmed;
+                        img.alt = trimmed;
+                        ourContainer.appendChild(img);
+                    });
+                }
+                ourTd.appendChild(ourContainer);
+                tr.appendChild(ourTd);
 
-        // Wynik
-        const resultTd = document.createElement("td");
-        resultTd.textContent = scrim.result || "";
-        resultTd.className = scrim.result === "WIN" ? "win" : "lose";
-        tr.appendChild(resultTd);
+                // Postacie przeciwników z ikonami
+                const enemyTd = document.createElement("td");
+                const enemyContainer = document.createElement("div");
+                enemyContainer.className = "champion-icons-container";
+                if (scrim.enemy) {
+                    scrim.enemy.split(",").forEach((champ) => {
+                        const trimmed = champ.trim();
+                        const img = document.createElement("img");
+                        img.className = "champion-icon";
+                        img.src = getChampionIconUrl(trimmed); 
+                        img.title = trimmed;
+                        img.alt = trimmed;
+                        enemyContainer.appendChild(img);
+                    });
+                }
+                enemyTd.appendChild(enemyContainer);
+                tr.appendChild(enemyTd);
 
-        // Czas gry
-        const timeTd = document.createElement("td");
-        timeTd.textContent = scrim.time || "";
-        tr.appendChild(timeTd);
+                // Akcje - Usuń
+                const actionsTd = document.createElement("td");
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Usuń";
+                deleteBtn.className = "delete-btn";
+                deleteBtn.addEventListener("click", async () => {
+                    if (
+                        confirm(
+                            `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
+                        )
+                    ) {
+                        await deleteScrim(scrim.id);
+                    }
+                });
+                actionsTd.appendChild(deleteBtn);
+                tr.appendChild(actionsTd);
 
-        // Nasze postacie z ikonami
-        const ourTd = document.createElement("td");
-        const ourContainer = document.createElement("div");
-        ourContainer.className = "champion-icons-container";
-        if (scrim.our) {
-          scrim.our.split(",").forEach((champ) => {
-            const trimmed = champ.trim();
-            const img = document.createElement("img");
-            img.className = "champion-icon";
-            img.src = getChampionIconUrl(trimmed);
-            img.title = trimmed;
-            img.alt = trimmed;
-            ourContainer.appendChild(img);
-          });
+                scrimTableBody.appendChild(tr);
+            });
+
+            updateStats();
         }
-        ourTd.appendChild(ourContainer);
-        tr.appendChild(ourTd);
 
-        // Postacie przeciwników z ikonami
-        const enemyTd = document.createElement("td");
-        const enemyContainer = document.createElement("div");
-        enemyContainer.className = "champion-icons-container";
-        if (scrim.enemy) {
-          scrim.enemy.split(",").forEach((champ) => {
-            const trimmed = champ.trim();
-            const img = document.createElement("img");
-            img.className = "champion-icon";
-            img.src = getChampionIconUrl(trimmed);
-            img.title = trimmed;
-            img.alt = trimmed;
-            enemyContainer.appendChild(img);
-          });
+        async function deleteScrim(id) {
+            try {
+                await remove(ref(db, `scrims/${id}`));
+            } catch (err) {
+                alert("Błąd podczas usuwania scrimu: " + err.message);
+            }
         }
-        enemyTd.appendChild(enemyContainer);
-        tr.appendChild(enemyTd);
 
-        // Akcje - Usuń
-        const actionsTd = document.createElement("td");
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Usuń";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.addEventListener("click", async () => {
-          if (
-            confirm(
-              `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
-            )
-          ) {
-            await deleteScrim(scrim.id);
-          }
+        function loadScrimsFromFirebase() {
+            onValue(scrimsRef, (snapshot) => {
+                const data = snapshot.val() || {};
+                scrimsData = Object.entries(data).map(([key, value]) => ({
+                    id: key,
+                    ...value,
+                }));
+                renderTable();
+            });
+        }
+
+        async function saveScrimToFirebase(scrim) {
+            try {
+                await push(scrimsRef, scrim);
+            } catch (err) {
+                alert("Błąd podczas dodawania scrimu: " + err.message);
+            }
+        }
+
+        scrimForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // Zbierz dane z formularza
+            const ourChampionsArray = Array.from(ourChampionInputs)
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+            const ourChampionsString = ourChampionsArray.join(", ");
+
+            const enemyChampionsArray = Array.from(enemyChampionInputs)
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+            const enemyChampionsString = enemyChampionsArray.join(", ");
+
+            const newScrim = {
+                date: scrimDateInput.value,
+                result: scrimResultInput.value,
+                time: scrimTimeInput.value,
+                our: ourChampionsString,
+                enemy: enemyChampionsString,
+            };
+
+            await saveScrimToFirebase(newScrim);
+            scrimForm.reset();
         });
-        actionsTd.appendChild(deleteBtn);
-        tr.appendChild(actionsTd);
 
-        scrimTableBody.appendChild(tr);
-      });
-
-      updateStats();
-    }
-
-    async function deleteScrim(id) {
-      try {
-        await remove(ref(db, `scrims/${id}`));
-      } catch (err) {
-        alert("Błąd podczas usuwania scrimu: " + err.message);
-      }
-    }
-
-    function loadScrimsFromFirebase() {
-      onValue(scrimsRef, (snapshot) => {
-        const data = snapshot.val() || {};
-        scrimsData = Object.entries(data).map(([key, value]) => ({
-          id: key,
-          ...value,
-        }));
-        renderTable();
-      });
-    }
-
-    async function saveScrimToFirebase(scrim) {
-      try {
-        await push(scrimsRef, scrim);
-      } catch (err) {
-        alert("Błąd podczas dodawania scrimu: " + err.message);
-      }
-    }
-
-    scrimForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      // Zbierz dane z formularza
-      const ourChampionsArray = Array.from(ourChampionInputs)
-        .map((input) => input.value.trim())
-        .filter(Boolean);
-      const ourChampionsString = ourChampionsArray.join(", ");
-
-      const enemyChampionsArray = Array.from(enemyChampionInputs)
-        .map((input) => input.value.trim())
-        .filter(Boolean);
-      const enemyChampionsString = enemyChampionsArray.join(", ");
-
-      const newScrim = {
-        date: scrimDateInput.value,
-        result: scrimResultInput.value,
-        time: scrimTimeInput.value,
-        our: ourChampionsString,
-        enemy: enemyChampionsString,
-      };
-
-      await saveScrimToFirebase(newScrim);
-      scrimForm.reset();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadScrimsFromFirebase();
-    });
-  </script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadScrimsFromFirebase();
+        });
+    </script>
 </body>
 </html>
