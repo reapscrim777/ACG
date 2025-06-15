@@ -174,45 +174,45 @@
         let scrimsData = [];
 
         // Config do ikon League of Legends
-        // *** ZAKTUALIZOWANA WERSJA DDRAGON API NA 15.12.1 ***
         const DDRAGON_VERSION = "15.12.1"; 
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A"; // Domyślna ikona, gdy nie znajdziemy championa
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A"; 
 
-        // *** POPRAWIONA FUNKCJA GETCHAMPIONICONURL ***
+        // Funkcja do pobierania URL-a ikony championa
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
 
-            // Normalizacja nazwy: usuń apostrofy, zmień na małe litery, usuń spacje na końcach
-            let cleanedName = championName.trim().toLowerCase().replace(/'/g, "");
+            // Agresywna normalizacja: usuń apostrofy, kropki, myślniki, zmień na małe litery, usuń nadmiarowe spacje
+            let cleanedName = championName
+                .trim()
+                .toLowerCase()
+                .replace(/[.'-]/g, "") // Usuń apostrofy, kropki, myślniki
+                .replace(/\s+/g, ""); // Zastąp WSZYSTKIE spacje (jedna lub więcej) brakiem spacji.
 
             // Mapa specjalnych przypadków i nazw, które różnią się od prostego PascalCase
             const nameMap = {
                 // Bohaterowie z wieloczłonowymi nazwami, spacjami, kropkami, apostrofami
+                // Normalizacja (np. "dr. mundo" -> "drmundo", "nunu & willump" -> "nunu&willump") musi być zgodna z tym, co jest tu w kluczu
                 "aurelion sol": "AurelionSol",
-                "dr. mundo": "DrMundo",
+                "drmundo": "DrMundo", 
                 "lee sin": "LeeSin",
                 "miss fortune": "MissFortune",
-                "nunu & willump": "Nunu",
+                "nunu&willump": "Nunu", // Po normalizacji "nunu & willump" da "nunu&willump"
                 "tahm kench": "TahmKench",
                 "twisted fate": "TwistedFate",
-                "xin zhao": "XinZhao",
                 "jarvan iv": "JarvanIV",
                 "renata glasc": "Renata",
-                "bel'veth": "BelVeth", 
-                "cho'gath": "Chogath",
-                "kai'sa": "Kaisa",
-                "kha'zix": "Khazix",
-                "kog'maw": "KogMaw",
+                "belveth": "BelVeth", 
+                "chogath": "Chogath", 
+                "kaisa": "Kaisa",     
+                "khazix": "Khazix",   
+                "kogmaw": "KogMaw",   
                 "wukong": "MonkeyKing", 
                 "monkey king": "MonkeyKing",
-                
-                // *** DODANO/POPRAWIONO MAPOWANIE DLA AMBESSY ***
-                "ambessa": "Ambessa", // Ponieważ "id" to "Ambessa"
-                "ambessa medarda": "Ambessa", // Na wypadek, gdyby ktoś wpisał całą nazwę
-
+                "ambessa": "Ambessa", 
+                "ambessamedarda": "Ambessa", 
                 "amumu": "Amumu", 
-                "mummy": "Amumu",
+                "mummy": "Amumu", // Alias
 
                 "fiddlesticks": "Fiddlesticks",
                 "blitzcrank": "Blitzcrank",
@@ -225,45 +225,33 @@
                 "master yi": "MasterYi", 
                 "cassiopeia": "Cassiopeia", 
 
-                // Krótsze aliasy, które mapują na pełne nazwy pliku DDragon
-                "drmundo": "DrMundo",
-                "nunu": "Nunu",
-                "renataglasc": "Renata",
-                "jarvaniv": "JarvanIV",
-                "masteryi": "MasterYi",
+                // Specyficzne dla Xin Zhao po usunięciu spacji:
+                "xinzhao": "XinZhao", 
             };
 
-            // 1. Spróbuj znaleźć w mapie (najwyższy priorytet)
+            // Spróbuj znaleźć w mapie (najwyższy priorytet)
             let dataDragonName = nameMap[cleanedName];
 
-            // 2. Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
-            // To złapie większość championów bez specjalnych znaków i spacji, których nie ma w nameMap
-            if (!dataDragonName) {
-                dataDragonName = cleanedName
-                    .split(" ") 
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) 
-                    .join(""); 
-            }
-            
-            // Jeszcze jedno sprawdzenie dla pojedynczych słów
+            // Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
             if (!dataDragonName && cleanedName.length > 0) {
+                 // Dla większości championów bez spacji/specjalnych znaków, pierwsza litera duża
                  dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
-
-
-            // --- Logi do debugowania (teraz możesz je wyłączyć, jeśli wszystko działa!) ---
-            console.log(`Input: "${championName}"`);
-            console.log(`Cleaned (po normalizacji): "${cleanedName}"`);
-            console.log(`DataDragonName (finalny): "${dataDragonName}"`);
+            
+            // --- Aktywne Logi do debugowania (POZOSTAW WŁĄCZONE, DLA DIAGNOSTYKI!) ---
+            console.log(`--- getChampionIconUrl Debug ---`);
+            console.log(`Input (championName): "${championName}"`);
+            console.log(`Cleaned (po normalizacji, do wyszukania w mapie/PascalCase): "${cleanedName}"`);
+            console.log(`DataDragonName (finalny z mapy/pascal): "${dataDragonName}"`);
             console.log(`Generated URL: ${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`);
-            // --- Koniec logów ---
+            console.log(`------------------------------`);
+            // --- Koniec aktywnych logów ---
 
-            // Ostateczna weryfikacja URL-a
             const finalUrl = `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
             return finalUrl;
         }
-        // *** KONIEC POPRAWIONEJ FUNKCJI ***
 
+        // Aktualizacja statystyk
         function updateStats() {
             const total = scrimsData.length;
             const wins = scrimsData.filter((s) => s.result === "WIN").length;
@@ -276,6 +264,7 @@
             winRateSpan.textContent = `${winRate}%`;
         }
 
+        // Renderowanie tabeli
         function renderTable() {
             scrimTableBody.innerHTML = "";
 
@@ -304,12 +293,23 @@
                 ourContainer.className = "champion-icons-container";
                 if (scrim.our) {
                     scrim.our.split(",").forEach((champ) => {
-                        const trimmed = champ.trim();
+                        const trimmedChampName = champ.trim(); 
                         const img = document.createElement("img");
                         img.className = "champion-icon";
-                        img.src = getChampionIconUrl(trimmed); 
-                        img.title = trimmed;
-                        img.alt = trimmed;
+                        
+                        const iconUrl = getChampionIconUrl(trimmedChampName); 
+                        img.src = iconUrl; 
+                        img.title = trimmedChampName;
+                        img.alt = trimmedChampName;
+
+                        // Dodatkowy log, żeby potwierdzić URL przypisywany do img.src
+                        console.log(`Przypisywany URL do img.src dla "${trimmedChampName}": ${iconUrl}`);
+
+                        img.onerror = function() {
+                            this.onerror=null; 
+                            this.src=FALLBACK_ICON_URL;
+                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej.`);
+                        };
                         ourContainer.appendChild(img);
                     });
                 }
@@ -322,12 +322,23 @@
                 enemyContainer.className = "champion-icons-container";
                 if (scrim.enemy) {
                     scrim.enemy.split(",").forEach((champ) => {
-                        const trimmed = champ.trim();
+                        const trimmedChampName = champ.trim(); 
                         const img = document.createElement("img");
                         img.className = "champion-icon";
-                        img.src = getChampionIconUrl(trimmed); 
-                        img.title = trimmed;
-                        img.alt = trimmed;
+                        
+                        const iconUrl = getChampionIconUrl(trimmedChampName); 
+                        img.src = iconUrl; 
+                        img.title = trimmedChampName;
+                        img.alt = trimmedChampName;
+
+                        // Dodatkowy log, żeby potwierdzić URL przypisywany do img.src
+                        console.log(`Przypisywany URL do img.src dla "${trimmedChampName}": ${iconUrl}`);
+
+                        img.onerror = function() {
+                            this.onerror=null; 
+                            this.src=FALLBACK_ICON_URL;
+                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej.`);
+                        };
                         enemyContainer.appendChild(img);
                     });
                 }
@@ -357,14 +368,18 @@
             updateStats();
         }
 
+        // Usuwanie scrimu z Firebase
         async function deleteScrim(id) {
             try {
                 await remove(ref(db, `scrims/${id}`));
+                console.log(`Scrim ${id} usunięty pomyślnie.`);
             } catch (err) {
+                console.error("Błąd podczas usuwania scrimu:", err);
                 alert("Błąd podczas usuwania scrimu: " + err.message);
             }
         }
 
+        // Ładowanie scrimów z Firebase
         function loadScrimsFromFirebase() {
             onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
@@ -372,22 +387,28 @@
                     id: key,
                     ...value,
                 }));
+                console.log("Dane Firebase załadowane:", scrimsData);
                 renderTable();
+            }, (error) => {
+                console.error("Błąd podczas ładowania danych z Firebase:", error);
             });
         }
 
+        // Zapisywanie scrimu do Firebase
         async function saveScrimToFirebase(scrim) {
             try {
                 await push(scrimsRef, scrim);
+                console.log("Scrim dodany do Firebase:", scrim);
             } catch (err) {
+                console.error("Błąd podczas dodawania scrimu:", err);
                 alert("Błąd podczas dodawania scrimu: " + err.message);
             }
         }
 
+        // Obsługa formularza dodawania scrimu
         scrimForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            // Zbierz dane z formularza
             const ourChampionsArray = Array.from(ourChampionInputs)
                 .map((input) => input.value.trim())
                 .filter(Boolean);
@@ -410,6 +431,7 @@
             scrimForm.reset();
         });
 
+        // Inicjalizacja po załadowaniu DOM
         document.addEventListener("DOMContentLoaded", () => {
             loadScrimsFromFirebase();
         });
