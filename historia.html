@@ -174,10 +174,10 @@
         let scrimsData = [];
 
         // Config do ikon League of Legends
-        // Upewnij się, że to jest aktualna wersja! (Sprawdź: https://ddragon.leagueoflegends.com/api/versions.json)
-        const DDRAGON_VERSION = "14.11.1"; 
+        // *** ZAKTUALIZOWANA WERSJA DDRAGON API NA 15.12.1 ***
+        const DDRAGON_VERSION = "15.12.1"; 
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A"; // Domyślna ikona, gdy nie znajdziemy championa
 
         // *** POPRAWIONA FUNKCJA GETCHAMPIONICONURL ***
         function getChampionIconUrl(championName) {
@@ -204,10 +204,15 @@
                 "kai'sa": "Kaisa",
                 "kha'zix": "Khazix",
                 "kog'maw": "KogMaw",
-
-                // *** KLUCZOWA ZMIANA TUTAJ: WUKONG MAPUJE NA MONKEYKING ***
                 "wukong": "MonkeyKing", 
-                "monkey king": "MonkeyKing", // Na wypadek, gdyby ktoś wpisał "Monkey King"
+                "monkey king": "MonkeyKing",
+                
+                // *** DODANO/POPRAWIONO MAPOWANIE DLA AMBESSY ***
+                "ambessa": "Ambessa", // Ponieważ "id" to "Ambessa"
+                "ambessa medarda": "Ambessa", // Na wypadek, gdyby ktoś wpisał całą nazwę
+
+                "amumu": "Amumu", 
+                "mummy": "Amumu",
 
                 "fiddlesticks": "Fiddlesticks",
                 "blitzcrank": "Blitzcrank",
@@ -234,28 +239,28 @@
             // 2. Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
             // To złapie większość championów bez specjalnych znaków i spacji, których nie ma w nameMap
             if (!dataDragonName) {
-                // Konwertuje "miss fortune" na "MissFortune" lub "garen" na "Garen"
                 dataDragonName = cleanedName
                     .split(" ") 
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) 
                     .join(""); 
             }
             
-            // Jeszcze jedno sprawdzenie dla pojedynczych słów, które nie miały spacji (np. "garen" -> "Garen")
-            // Ta sekcja jest na wypadek, gdyby `cleanedName` był pojedynczym słowem, a nie został znaleziony w `nameMap`
+            // Jeszcze jedno sprawdzenie dla pojedynczych słów
             if (!dataDragonName && cleanedName.length > 0) {
                  dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
 
 
-            // --- Logi do debugowania (pozostaw je włączone, dopóki wszystko nie zadziała idealnie!) ---
+            // --- Logi do debugowania (teraz możesz je wyłączyć, jeśli wszystko działa!) ---
             console.log(`Input: "${championName}"`);
             console.log(`Cleaned (po normalizacji): "${cleanedName}"`);
             console.log(`DataDragonName (finalny): "${dataDragonName}"`);
             console.log(`Generated URL: ${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`);
             // --- Koniec logów ---
 
-            return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
+            // Ostateczna weryfikacja URL-a
+            const finalUrl = `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
+            return finalUrl;
         }
         // *** KONIEC POPRAWIONEJ FUNKCJI ***
 
