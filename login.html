@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie / Rejestracja</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0f0f;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .auth-container {
+            background-color: #1a1a1a;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            width: 100%;
+            color: #f0f0f0;
+            text-align: center;
+        }
+
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+            font-size: 2em;
+        }
+
+        .auth-container input[type="email"],
+        .auth-container input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: #f0f0f0;
+            font-size: 1.1em;
+        }
+
+        .auth-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .auth-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .auth-container .toggle-link {
+            display: block;
+            margin-top: 15px;
+            color: #bbb;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        .auth-container .toggle-link:hover {
+            color: #007bff;
+        }
+
+        .auth-message {
+            margin-top: 20px;
+            color: green;
+        }
+        .auth-message.error {
+            color: red;
+        }
+
+        .auth-status {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .auth-status p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .auth-status button {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #dc3545;
+        }
+        .auth-status button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2 id="authTitle">Zaloguj się</h2>
+        
+        <div id="loginSection">
+            <input type="email" id="loginEmail" placeholder="Email" required />
+            <input type="password" id="loginPassword" placeholder="Hasło" required />
+            <button id="loginBtn">Zaloguj</button>
+            <a href="#" id="showRegister" class="toggle-link">Nie masz konta? Zarejestruj się</a>
+        </div>
+
+        <div id="registerSection" style="display: none;">
+            <input type="email" id="registerEmail" placeholder="Email" required />
+            <input type="password" id="registerPassword" placeholder="Hasło" required />
+            <button id="registerBtn">Zarejestruj</button>
+            <a href="#" id="showLogin" class="toggle-link">Masz już konto? Zaloguj się</a>
+        </div>
+
+        <div class="auth-message" id="authMessage"></div>
+
+        <div class="auth-status" id="loggedInStatus" style="display: none;">
+            <p>Zalogowano jako: <span id="userEmail"></span></p>
+            <button id="logoutBtn">Wyloguj</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        // Twoja konfiguracja Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebaseapp.com",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // UI Elements
+        const authTitle = document.getElementById('authTitle');
+        const loginSection = document.getElementById('loginSection');
+        const registerSection = document.getElementById('registerSection');
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const registerEmailInput = document.getElementById('registerEmail');
+        const registerPasswordInput = document.getElementById('registerPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        const authMessage = document.getElementById('authMessage');
+        const loggedInStatus = document.getElementById('loggedInStatus');
+        const userEmailSpan = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Admin UID - WAŻNE: ZMIENIONO NA PODANY UID
+        const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23"; 
+
+        // Function to display messages
+        function showMessage(message, isError = false) {
+            authMessage.textContent = message;
+            authMessage.className = isError ? 'auth-message error' : 'auth-message';
+        }
+
+        // Toggle between login and register forms
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginSection.style.display = 'none';
+            registerSection.style.display = 'block';
+            authTitle.textContent = 'Zarejestruj się';
+            authMessage.textContent = ''; // Clear message
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerSection.style.display = 'none';
+            loginSection.style.display = 'block';
+            authTitle.textContent = 'Zaloguj się';
+            authMessage.textContent = ''; // Clear message
+        });
+
+        // Handle Login
+        loginBtn.addEventListener('click', async () => {
+            const email = loginEmailInput.value;
+            const password = loginPasswordInput.value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage('Zalogowano pomyślnie!', false);
+                // Przekieruj na stronę główną lub dodajmecz.html jeśli chcieli tam iść
+                window.location.href = 'index.html'; 
+            } catch (error) {
+                showMessage(`Błąd logowania: ${error.message}`, true);
+                console.error("Login error:", error);
+            }
+        });
+
+        // Handle Register
+        registerBtn.addEventListener('click', async () => {
+            const email = registerEmailInput.value;
+            const password = registerPasswordInput.value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage('Rejestracja udana! Możesz się teraz zalogować.', false);
+                // Automatyczne przejście do logowania po rejestracji
+                showLoginLink.click(); 
+            } catch (error) {
+                showMessage(`Błąd rejestracji: ${error.message}`, true);
+                console.error("Register error:", error);
+            }
+        });
+
+        // Handle Logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                showMessage('Wylogowano pomyślnie.', false);
+                // Przekieruj z powrotem do strony logowania
+                window.location.href = 'login.html'; 
+            } catch (error) {
+                showMessage(`Błąd wylogowania: ${error.message}`, true);
+                console.error("Logout error:", error);
+            }
+        });
+
+        // Monitor authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                userEmailSpan.textContent = user.email;
+                loggedInStatus.style.display = 'flex'; // Show logged in status
+                loginSection.style.display = 'none';
+                registerSection.style.display = 'none';
+                authTitle.textContent = 'Status logowania';
+                authMessage.textContent = '';
+            } else {
+                // User is signed out
+                loggedInStatus.style.display = 'none';
+                loginSection.style.display = 'block'; // Show login form by default
+                registerSection.style.display = 'none';
+                authTitle.textContent = 'Zaloguj się';
+                authMessage.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -230,6 +230,9 @@
             remove,
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+        // DODAJ IMPORT AUTORYZACJI
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
 
         // Firebase config (nie zmieniony)
         const firebaseConfig = {
@@ -248,6 +251,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
+        const auth = getAuth(app); // Pobierz instancję autoryzacji
         const scrimsRef = ref(db, "scrims");
 
         const scrimTableBody = document.getElementById("scrimTableBody");
@@ -258,6 +262,16 @@
         const winRateSpan = document.getElementById("winRate");
 
         let scrimsData = [];
+        let currentUser = null; // Zmienna do przechowywania stanu użytkownika
+
+        // Nasłuchuj zmian stanu autoryzacji
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            // Tutaj możesz zaktualizować interfejs użytkownika na podstawie stanu zalogowania
+            // np. ukryć/pokazać przycisk "Usuń" lub "Zaloguj się"
+            console.log("Stan autoryzacji: ", currentUser ? currentUser.email : "Niezalogowany");
+            renderTable(); // Odśwież tabelę po zmianie stanu zalogowania, aby uwzględnić widoczność przycisku
+        });
 
         // Config do ikon League of Legends
         const DDRAGON_VERSION = "15.12.1"; // Zaktualizowana wersja DDragon
@@ -399,16 +413,28 @@
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Usuń";
                 deleteBtn.className = "delete-btn";
-                deleteBtn.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    if (
-                        confirm(
-                            `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
-                        )
-                    ) {
-                        await deleteScrim(scrim.id);
-                    }
-                });
+                // Dodajemy warunek wyświetlania przycisku i logikę kliknięcia
+                if (currentUser) { // Jeśli użytkownik jest zalogowany, pokaż przycisk
+                    deleteBtn.style.display = 'block'; // Lub 'inline-block' w zależności od potrzeb
+                    deleteBtn.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        if (
+                            confirm(
+                                `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
+                            )
+                        ) {
+                            await deleteScrim(scrim.id);
+                        }
+                    });
+                } else { // Jeśli użytkownik nie jest zalogowany, ukryj przycisk i dodaj obsługę kliknięcia z komunikatem
+                    deleteBtn.style.display = 'block'; // Nadal widoczny, ale zmieni się jego zachowanie
+                    deleteBtn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        alert("Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.");
+                        // Przekierowanie do strony logowania - załóżmy, że masz plik login.html
+                        window.location.href = "login.html";
+                    });
+                }
                 actionsTd.appendChild(deleteBtn);
                 mainRow.appendChild(actionsTd);
 
@@ -570,6 +596,11 @@
 
         // Usuwanie scrimu z Firebase
         async function deleteScrim(id) {
+            if (!currentUser) {
+                alert("Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.");
+                window.location.href = "login.html"; // Przekierowanie do strony logowania
+                return; // Zatrzymaj dalsze wykonywanie funkcji
+            }
             try {
                 await remove(ref(db, `scrims/${id}`));
                 console.log(`Scrim ${id} usunięty pomyślnie.`);
