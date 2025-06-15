@@ -72,7 +72,7 @@ main h1 {
 
 .nav-links a:hover {
     background-color: #ffffff;  /* Kolor tła przy najechaniu */
-    color: rgb(0, 0, 0);                 /* Zmiana koloru tekstu */
+    color: rgb(0, 0, 0);         /* Zmiana koloru tekstu */
     transform: translateY(0px); /* Efekt podniesienia przy najechaniu */
 }
 
@@ -254,7 +254,6 @@ main h1 {
     width: 100%;
 }
 
-
 /* Styl dla przycisku w formularzu */
 #scrimForm button[type="submit"] {
     grid-column: 1 / -1;
@@ -281,7 +280,7 @@ main h1 {
     background-color: #333;
     padding: 25px;
     border-radius: 0px;
-    margin-bottom: 10px
+    margin-bottom: 10px;
 }
 
 .scrim-history h2 {
@@ -321,18 +320,18 @@ main h1 {
 
 /* Style dla wyników WIN/LOSE w tabeli */
 .win {
-    color: #28a745; /* Zielony */
+    color: green !important;
     font-weight: bold;
 }
 
 .lose {
-    color: #dc3545; /* Czerwony */
+    color: red !important;
     font-weight: bold;
 }
 
 /* Style dla przycisku usuwania w tabeli */
 .delete-btn {
-    background-color: #dc3545;
+    background-color: #6a9ac4; /* Wyblakły niebieski */
     color: white;
     border: none;
     padding: 8px 12px;
@@ -343,7 +342,7 @@ main h1 {
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #4a7aa3; /* Ciemniejszy odcień wyblakłego niebieskiego przy najechaniu */
 }
 
 /* Style dla ikon postaci w tabeli */
@@ -402,7 +401,6 @@ main h1 {
     background-color: #ffffff;
     transform: translateY(-1px); /* Delikatny efekt hover */
 }
-
 
 /* --- Style dla podstron zawodników (Likht.html, Weedolas.html, itp.) --- */
 .player-stats-detail {
@@ -591,7 +589,7 @@ footer {
     color: white;  /* Kolor tekstu */
     text-align: center;  /* Wyśrodkowanie tekstu */
     padding: 10px 0;
-    font-size: 14px;    /* Mniejsza czcionka */
+    font-size: 14px;     /* Mniejsza czcionka */
     position: relative;
     bottom: 0;
     width: 100%;

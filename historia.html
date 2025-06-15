@@ -29,16 +29,148 @@
             color: red;
             font-weight: bold;
         }
-        button.delete-btn {
-            background-color: #f44336;
+        /* Style dla tabeli scrimów */
+        .scrim-history table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+
+        .scrim-history th, .scrim-history td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .scrim-history th {
+            background-color: #007bff;
             color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .scrim-history tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .scrim-history tbody tr:nth-child(odd) {
+            background-color: #2a2a2a;
+        }
+
+        .scrim-history tbody tr:nth-child(even) {
+            background-color: #1e1e1e;
+        }
+
+        .scrim-history tbody tr:hover {
+            background-color: #3a3a3a;
+        }
+
+        /* Styl dla klikalnego wiersza meczu */
+        .match-row {
             cursor: pointer;
         }
-        button.delete-btn:hover {
-            background-color: #d32f2f;
+
+        /* Ukryta sekcja ze statystykami graczy */
+        .player-stats-detail-row {
+            display: none; /* Domyślnie ukryte */
+            background-color: #252525;
+        }
+
+        /* Kontener dla obu tabel, żeby je ładnie ułożyć obok siebie lub pod sobą */
+        .player-stats-container {
+            display: flex; /* Użyj flexboxa */
+            flex-wrap: wrap; /* Pozwól na zawijanie elementów, jeśli brakuje miejsca */
+            gap: 20px; /* Odstęp między tabelami */
+            justify-content: space-around; /* Wyśrodkowanie i rozłożenie tabel */
+            padding: 10px;
+        }
+
+        /* Styl dla rozwijalnej tabeli graczy (obu: naszej i przeciwnika) */
+        .player-stats-detail-table {
+            flex: 1; /* Pozwól tabelom rosnąć i kurczyć się */
+            min-width: 300px; /* Minimalna szerokość tabeli, żeby się nie ściskały za bardzo */
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .player-stats-detail-table h4 {
+            text-align: center;
+            color: #f0f0f0;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Nowy styl dla wyświetlania sumy złota */
+        .gold-summary {
+            text-align: center;
+            color: #ffcc00 !important; /* Złoty kolor - z !important */
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .player-stats-detail-table th {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left; /* Nagłówki kolumn nadal wyrównane do lewej */
+            background-color: #333;
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+
+        /* Zmiana tutaj: wszystkie komórki td wewnątrz player-stats-detail-table będą wyśrodkowane */
+        .player-stats-detail-table td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: center; /* Wyrównanie wszystkich komórek danych do środka */
+        }
+
+        /* Specyficzne style, które mogą nadpisać ogólne, jeśli potrzebne (np. dla ikony+nicka) */
+        .player-stats-detail-table td:first-child {
+             text-align: left; /* Pierwsza kolumna (postać/gracz) z powrotem do lewej */
+        }
+
+
+        .player-stats-detail-table .player-kda {
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        .player-stats-detail-table .player-minions {
+            color: #88d0ff; /* Jakiś fajny kolor dla minionów */
+        }
+        .player-stats-detail-table .player-gold {
+            color: #ffcc00; /* Złoty kolor dla golda */
+        }
+        .player-stats-detail-table .player-champion-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+            border-radius: 2px;
+            border: 1px solid #555;
+        }
+
+        /* Przycisk usuwania */
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.85em;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -51,9 +183,9 @@
         <nav class="nav-links">
             <a href="index.html">STRONA GŁÓWNA</a>
             <a href="historia.html">HISTORIA GIER</a>
-            <a href="#test3">test3</a>
+            <a href="statystyki.html">STATYSTYKI</a>
             <a href="#test4">test4</a>
-            <a href="#test5">test5</a>
+            <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
     </header>
 
@@ -65,48 +197,6 @@
             <div class="stats-item">Wygrane: <span id="wins">0</span></div>
             <div class="stats-item">Przegrane: <span id="losses">0</span></div>
             <div class="stats-item">% zwycięstw: <span id="winRate">0%</span></div>
-        </section>
-
-        <section class="add-scrim-form">
-            <h2>Dodaj nowy Scrim</h2>
-            <form id="scrimForm">
-                <div class="form-group">
-                    <label for="scrimDate">Data:</label>
-                    <input type="date" id="scrimDate" required />
-                </div>
-                <div class="form-group">
-                    <label for="scrimResult">Wynik:</label>
-                    <select id="scrimResult" required>
-                        <option value="">Wybierz wynik</option>
-                        <option value="WIN">WIN</option>
-                        <option value="LOSE">LOSE</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="scrimTime">Czas Gry:</label>
-                    <input type="text" id="scrimTime" placeholder="np. 35:12" required />
-                </div>
-
-                <div class="form-group team-champions">
-                    <label>Nasze Postacie:</label>
-                    <input type="text" class="our-champion-input" placeholder="Top" required />
-                    <input type="text" class="our-champion-input" placeholder="Jungle" required />
-                    <input type="text" class="our-champion-input" placeholder="Mid" required />
-                    <input type="text" class="our-champion-input" placeholder="Adc" required />
-                    <input type="text" class="our-champion-input" placeholder="Support" required />
-                </div>
-
-                <div class="form-group team-champions">
-                    <label>Postacie Przeciwników:</label>
-                    <input type="text" class="enemy-champion-input" placeholder="Top" required />
-                    <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
-                    <input type="text" class="enemy-champion-input" placeholder="Mid" required />
-                    <input type="text" class="enemy-champion-input" placeholder="Adc" required />
-                    <input type="text" class="enemy-champion-input" placeholder="Support" required />
-                </div>
-
-                <button type="submit">Dodaj Scrim</button>
-            </form>
         </section>
 
         <section class="scrim-history">
@@ -127,12 +217,15 @@
         </section>
     </main>
 
+    <footer>
+        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
         import {
             getDatabase,
             ref,
-            push,
             onValue,
             remove,
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
@@ -157,14 +250,7 @@
         const db = getDatabase(app);
         const scrimsRef = ref(db, "scrims");
 
-        const scrimForm = document.getElementById("scrimForm");
         const scrimTableBody = document.getElementById("scrimTableBody");
-        const scrimDateInput = document.getElementById("scrimDate");
-        const scrimResultInput = document.getElementById("scrimResult");
-        const scrimTimeInput = document.getElementById("scrimTime");
-
-        const ourChampionInputs = document.querySelectorAll(".our-champion-input");
-        const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
 
         const totalScrimsSpan = document.getElementById("totalScrims");
         const winsSpan = document.getElementById("wins");
@@ -174,223 +260,57 @@
         let scrimsData = [];
 
         // Config do ikon League of Legends
-        // AKTUALNA WERSJA DDragon API
-        const DDRAGON_VERSION = "15.12.1"; 
+        const DDRAGON_VERSION = "15.12.1"; // Zaktualizowana wersja DDragon
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A"; 
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
 
-        // Funkcja do pobierania URL-a ikony championa
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
-
-            // Agresywna normalizacja: usuń apostrofy, kropki, myślniki, zmień na małe litery, usuń wszystkie spacje
-            // Np. "Dr. Mundo" -> "drmundo", "Nunu & Willump" -> "nunu&willump", "Bel'Veth" -> "belveth"
             let cleanedName = championName
                 .trim()
                 .toLowerCase()
-                .replace(/[.'-]/g, "") // Usuń apostrofy, kropki, myślniki
-                .replace(/\s+/g, ""); // Zastąp WSZYSTKIE spacje (jedna lub więcej) brakiem spacji.
+                .replace(/[.'-]/g, "")
+                .replace(/\s+/g, "");
 
-            // !!! KOMPLETNA I ZAKTUALIZOWANA MAPA NAZW CHAMPIONÓW !!!
-            // Klucze to ZNORMALIZOWANE NAZWY (bez spacji, apostrofów, itp.)
-            // Wartości to DOKŁADNE NAZWY PLIKÓW IKON W DDRAGON
             const nameMap = {
-                "aatrox": "Aatrox",
-                "ahri": "Ahri",
-                "akali": "Akali",
-                "akshan": "Akshan",
-                "alistar": "Alistar",
-                "amumu": "Amumu", "mummy": "Amumu",
-                "anivia": "Anivia",
-                "annie": "Annie",
-                "aphelios": "Aphelios",
-                "ashe": "Ashe",
-                "aurelionsol": "AurelionSol", // Zmieniono klucz na "aurelionsol"
-                "azir": "Azir",
-                "bard": "Bard",
-                "belveth": "BelVeth", // Po normalizacji z "Bel'Veth"
-                "blitzcrank": "Blitzcrank",
-                "brand": "Brand",
-                "braum": "Braum",
-                "briar": "Briar",
-                "caitlyn": "Caitlyn",
-                "camille": "Camille",
-                "cassiopeia": "Cassiopeia",
-                "chogath": "Chogath", // Po normalizacji z "Cho'Gath"
-                "corki": "Corki",
-                "darius": "Darius",
-                "diana": "Diana",
-                "drankz": "DrMundo", // Alias (jeśli jest używany)
-                "drmundo": "DrMundo", // Po normalizacji z "Dr. Mundo"
-                "draven": "Draven",
-                "ekko": "Ekko",
-                "elise": "Elise",
-                "evelynn": "Evelynn",
-                "ezreal": "Ezreal",
-                "fiddlesticks": "Fiddlesticks",
-                "fiora": "Fiora",
-                "fizz": "Fizz",
-                "galio": "Galio",
-                "gangplank": "Gangplank",
-                "garen": "Garen",
-                "gnar": "Gnar",
-                "gragas": "Gragas",
-                "graves": "Graves",
-                "gwen": "Gwen",
-                "hecarim": "Hecarim",
-                "heimerdinger": "Heimerdinger",
-                "hwei": "Hwei",
-                "illaoi": "Illaoi",
-                "irelia": "Irelia",
-                "ivern": "Ivern",
-                "janna": "Janna",
-                "jarvaniv": "JarvanIV", // Po normalizacji z "Jarvan IV"
-                "jax": "Jax",
-                "jayce": "Jayce",
-                "jhin": "Jhin",
-                "jinx": "Jinx",
-                "kaisa": "Kaisa", // Po normalizacji z "Kai'Sa"
-                "kalista": "Kalista",
-                "karma": "Karma",
-                "karthus": "Karthus",
-                "kassadin": "Kassadin",
-                "katarina": "Katarina",
-                "kayle": "Kayle",
-                "kayn": "Kayn",
-                "kennen": "Kennen",
-                "khazix": "Khazix", // Po normalizacji z "Kha'Zix"
-                "kindred": "Kindred",
-                "kled": "Kled",
-                "kogmaw": "KogMaw", // Po normalizacji z "Kog'Maw"
-                "ksante": "KSante", // DDragon ma "KSante"
-                "leblanc": "Leblanc",
-                "leesin": "LeeSin", // Po normalizacji z "Lee Sin"
-                "leona": "Leona",
-                "lillia": "Lillia",
-                "lissandra": "Lissandra",
-                "lucian": "Lucian",
-                "lulu": "Lulu",
-                "lux": "Lux",
-                "malphite": "Malphite",
-                "malzahar": "Malzahar",
-                "maokai": "Maokai",
-                "masteryi": "MasterYi", // Po normalizacji z "Master Yi"
-                "milio": "Milio",
-                "missfortune": "MissFortune", // Po normalizacji z "Miss Fortune"
-                "monkeyking": "MonkeyKing", "wukong": "MonkeyKing", // Wukong ma nazwę pliku "MonkeyKing"
-                "mordekaiser": "Mordekaiser",
-                "morgana": "Morgana",
-                "naafiri": "Naafiri",
-                "nami": "Nami",
-                "nasus": "Nasus",
-                "nautilus": "Nautilus",
-                "neeko": "Neeko",
-                "nidalee": "Nidalee",
-                "nilah": "Nilah",
-                "nocturne": "Nocturne",
-                "nunu": "Nunu", // Po normalizacji "Nunu & Willump" będzie "nunu&willump" lub po prostu "nunu"
-                "olaf": "Olaf",
-                "orianna": "Orianna",
-                "ornn": "Ornn",
-                "pantheon": "Pantheon",
-                "poppy": "Poppy",
-                "pyke": "Pyke",
-                "qiyana": "Qiyana",
-                "quinn": "Quinn",
-                "rakan": "Rakan",
-                "rammus": "Rammus",
-                "reksai": "RekSai", // DDragon ma "RekSai"
-                "rell": "Rell",
-                "renata": "Renata", // Po normalizacji z "Renata Glasc"
-                "renekton": "Renekton",
-                "rengar": "Rengar",
-                "riven": "Riven",
-                "rumble": "Rumble",
-                "ryze": "Ryze",
-                "samira": "Samira",
-                "sejuani": "Sejuani",
-                "senna": "Senna",
-                "seraphine": "Seraphine",
-                "sett": "Sett",
-                "shaco": "Shaco",
-                "shen": "Shen",
-                "shyvana": "Shyvana",
-                "singed": "Singed",
-                "sion": "Sion",
-                "sivir": "Sivir",
-                "skarner": "Skarner",
-                "smolder": "Smolder",
-                "sona": "Sona",
-                "soraka": "Soraka",
-                "swain": "Swain",
-                "sylas": "Sylas",
-                "syndra": "Syndra",
-                "tahmkench": "TahmKench", // Po normalizacji z "Tahm Kench"
-                "taliyah": "Taliyah",
-                "talon": "Talon",
-                "taric": "Taric",
-                "teemo": "Teemo",
-                "thresh": "Thresh",
-                "tristana": "Tristana",
-                "trundle": "Trundle",
-                "tryndamere": "Tryndamere",
-                "twistedfate": "TwistedFate", // Po normalizacji z "Twisted Fate"
-                "twitch": "Twitch",
-                "udyr": "Udyr",
-                "urgot": "Urgot",
-                "varus": "Varus",
-                "vayne": "Vayne",
-                "veigar": "Veigar",
-                "velkoz": "Velkoz", // DDragon ma "Velkoz"
-                "vex": "Vex",
-                "vi": "Vi",
-                "viego": "Viego",
-                "viktor": "Viktor",
-                "vladimir": "Vladimir",
-                "volibear": "Volibear",
-                "warwick": "Warwick",
-                "xayah": "Xayah",
-                "xerath": "Xerath",
-                "xinzhao": "XinZhao", // DDragon ma "XinZhao"
-                "yasuo": "Yasuo",
-                "yone": "Yone",
-                "yorick": "Yorick",
-                "yuumi": "Yuumi",
-                "zac": "Zac",
-                "zed": "Zed",
-                "zeri": "Zeri",
-                "ziggs": "Ziggs",
-                "zilean": "Zilean",
-                "zoe": "Zoe",
-                "zyra": "Zyra",
-                // *** AMBESSA ***
-                "ambessa": "Ambessa", // Ambessa jest już normalnie "Ambessa" w DDragon
+                "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu", "mummy": "Amumu",
+                "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
+                "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar",
+                "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", "corki": "Corki", "darius": "Darius",
+                "diana": "Diana", "drankz": "DrMundo", "drmundo": "DrMundo", "draven": "Draven", "ekko": "Ekko", "elise": "Elise",
+                "evelynn": "Evelynn", "ezreal": "Ezreal", "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio",
+                "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen",
+                "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern",
+                "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx", "kaisa": "Kaisa",
+                "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle",
+                "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw",
+                "ksante": "KSante", "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra",
+                "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux", "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai",
+                "masteryi": "MasterYi", "milio": "Milio", "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing",
+                "mordekaiser": "Mordekaiser", "morgana": "Morgana", "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus",
+                "neeko": "Neeko", "nidalee": "Nidalee", "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf",
+                "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana",
+                "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renata": "RenataGlasc",
+                "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze", "samira": "Samira",
+                "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen",
+                "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder",
+                "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra", "tahmkench": "TahmKench",
+                "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh", "tristana": "Tristana",
+                "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch", "udyr": "Udyr",
+                "urgot": "Urgot", "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi",
+                "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear", "warwick": "Warwick", "xayah": "Xayah",
+                "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone", "yorick": "Yorick", "yuumi": "Yuumi",
+                "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean", "zoe": "Zoe", "zyra": "Zyra",
+                "ambessa": "Ambessa",
             };
 
-            // Spróbuj znaleźć w mapie (najwyższy priorytet)
             let dataDragonName = nameMap[cleanedName];
-
-            // Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
-            // To złapie championów, których nazwy DDragon są prostym PascalCase (np. Garen, Lux)
-            // i nie wymagają specjalnych mapowań, bo nie mają spacji ani znaków specjalnych po normalizacji.
             if (!dataDragonName && cleanedName.length > 0) {
-                 dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
+                dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
-            
-            // --- Aktywne Logi do debugowania (POZOSTAW WŁĄCZONE, DLA DIAGNOSTYKI!) ---
-            console.log(`--- getChampionIconUrl Debug ---`);
-            console.log(`Input (championName): "${championName}"`);
-            console.log(`Cleaned (po normalizacji, do wyszukania w mapie/PascalCase): "${cleanedName}"`);
-            console.log(`DataDragonName (finalny z mapy/pascal): "${dataDragonName}"`);
-            console.log(`Generated URL: ${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`);
-            console.log(`------------------------------`);
-            // --- Koniec aktywnych logów ---
-
-            const finalUrl = `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
-            return finalUrl;
+            return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
         }
 
-        // Aktualizacja statystyk
         function updateStats() {
             const total = scrimsData.length;
             const wins = scrimsData.filter((s) => s.result === "WIN").length;
@@ -403,93 +323,84 @@
             winRateSpan.textContent = `${winRate}%`;
         }
 
-        // Renderowanie tabeli
+        // Funkcja pomocnicza do znajdowania gracza po nazwie championa (może być użyta w sortowaniu)
+        function findPlayerByChampionName(playersArray, championName) {
+            return playersArray.find(player => player.champion && player.champion.trim().toLowerCase() === championName.trim().toLowerCase());
+        }
+
         function renderTable() {
             scrimTableBody.innerHTML = "";
 
             scrimsData.forEach((scrim) => {
-                const tr = document.createElement("tr");
+                // Główny wiersz meczu
+                const mainRow = document.createElement("tr");
+                mainRow.classList.add("match-row");
+                mainRow.dataset.matchId = scrim.id;
 
                 // Data
                 const dateTd = document.createElement("td");
-                dateTd.textContent = scrim.date || "";
-                tr.appendChild(dateTd);
+                if (scrim.date) {
+                    const [year, month, day] = scrim.date.split('-');
+                    dateTd.textContent = `${day}-${month}-${year}`;
+                } else {
+                    dateTd.textContent = "";
+                }
+                mainRow.appendChild(dateTd);
 
                 // Wynik
                 const resultTd = document.createElement("td");
                 resultTd.textContent = scrim.result || "";
                 resultTd.className = scrim.result === "WIN" ? "win" : "lose";
-                tr.appendChild(resultTd);
+                mainRow.appendChild(resultTd);
 
                 // Czas gry
                 const timeTd = document.createElement("td");
                 timeTd.textContent = scrim.time || "";
-                tr.appendChild(timeTd);
+                mainRow.appendChild(timeTd);
 
                 // Nasze postacie z ikonami
                 const ourTd = document.createElement("td");
                 const ourContainer = document.createElement("div");
                 ourContainer.className = "champion-icons-container";
-                if (scrim.our) {
-                    scrim.our.split(",").forEach((champ) => {
-                        const trimmedChampName = champ.trim(); 
-                        const img = document.createElement("img");
-                        img.className = "champion-icon";
-                        
-                        const iconUrl = getChampionIconUrl(trimmedChampName); 
-                        img.src = iconUrl; 
-                        img.title = trimmedChampName;
-                        img.alt = trimmedChampName;
-
-                        // Dodatkowy log, żeby potwierdzić URL przypisywany do img.src
-                        console.log(`Przypisywany URL do img.src dla "${trimmedChampName}": ${iconUrl}`);
-
-                        img.onerror = function() {
-                            this.onerror=null; 
-                            this.src=FALLBACK_ICON_URL;
-                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej. Sprawdzono URL: ${this.src}`);
-                        };
-                        ourContainer.appendChild(img);
-                    });
-                }
+                let ourChampsToDisplay = Array.isArray(scrim.ourChamps) ? scrim.ourChamps : [];
+                ourChampsToDisplay.forEach((champ) => {
+                    const trimmedChampName = champ.trim();
+                    const img = document.createElement("img");
+                    img.className = "champion-icon";
+                    img.src = getChampionIconUrl(trimmedChampName);
+                    img.title = trimmedChampName;
+                    img.alt = trimmedChampName;
+                    img.onerror = function() { this.onerror=null; this.src=FALLBACK_ICON_URL; };
+                    ourContainer.appendChild(img);
+                });
                 ourTd.appendChild(ourContainer);
-                tr.appendChild(ourTd);
+                mainRow.appendChild(ourTd);
 
                 // Postacie przeciwników z ikonami
                 const enemyTd = document.createElement("td");
                 const enemyContainer = document.createElement("div");
                 enemyContainer.className = "champion-icons-container";
-                if (scrim.enemy) {
-                    scrim.enemy.split(",").forEach((champ) => {
-                        const trimmedChampName = champ.trim(); 
-                        const img = document.createElement("img");
-                        img.className = "champion-icon";
-                        
-                        const iconUrl = getChampionIconUrl(trimmedChampName); 
-                        img.src = iconUrl; 
-                        img.title = trimmedChampName;
-                        img.alt = trimmedChampName;
-
-                        // Dodatkowy log, żeby potwierdzić URL przypisywany do img.src
-                        console.log(`Przypisywany URL do img.src dla "${trimmedChampName}": ${iconUrl}`);
-
-                        img.onerror = function() {
-                            this.onerror=null; 
-                            this.src=FALLBACK_ICON_URL;
-                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej. Sprawdzono URL: ${this.src}`);
-                        };
-                        enemyContainer.appendChild(img);
-                    });
-                }
+                let enemyChampsToDisplay = Array.isArray(scrim.enemyChamps) ? scrim.enemyChamps : [];
+                enemyChampsToDisplay.forEach((champ) => {
+                    const trimmedChampName = champ.trim();
+                    const img = document.createElement("img");
+                    img.className = "champion-icon";
+                    img.src = getChampionIconUrl(trimmedChampName);
+                    img.title = trimmedChampName;
+                    img.alt = trimmedChampName;
+                    img.onerror = function() { this.onerror=null; this.src=FALLBACK_ICON_URL; };
+                    enemyContainer.appendChild(img);
+                });
                 enemyTd.appendChild(enemyContainer);
-                tr.appendChild(enemyTd);
+                mainRow.appendChild(enemyTd);
 
                 // Akcje - Usuń
                 const actionsTd = document.createElement("td");
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Usuń";
                 deleteBtn.className = "delete-btn";
-                deleteBtn.addEventListener("click", async () => {
+                deleteBtn.addEventListener("click", async (e) => {
+                    e.stopPropagation();
                     if (
                         confirm(
                             `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
@@ -499,9 +410,159 @@
                     }
                 });
                 actionsTd.appendChild(deleteBtn);
-                tr.appendChild(actionsTd);
+                mainRow.appendChild(actionsTd);
 
-                scrimTableBody.appendChild(tr);
+                scrimTableBody.appendChild(mainRow);
+
+                // --- Rozwijalny wiersz ze statystykami graczy ---
+                const detailRow = document.createElement("tr");
+                detailRow.classList.add("player-stats-detail-row");
+                detailRow.dataset.matchId = scrim.id;
+
+                const detailCell = document.createElement("td");
+                detailCell.colSpan = mainRow.children.length;
+
+                const playerStatsContainer = document.createElement("div");
+                playerStatsContainer.classList.add("player-stats-container");
+
+                // Posortowanie naszych graczy zgodnie z kolejnością championów
+                const sortedOurPlayers = ourChampsToDisplay
+                    .map(champName => findPlayerByChampionName(scrim.players || [], champName))
+                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
+
+                // Obliczanie sumy złota dla naszej drużyny
+                let totalOurGold = 0;
+                const ourPlayersRows = sortedOurPlayers
+                    .map(player => {
+                        const championName = player.champion;
+                        const displayPlayerName = player ? player.name : 'N/A';
+                        const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
+                        const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
+                        const displayGold = player && player.gold !== undefined ? player.gold : 'N/A';
+
+                        if (typeof player?.gold === 'number') {
+                            totalOurGold += player.gold;
+                        }
+
+                        return `
+                            <tr>
+                                <td>
+                                    <img src="${getChampionIconUrl(championName)}" class="player-champion-icon" alt="${championName}" onerror="this.onerror=null;this.src='${FALLBACK_ICON_URL}';">
+                                    ${displayPlayerName}
+                                </td>
+                                <td class="player-kda">${displayKDA}</td>
+                                <td class="player-minions">${displayMinions}</td>
+                                <td class="player-gold">${displayGold}</td>
+                            </tr>
+                        `;
+                    })
+                    .join('');
+
+                // Tabela dla naszych graczy
+                const ourPlayersTable = document.createElement("table");
+                ourPlayersTable.classList.add("player-stats-detail-table");
+                ourPlayersTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th colspan="4"><h4>Nasi Gracze</h4></th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="gold-summary">Team Gold: ${totalOurGold.toLocaleString()}</th>
+                        </tr>
+                        <tr>
+                            <th>Postać / Gracz</th>
+                            <th>KDA</th>
+                            <th>Miniony</th>
+                            <th>Gold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${ourPlayersRows}
+                    </tbody>
+                `;
+                playerStatsContainer.appendChild(ourPlayersTable);
+
+                // Posortowanie graczy przeciwnika zgodnie z kolejnością championów
+                const sortedEnemyPlayers = enemyChampsToDisplay
+                    .map(champName => findPlayerByChampionName(scrim.enemyPlayers || [], champName))
+                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
+
+
+                // Obliczanie sumy złota dla graczy przeciwnika
+                let totalEnemyGold = 0;
+                const enemyPlayersRows = sortedEnemyPlayers
+                    .map(player => {
+                        const championName = player.champion;
+                        const displayPlayerName = player ? player.name : 'N/A';
+                        const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
+                        const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
+                        const displayGold = player && player.gold !== undefined ? player.gold : 'N/A';
+
+                        if (typeof player?.gold === 'number') {
+                            totalEnemyGold += player.gold;
+                        }
+
+                        return `
+                            <tr>
+                                <td>
+                                    <img src="${getChampionIconUrl(championName)}" class="player-champion-icon" alt="${championName}" onerror="this.onerror=null;this.src='${FALLBACK_ICON_URL}';">
+                                    ${displayPlayerName}
+                                </td>
+                                <td class="player-kda">${displayKDA}</td>
+                                <td class="player-minions">${displayMinions}</td>
+                                <td class="player-gold">${displayGold}</td>
+                            </tr>
+                        `;
+                    })
+                    .join('');
+
+
+                // Tabela dla graczy przeciwnika
+                const enemyPlayersTable = document.createElement("table");
+                enemyPlayersTable.classList.add("player-stats-detail-table");
+                enemyPlayersTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th colspan="4"><h4>Gracze Przeciwnika</h4></th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="gold-summary">Team Gold: ${totalEnemyGold.toLocaleString()}</th>
+                        </tr>
+                        <tr>
+                            <th>Postać / Gracz</th>
+                            <th>KDA</th>
+                            <th>Miniony</th>
+                            <th>Gold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${enemyPlayersRows}
+                    </tbody>
+                `;
+                playerStatsContainer.appendChild(enemyPlayersTable);
+
+
+                detailCell.appendChild(playerStatsContainer);
+                detailRow.appendChild(detailCell);
+                scrimTableBody.appendChild(detailRow);
+
+
+                // Obsługa kliknięcia dla rozwijania/zwijania
+                mainRow.addEventListener('click', () => {
+                    // Zwiń wszystkie inne rozwinięte wiersze
+                    document.querySelectorAll('.player-stats-detail-row').forEach(row => {
+                        if (row !== detailRow && row.style.display === 'table-row') {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Przełącz widoczność bieżącego wiersza
+                    if (detailRow.style.display === 'table-row') {
+                        detailRow.style.display = 'none';
+                    } else {
+                        detailRow.style.display = 'table-row';
+                    }
+                });
             });
 
             updateStats();
@@ -522,53 +583,27 @@
         function loadScrimsFromFirebase() {
             onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
-                scrimsData = Object.entries(data).map(([key, value]) => ({
+                const allScrims = Object.entries(data).map(([key, value]) => ({
                     id: key,
                     ...value,
+                    type: value.type || 'general',
+                    ourChamps: Array.isArray(value.ourChamps) ? value.ourChamps : (typeof value.our === 'string' ? value.our.split(',').map(s => s.trim()).filter(Boolean) : []),
+                    enemyChamps: Array.isArray(value.enemyChamps) ? value.enemyChamps : (typeof value.enemy === 'string' ? value.enemy.split(',').map(s => s.trim()).filter(Boolean) : []),
+                    // Upewnij się, że players i enemyPlayers są tablicami, nawet jeśli są puste
+                    players: value.players || [],
+                    enemyPlayers: value.enemyPlayers || []
                 }));
-                console.log("Dane Firebase załadowane:", scrimsData);
+
+                scrimsData = allScrims
+                    .filter(scrim => scrim.type !== "player_specific")
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
                 renderTable();
             }, (error) => {
                 console.error("Błąd podczas ładowania danych z Firebase:", error);
+                alert("Błąd podczas ładowania danych z Firebase: " + error.message);
             });
         }
-
-        // Zapisywanie scrimu do Firebase
-        async function saveScrimToFirebase(scrim) {
-            try {
-                await push(scrimsRef, scrim);
-                console.log("Scrim dodany do Firebase:", scrim);
-            } catch (err) {
-                console.error("Błąd podczas dodawania scrimu:", err);
-                alert("Błąd podczas dodawania scrimu: " + err.message);
-            }
-        }
-
-        // Obsługa formularza dodawania scrimu
-        scrimForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const ourChampionsArray = Array.from(ourChampionInputs)
-                .map((input) => input.value.trim())
-                .filter(Boolean);
-            const ourChampionsString = ourChampionsArray.join(", ");
-
-            const enemyChampionsArray = Array.from(enemyChampionInputs)
-                .map((input) => input.value.trim())
-                .filter(Boolean);
-            const enemyChampionsString = enemyChampionsArray.join(", ");
-
-            const newScrim = {
-                date: scrimDateInput.value,
-                result: scrimResultInput.value,
-                time: scrimTimeInput.value,
-                our: ourChampionsString,
-                enemy: enemyChampionsString,
-            };
-
-            await saveScrimToFirebase(newScrim);
-            scrimForm.reset();
-        });
 
         // Inicjalizacja po załadowaniu DOM
         document.addEventListener("DOMContentLoaded", () => {

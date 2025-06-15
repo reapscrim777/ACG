@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dodaj Mecz</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
+        .champion-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 2px;
+            vertical-align: middle;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .champion-icons-container {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+        .win {
+            color: green;
+            font-weight: bold;
+        }
+        .lose {
+            color: red;
+            font-weight: bold;
+        }
+        /* Style formularza specyficzne dla dodajmecz.html */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        main h1 {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            margin-bottom: 20px !important;
+            text-align: center;
+            color: #f0f0f0;
+            width: 100%;
+        }
+        .add-scrim-form {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 800px;
+            color: #f0f0f0;
+        }
+
+        .add-scrim-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #f0f0f0;
+        }
+
+        .team-champions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .team-champions input {
+            flex: 1;
+            min-width: 100px;
+            max-width: calc(20% - 8px); /* 5 inputów w rzędzie */
+        }
+        
+        .player-stats-section {
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #2a2a2a;
+        }
+        .player-stats-section h3 {
+            margin-top: 0;
+            color: #f0f0f0;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .player-entry {
+            display: grid;
+            /* Zmieniona siatka: Etykieta, Champion, K, D, A, Miniony, Gold */
+            grid-template-columns: 1fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr; /* Dodano 7. kolumnę dla Golda */
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .player-entry label {
+            text-align: right; /* Wyrównaj nazwę gracza do prawej */
+            padding-right: 5px;
+        }
+        .player-entry input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #f0f0f0;
+            box-sizing: border-box;
+        }
+        /* Dopasowanie szerokości pól KDA, Minions, Gold */
+        .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+            max-width: 100%; /* Pozwól im wypełniać komórkę w siatce */
+            text-align: center;
+        }
+
+        .add-scrim-form button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .add-scrim-form button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsywność dla mniejszych ekranów */
+        @media (max-width: 768px) {
+            .player-entry {
+                /* Zmień na układ kolumnowy dla małych ekranów, aby uniknąć ściskania */
+                grid-template-columns: 1fr; /* Wszystkie elementy w jednej kolumnie */
+                text-align: center;
+            }
+            .player-entry label {
+                text-align: center;
+            }
+            .player-entry input {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+                max-width: unset; /* Usuń ograniczenia szerokości */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-section">
+            <img src="logo.png" alt="Logo" class="logo" />
+            <span class="site-name"></span>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">STRONA GŁÓWNA</a>
+            <a href="historia.html">HISTORIA GIER</a>
+            <a href="statystyki.html">STATYSTYKI</a>
+            <a href="#test4">test4</a>
+            <a href="dodajmecz.html">DODAJ MECZ</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Dodaj Nowy Mecz</h1>
+
+        <section class="add-scrim-form">
+            <form id="matchForm">
+                <div class="form-group">
+                    <label for="matchDate">Data:</label>
+                    <input type="date" id="matchDate" required />
+                </div>
+                <div class="form-group">
+                    <label for="matchResult">Wynik:</label>
+                    <select id="matchResult" required>
+                        <option value="">Wybierz wynik</option>
+                        <option value="WIN">WIN</option>
+                        <option value="LOSE">LOSE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matchTime">Czas Gry:</label>
+                    <input type="text" id="matchTime" placeholder="np. 35:12" required />
+                </div>
+
+                <h3>Teamcomp Ogólny (Nasza Drużyna)</h3>
+                <div class="form-group team-champions">
+                    <input type="text" class="our-champion-input" placeholder="Top" required />
+                    <input type="text" class="our-champion-input" placeholder="Jungle" required />
+                    <input type="text" class="our-champion-input" placeholder="Mid" required />
+                    <input type="text" class="our-champion-input" placeholder="Adc" required />
+                    <input type="text" class="our-champion-input" placeholder="Support" required />
+                </div>
+
+                <h3>Teamcomp Ogólny (Przeciwnicy)</h3>
+                <div class="form-group team-champions">
+                    <input type="text" class="enemy-champion-input" placeholder="Top" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Mid" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Adc" required />
+                    <input type="text" class="enemy-champion-input" placeholder="Support" required />
+                </div>
+
+                <div class="player-stats-section">
+                    <h3>Statystyki Zawodników (Nasza Drużyna)</h3>
+                    <div id="ourPlayerStatsContainer">
+                        </div>
+                </div>
+
+                <div class="player-stats-section">
+                    <h3>Statystyki Zawodników (Przeciwnicy)</h3>
+                    <div id="enemyPlayerStatsContainer">
+                        </div>
+                </div>
+
+                <button type="submit">Dodaj Mecz</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            push,
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        // Firebase config (ten sam co w innych plikach)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL:
+                "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebaseapp.com",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const scrimsRef = ref(db, "scrims"); // Główna referencja do scrimów
+
+        const matchForm = document.getElementById("matchForm");
+        const matchDateInput = document.getElementById("matchDate");
+        const matchResultInput = document.getElementById("matchResult");
+        const matchTimeInput = document.getElementById("matchTime");
+
+        const ourChampionInputs = document.querySelectorAll(".our-champion-input");
+        const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
+        const ourPlayerStatsContainer = document.getElementById("ourPlayerStatsContainer"); // Zmieniona nazwa ID
+        const enemyPlayerStatsContainer = document.getElementById("enemyPlayerStatsContainer"); // Nowe ID
+
+        // Listy graczy (nasza drużyna i przeciwnicy)
+        const ourPlayersList = [
+            "Likht", "Weedolas", "reap777", "Kohayushi", "None"
+        ];
+        // ZMIANA TUTAJ: Zmieniamy nazwy przeciwników na "Enemy"
+        const enemyPlayersList = [
+            "Enemy 1", "Enemy 2", "Enemy 3", "Enemy 4", "Enemy 5"
+        ];
+
+        // Funkcja do generowania pól input dla graczy (naszych lub przeciwników)
+        function generatePlayerInputs(containerElement, playersArray, playerTypePrefix) {
+            containerElement.innerHTML = ''; // Wyczyść przed generacją
+            playersArray.forEach((player, index) => {
+                const playerEntryDiv = document.createElement("div");
+                playerEntryDiv.className = "player-entry";
+                playerEntryDiv.innerHTML = `
+                    <label for="${playerTypePrefix}-champion-${index}">${player}:</label>
+                    <input type="text" id="${playerTypePrefix}-champion-${index}" class="player-champion-input" placeholder="Postać" data-player-type="${playerTypePrefix}" data-player-id="${index}" required />
+                    <input type="number" id="${playerTypePrefix}-kda-k-${index}" class="player-kda-input" placeholder="K" data-kda-part="k" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-kda-d-${index}" class="player-kda-input" placeholder="D" data-kda-part="d" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-kda-a-${index}" class="player-kda-input" placeholder="A" data-kda-part="a" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-minions-${index}" class="player-minions-input" placeholder="Miniony" data-minions-part="cs" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-gold-${index}" class="player-gold-input" placeholder="Gold" data-gold-part="gold" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                `;
+                containerElement.appendChild(playerEntryDiv);
+            });
+        }
+
+        // Funkcja do pobierania danych graczy z formularza
+        function getPlayerDataFromForm(playersArray, containerElement, playerTypePrefix) {
+            const data = [];
+            playersArray.forEach((player, index) => {
+                const championInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][class*="player-champion-input"]`);
+                const kInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="k"]`);
+                const dInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="d"]`);
+                const aInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="a"]`);
+                const minionsInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-minions-part="cs"]`);
+                const goldInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-gold-part="gold"]`);
+
+                data.push({
+                    name: player, // Nazwa gracza np. "Likht" lub "Enemy 1"
+                    champion: championInput ? championInput.value.trim() : '',
+                    kda: {
+                        k: parseInt(kInput ? kInput.value : '0'),
+                        d: parseInt(dInput ? dInput.value : '0'),
+                        a: parseInt(aInput ? aInput.value : '0'),
+                    },
+                    minions: parseInt(minionsInput ? minionsInput.value : '0'),
+                    gold: parseInt(goldInput ? goldInput.value : '0')
+                });
+            });
+            return data;
+        }
+
+        // --- Obsługa formularza dodawania meczu ---
+        matchForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // Pobierz ogólny teamcomp
+            const ourChampionsArray = Array.from(ourChampionInputs)
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+            const enemyChampionsArray = Array.from(enemyChampionInputs)
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+
+            // Pobierz dane zawodników naszej drużyny
+            const ourPlayersData = getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our');
+            // Pobierz dane zawodników przeciwników
+            const enemyPlayersData = getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy');
+
+            const newMatch = {
+                date: matchDateInput.value,
+                result: matchResultInput.value,
+                time: matchTimeInput.value,
+                ourChamps: ourChampionsArray,
+                enemyChamps: enemyChampionsArray,
+                players: ourPlayersData, // Dane graczy naszej drużyny
+                enemyPlayers: enemyPlayersData, // Dane graczy przeciwników
+                type: "general" // Typ meczu, aby historia.html go widziała
+            };
+
+            try {
+                await push(scrimsRef, newMatch);
+                alert("Mecz dodany pomyślnie!");
+                matchForm.reset();
+                // Ponowne generowanie pól, aby wyczyścić ich zawartość
+                generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+                generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+            } catch (err) {
+                console.error("Błąd podczas dodawania meczu:", err);
+                alert("Wystąpił błąd podczas dodawania meczu: " + err.message);
+            }
+        });
+
+        // Inicjalizacja po załadowaniu DOM
+        document.addEventListener("DOMContentLoaded", () => {
+            generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+            generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+        });
+    </script>
+</body>
+</html>
