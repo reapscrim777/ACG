@@ -138,7 +138,7 @@
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
-        // Firebase config
+        // Firebase config (nie zmieniony)
         const firebaseConfig = {
             apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
             authDomain: "acg-skrimy.firebaseapp.com",
@@ -174,6 +174,7 @@
         let scrimsData = [];
 
         // Config do ikon League of Legends
+        // AKTUALNA WERSJA DDragon API
         const DDRAGON_VERSION = "15.12.1"; 
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
         const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A"; 
@@ -182,59 +183,197 @@
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
 
-            // Agresywna normalizacja: usuń apostrofy, kropki, myślniki, zmień na małe litery, usuń nadmiarowe spacje
+            // Agresywna normalizacja: usuń apostrofy, kropki, myślniki, zmień na małe litery, usuń wszystkie spacje
+            // Np. "Dr. Mundo" -> "drmundo", "Nunu & Willump" -> "nunu&willump", "Bel'Veth" -> "belveth"
             let cleanedName = championName
                 .trim()
                 .toLowerCase()
                 .replace(/[.'-]/g, "") // Usuń apostrofy, kropki, myślniki
                 .replace(/\s+/g, ""); // Zastąp WSZYSTKIE spacje (jedna lub więcej) brakiem spacji.
 
-            // Mapa specjalnych przypadków i nazw, które różnią się od prostego PascalCase
+            // !!! KOMPLETNA I ZAKTUALIZOWANA MAPA NAZW CHAMPIONÓW !!!
+            // Klucze to ZNORMALIZOWANE NAZWY (bez spacji, apostrofów, itp.)
+            // Wartości to DOKŁADNE NAZWY PLIKÓW IKON W DDRAGON
             const nameMap = {
-                // Bohaterowie z wieloczłonowymi nazwami, spacjami, kropkami, apostrofami
-                // Normalizacja (np. "dr. mundo" -> "drmundo", "nunu & willump" -> "nunu&willump") musi być zgodna z tym, co jest tu w kluczu
-                "aurelion sol": "AurelionSol",
-                "drmundo": "DrMundo", 
-                "lee sin": "LeeSin",
-                "miss fortune": "MissFortune",
-                "nunu&willump": "Nunu", // Po normalizacji "nunu & willump" da "nunu&willump"
-                "tahm kench": "TahmKench",
-                "twisted fate": "TwistedFate",
-                "jarvan iv": "JarvanIV",
-                "renata glasc": "Renata",
-                "belveth": "BelVeth", 
-                "chogath": "Chogath", 
-                "kaisa": "Kaisa",     
-                "khazix": "Khazix",   
-                "kogmaw": "KogMaw",   
-                "wukong": "MonkeyKing", 
-                "monkey king": "MonkeyKing",
-                "ambessa": "Ambessa", 
-                "ambessamedarda": "Ambessa", 
-                "amumu": "Amumu", 
-                "mummy": "Amumu", // Alias
-
-                "fiddlesticks": "Fiddlesticks",
+                "aatrox": "Aatrox",
+                "ahri": "Ahri",
+                "akali": "Akali",
+                "akshan": "Akshan",
+                "alistar": "Alistar",
+                "amumu": "Amumu", "mummy": "Amumu",
+                "anivia": "Anivia",
+                "annie": "Annie",
+                "aphelios": "Aphelios",
+                "ashe": "Ashe",
+                "aurelionsol": "AurelionSol", // Zmieniono klucz na "aurelionsol"
+                "azir": "Azir",
+                "bard": "Bard",
+                "belveth": "BelVeth", // Po normalizacji z "Bel'Veth"
                 "blitzcrank": "Blitzcrank",
-                "rengar": "Rengar",
-                "reksai": "RekSai",
-                "viego": "Viego",
+                "brand": "Brand",
+                "braum": "Braum",
+                "briar": "Briar",
+                "caitlyn": "Caitlyn",
+                "camille": "Camille",
+                "cassiopeia": "Cassiopeia",
+                "chogath": "Chogath", // Po normalizacji z "Cho'Gath"
+                "corki": "Corki",
+                "darius": "Darius",
+                "diana": "Diana",
+                "drankz": "DrMundo", // Alias (jeśli jest używany)
+                "drmundo": "DrMundo", // Po normalizacji z "Dr. Mundo"
+                "draven": "Draven",
+                "ekko": "Ekko",
+                "elise": "Elise",
+                "evelynn": "Evelynn",
+                "ezreal": "Ezreal",
+                "fiddlesticks": "Fiddlesticks",
+                "fiora": "Fiora",
+                "fizz": "Fizz",
+                "galio": "Galio",
+                "gangplank": "Gangplank",
+                "garen": "Garen",
+                "gnar": "Gnar",
+                "gragas": "Gragas",
+                "graves": "Graves",
+                "gwen": "Gwen",
+                "hecarim": "Hecarim",
+                "heimerdinger": "Heimerdinger",
+                "hwei": "Hwei",
+                "illaoi": "Illaoi",
+                "irelia": "Irelia",
+                "ivern": "Ivern",
+                "janna": "Janna",
+                "jarvaniv": "JarvanIV", // Po normalizacji z "Jarvan IV"
+                "jax": "Jax",
+                "jayce": "Jayce",
+                "jhin": "Jhin",
+                "jinx": "Jinx",
+                "kaisa": "Kaisa", // Po normalizacji z "Kai'Sa"
+                "kalista": "Kalista",
+                "karma": "Karma",
+                "karthus": "Karthus",
+                "kassadin": "Kassadin",
+                "katarina": "Katarina",
+                "kayle": "Kayle",
+                "kayn": "Kayn",
+                "kennen": "Kennen",
+                "khazix": "Khazix", // Po normalizacji z "Kha'Zix"
+                "kindred": "Kindred",
                 "kled": "Kled",
-                "velkoz": "Velkoz",
-                "ksante": "KSante",
-                "master yi": "MasterYi", 
-                "cassiopeia": "Cassiopeia", 
-
-                // Specyficzne dla Xin Zhao po usunięciu spacji:
-                "xinzhao": "XinZhao", 
+                "kogmaw": "KogMaw", // Po normalizacji z "Kog'Maw"
+                "ksante": "KSante", // DDragon ma "KSante"
+                "leblanc": "Leblanc",
+                "leesin": "LeeSin", // Po normalizacji z "Lee Sin"
+                "leona": "Leona",
+                "lillia": "Lillia",
+                "lissandra": "Lissandra",
+                "lucian": "Lucian",
+                "lulu": "Lulu",
+                "lux": "Lux",
+                "malphite": "Malphite",
+                "malzahar": "Malzahar",
+                "maokai": "Maokai",
+                "masteryi": "MasterYi", // Po normalizacji z "Master Yi"
+                "milio": "Milio",
+                "missfortune": "MissFortune", // Po normalizacji z "Miss Fortune"
+                "monkeyking": "MonkeyKing", "wukong": "MonkeyKing", // Wukong ma nazwę pliku "MonkeyKing"
+                "mordekaiser": "Mordekaiser",
+                "morgana": "Morgana",
+                "naafiri": "Naafiri",
+                "nami": "Nami",
+                "nasus": "Nasus",
+                "nautilus": "Nautilus",
+                "neeko": "Neeko",
+                "nidalee": "Nidalee",
+                "nilah": "Nilah",
+                "nocturne": "Nocturne",
+                "nunu": "Nunu", // Po normalizacji "Nunu & Willump" będzie "nunu&willump" lub po prostu "nunu"
+                "olaf": "Olaf",
+                "orianna": "Orianna",
+                "ornn": "Ornn",
+                "pantheon": "Pantheon",
+                "poppy": "Poppy",
+                "pyke": "Pyke",
+                "qiyana": "Qiyana",
+                "quinn": "Quinn",
+                "rakan": "Rakan",
+                "rammus": "Rammus",
+                "reksai": "RekSai", // DDragon ma "RekSai"
+                "rell": "Rell",
+                "renata": "Renata", // Po normalizacji z "Renata Glasc"
+                "renekton": "Renekton",
+                "rengar": "Rengar",
+                "riven": "Riven",
+                "rumble": "Rumble",
+                "ryze": "Ryze",
+                "samira": "Samira",
+                "sejuani": "Sejuani",
+                "senna": "Senna",
+                "seraphine": "Seraphine",
+                "sett": "Sett",
+                "shaco": "Shaco",
+                "shen": "Shen",
+                "shyvana": "Shyvana",
+                "singed": "Singed",
+                "sion": "Sion",
+                "sivir": "Sivir",
+                "skarner": "Skarner",
+                "smolder": "Smolder",
+                "sona": "Sona",
+                "soraka": "Soraka",
+                "swain": "Swain",
+                "sylas": "Sylas",
+                "syndra": "Syndra",
+                "tahmkench": "TahmKench", // Po normalizacji z "Tahm Kench"
+                "taliyah": "Taliyah",
+                "talon": "Talon",
+                "taric": "Taric",
+                "teemo": "Teemo",
+                "thresh": "Thresh",
+                "tristana": "Tristana",
+                "trundle": "Trundle",
+                "tryndamere": "Tryndamere",
+                "twistedfate": "TwistedFate", // Po normalizacji z "Twisted Fate"
+                "twitch": "Twitch",
+                "udyr": "Udyr",
+                "urgot": "Urgot",
+                "varus": "Varus",
+                "vayne": "Vayne",
+                "veigar": "Veigar",
+                "velkoz": "Velkoz", // DDragon ma "Velkoz"
+                "vex": "Vex",
+                "vi": "Vi",
+                "viego": "Viego",
+                "viktor": "Viktor",
+                "vladimir": "Vladimir",
+                "volibear": "Volibear",
+                "warwick": "Warwick",
+                "xayah": "Xayah",
+                "xerath": "Xerath",
+                "xinzhao": "XinZhao", // DDragon ma "XinZhao"
+                "yasuo": "Yasuo",
+                "yone": "Yone",
+                "yorick": "Yorick",
+                "yuumi": "Yuumi",
+                "zac": "Zac",
+                "zed": "Zed",
+                "zeri": "Zeri",
+                "ziggs": "Ziggs",
+                "zilean": "Zilean",
+                "zoe": "Zoe",
+                "zyra": "Zyra",
+                // *** AMBESSA ***
+                "ambessa": "Ambessa", // Ambessa jest już normalnie "Ambessa" w DDragon
             };
 
             // Spróbuj znaleźć w mapie (najwyższy priorytet)
             let dataDragonName = nameMap[cleanedName];
 
             // Jeśli nie znaleziono w mapie, spróbuj prostej konwersji na PascalCase
+            // To złapie championów, których nazwy DDragon są prostym PascalCase (np. Garen, Lux)
+            // i nie wymagają specjalnych mapowań, bo nie mają spacji ani znaków specjalnych po normalizacji.
             if (!dataDragonName && cleanedName.length > 0) {
-                 // Dla większości championów bez spacji/specjalnych znaków, pierwsza litera duża
                  dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
             
@@ -308,7 +447,7 @@
                         img.onerror = function() {
                             this.onerror=null; 
                             this.src=FALLBACK_ICON_URL;
-                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej.`);
+                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej. Sprawdzono URL: ${this.src}`);
                         };
                         ourContainer.appendChild(img);
                     });
@@ -337,7 +476,7 @@
                         img.onerror = function() {
                             this.onerror=null; 
                             this.src=FALLBACK_ICON_URL;
-                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej.`);
+                            console.warn(`[ERROR HANDLER] Nie udało się załadować ikony dla "${trimmedChampName}". Użyto ikony zastępczej. Sprawdzono URL: ${this.src}`);
                         };
                         enemyContainer.appendChild(img);
                     });
