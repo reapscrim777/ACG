@@ -1,0 +1,605 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-image: url('background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+main {
+    --background-color: rgba(255, 255, 255, 0.85); /* jasne tło, by tekst był czytelny */
+    padding: 375px;
+    margin: 20px;
+    border-radius: 8px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex; /* Dodane dla układu kolumnowego w main */
+    justify-content: center;
+    align-items: center;
+    margin-top: 0px;
+    padding-top: 0px;
+    flex-direction: column;
+}
+
+/* REGULA DLA NAGŁÓWKA H1 "Historia Scrimów" */
+main h1 {
+    color: #ffffff; /* Biały kolor dla nagłówka Historia Scrimów */
+    text-align: center; /* Wyśrodkowanie */
+    margin-bottom: 20px; /* Odstęp od kolejnej sekcji */
+    font-size: 2.5em; /* Przykładowy rozmiar, dostosuj jeśli potrzebujesz */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0e0e0e;
+    padding: 15px 30px;
+    color: white;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.site-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-size: 16px;
+    padding: 6px 12px;
+    border-radius: 0px; /* Zaokrąglone rogi przycisków */
+    transition: all 0s ease; /* Płynna animacja przy zmianie stanu */
+}
+
+.nav-links a:hover {
+    background-color: #ffffff;  /* Kolor tła przy najechaniu */
+    color: rgb(0, 0, 0);                 /* Zmiana koloru tekstu */
+    transform: translateY(0px); /* Efekt podniesienia przy najechaniu */
+}
+
+.nav-links a:active {
+    transform: translateY(0px);  /* Efekt naciskania (opadanie przycisku) */
+}
+
+.logo2-center {
+    text-align: center;
+}
+
+.logo2 {
+    max-width: 400px;  /* Ustal maksymalną szerokość logo */
+    height: auto;      /* Ustal automatyczną wysokość, aby zachować proporcje */
+}
+
+.footer2-links {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: -95px; /* lub np. -10px jeśli chcesz mocno przysunąć */
+    padding-top: 0px;
+    width: 100%;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.footer2-links a {
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+
+.footer2-links a:hover {
+    transform: scale(1.1);
+    box-sizing: border-box;
+}
+
+.footer2-links img {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 5px;
+    box-sizing: border-box;
+}
+
+.footer2-links span {
+    display: flex;
+    /* Usunięto nieprawidłową właściwość "font-s" */
+}
+
+.info-box {
+    background-color: #0e0e0e;
+    padding: 20px;
+    border-radius: 0px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: 20px;
+}
+
+.info-box h2 {
+    color: #ffffff; /* Ten nagłówek "Historia Scrimów" jest teraz biały, jeśli występuje w .info-box */
+    margin-top: 0;
+}
+
+.info-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-box ul li {
+    margin-bottom: 10px;
+}
+
+.info-box ul li p {
+    margin: 0;
+}
+
+/* --- Sekcja Statystyk (dla test1.html i podstron zawodników) --- */
+.stats-summary {
+    background-color: #333; /* Tło pasujące do formularza */
+    padding: 15px;
+    border-radius: 0px;
+    margin-bottom: 20px; /* Odstęp od formularza */
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    color: white;
+}
+
+.stats-item {
+    margin: 8px 15px;
+    font-size: 1.1em; /* Trochę mniejsza czcionka dla spójności */
+    font-weight: bold;
+    color: #ffffff; /* Jasny tekst - zmienione na biały */
+}
+
+.stats-item span {
+    color: #ffffff; /* Kolor liczb pasujący do linków/nagłówka - zmienione na biały */
+    font-size: 1.1em; /* Delikatnie większe liczby */
+    display: block; /* Liczba w nowej linii dla lepszej czytelności */
+    margin-top: 5px;
+}
+
+/* --- Formularz dodawania scrimów (dla test1.html) --- */
+.add-scrim-form {
+    background-color: #333; /* Ciemniejsze tło dla sekcji */
+    padding: 40px; /* Zwiększony padding dla lepszej przestrzeni */
+    border-radius: 0px;
+    margin-bottom: 10px; /* Odstęp od tabeli */
+    max-width: 500px; /* Lekko zwiększona maksymalna szerokość formularza */
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 600px;
+    color: white;
+}
+
+.add-scrim-form h2 {
+    color: #ffffff; /* Zmieniono kolor na biały */
+    text-align: center;
+    margin-bottom: 25px; /* Zwiększony margines */
+    font-size: 1.8em; /* Zwiększona czcionka nagłówka */
+}
+
+#scrimForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Dopasowanie do 200px minimalnej szerokości */
+    gap: 20px; /* Odstęp między elementami */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: #ffffff; /* Zmieniono kolor na biały */
+    margin-bottom: 5px; /* Odstęp pod etykietą */
+    font-size: 0.9em; /* Czcionka dla etykiet */
+    font-weight: bold;
+}
+
+.form-group input[type="date"],
+.form-group input[type="text"],
+.form-group select {
+    width: 100%;
+    padding: 8px 10px; /* Standardowy padding w polach input */
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #444;
+    color: #ffffff;
+    font-size: 1em; /* Standardowa czcionka w polach input */
+    box-sizing: border-box;
+}
+
+/* Style dla grup pól z postaciami */
+.form-group.team-champions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Większe kolumny dla inputów postaci */
+    gap: 10px; /* Odstęp między inputami postaci */
+    align-items: end;
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.form-group.team-champions label {
+    grid-column: 1 / -1;
+    margin-bottom: 10px; /* Większy margines */
+    text-align: center;
+    font-size: 1em;
+}
+
+.form-group.team-champions input {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+
+/* Styl dla przycisku w formularzu */
+#scrimForm button[type="submit"] {
+    grid-column: 1 / -1;
+    padding: 12px 20px; /* Standardowy padding dla przycisku */
+    background-color: #ffffff;
+    color: #0e0e0e;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em; /* Standardowa czcionka przycisku */
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 20px; /* Większy odstęp od inputów */
+}
+
+#scrimForm button[type="submit"]:hover {
+    background-color: #0e0e0e;
+    color: #ffffff;
+    transform: translateY(0px); /* Efekt podniesienia przy najechaniu */
+}
+
+/* --- Sekcja Historii Scrimów (Tabela) --- */
+.scrim-history {
+    background-color: #333;
+    padding: 25px;
+    border-radius: 0px;
+    margin-bottom: 10px
+}
+
+.scrim-history h2 {
+    color: #ffffff; /* Zmieniono kolor nagłówka na biały (tego, który nad tabelą) */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.scrim-history table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.scrim-history th,
+.scrim-history td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+    color: #ffffff; /* Zmieniono kolor tekstu w komórkach tabeli na biały */
+}
+
+.scrim-history th {
+    background-color: #ffffff; /* Nagłówki tabeli w kolorze akcentu */
+    color: #0e0e0e;
+    font-weight: bold;
+}
+
+.scrim-history tr:nth-child(even) {
+    background-color: #3a3a3a;
+}
+
+.scrim-history tr:hover {
+    background-color: #4a4a4a;
+}
+
+/* Style dla wyników WIN/LOSE w tabeli */
+.win {
+    color: #28a745; /* Zielony */
+    font-weight: bold;
+}
+
+.lose {
+    color: #dc3545; /* Czerwony */
+    font-weight: bold;
+}
+
+/* Style dla przycisku usuwania w tabeli */
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 0px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Style dla ikon postaci w tabeli */
+.champion-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin: 2px;
+    vertical-align: middle;
+    object-fit: cover;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Kontener dla ikon, aby ładnie się układały */
+.champion-icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* --- ZMODYFIKOWANE STYLE dla strony test2.html (Lista zawodników w jednej linii i mniejsza) --- */
+.player-list-section.compact {
+    max-width: 800px; /* Zwiększona szerokość, aby zmieścić linki w jednej linii */
+    padding: 15px 20px; /* Mniejszy padding */
+    margin: 20px auto; /* Mniejszy margines */
+}
+
+.player-list-section.compact h2 {
+    font-size: 1.5em; /* Mniejszy nagłówek */
+    margin-bottom: 15px;
+}
+
+.player-links-container {
+    display: flex;
+    flex-wrap: wrap; /* Zezwól na zawijanie, jeśli ekran jest zbyt mały */
+    justify-content: center; /* Wyśrodkuj linki */
+    gap: 10px; /* Mniejszy odstęp między linkami */
+}
+
+.player-link-item {
+    display: inline-block; /* Aby były w jednej linii */
+    background-color: #ffffff;
+    color: white;
+    padding: 8px 15px; /* Mniejszy padding */
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95em; /* Mniejsza czcionka */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-link-item:hover {
+    background-color: #ffffff;
+    transform: translateY(-1px); /* Delikatny efekt hover */
+}
+
+
+/* --- Style dla podstron zawodników (Likht.html, Weedolas.html, itp.) --- */
+.player-stats-detail {
+    background-color: #333;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    margin-top: 30px;
+}
+
+.player-stats-detail h2 {
+    color: #f0f0f0;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.player-stats-detail table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.player-stats-detail th,
+.player-stats-detail td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+    color: #f0f0f0;
+}
+
+.player-stats-detail th {
+    background-color: #ffffff;
+    color: #0e0e0e; /* Nagłówki tabeli w player-stats-detail powinny być czarne, jeśli tło jest białe */
+    font-weight: bold;
+}
+
+.player-stats-detail tr:nth-child(even) {
+    background-color: #3a3a3a;
+}
+
+.player-stats-detail tr:hover {
+    background-color: #4a4a4a;
+}
+
+.player-stats-detail .champion-icon {
+    width: 24px; /* Trochę mniejsze ikony w tabeli gracza */
+    height: 24px;
+    margin-right: 5px;
+    vertical-align: middle;
+    object-fit: cover;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.player-stats-detail p {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav ul li {
+        margin: 8px 0;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    .stats-summary,
+    .add-scrim-form,
+    .scrim-history,
+    .player-list-section,
+    .player-stats-detail {
+        padding: 15px;
+    }
+
+    #scrimForm {
+        grid-template-columns: 1fr; /* Jeden input w rzędzie na małych ekranach */
+    }
+
+    .form-group.team-champions {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Mniejsze kolumny dla postaci */
+    }
+
+    /* Ulepszona responsywność tabeli dla małych ekranów (dla test1.html i podstron zawodników) */
+    .scrim-history table,
+    .scrim-history thead,
+    .scrim-history tbody,
+    .scrim-history th,
+    .scrim-history td,
+    .scrim-history tr,
+    .player-stats-detail table,
+    .player-stats-detail thead,
+    .player-stats-detail tbody,
+    .player-stats-detail th,
+    .player-stats-detail td,
+    .player-stats-detail tr {
+        display: block;
+    }
+
+    .scrim-history thead tr,
+    .player-stats-detail thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .scrim-history tr,
+    .player-stats-detail tr {
+        border: 1px solid #444;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden; /* Dla zaokrąglonych narożników na wierszach */
+    }
+
+    .scrim-history td,
+    .player-stats-detail td {
+        border: none;
+        border-bottom: 1px solid #555;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 40px; /* Minimalna wysokość komórki */
+    }
+
+    .scrim-history td:last-child,
+    .player-stats-detail td:last-child {
+        border-bottom: none;
+    }
+
+    .scrim-history td:before,
+    .player-stats-detail td:before {
+        content: attr(data-label); /* Użyj atrybutu data-label do wyświetlania nagłówka */
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        text-align: left;
+        font-weight: bold;
+        color: #bbb;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .champion-icons-container {
+        justify-content: flex-end; /* Wyrównaj ikonki do prawej w widoku mobilnym */
+    }
+
+    /* Responsywność dla player-links-container na test2.html */
+    .player-links-container {
+        flex-direction: column; /* Ułóż linki w kolumnie na małych ekranach */
+        align-items: center; /* Wyśrodkuj je */
+    }
+
+    .player-link-item {
+        width: 80%; /* Linki zajmują 80% szerokości na małych ekranach */
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-item {
+        font-size: 1em;
+        margin: 5px 10px;
+    }
+
+    .player-list li a {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
+
+footer {
+    background-color: #0e0e0e;  /* Ciemne tło dla stopki */
+    color: white;  /* Kolor tekstu */
+    text-align: center;  /* Wyśrodkowanie tekstu */
+    padding: 10px 0;
+    font-size: 14px;    /* Mniejsza czcionka */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    margin-top: 40px;
+}
+
+footer p {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #f0f0f0;  /* Kolor tekstu w stopce, np. jasnoszary */
+}
