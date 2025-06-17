@@ -325,6 +325,9 @@
             return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
         }
 
+        /**
+         * Updates the overall scrim statistics displayed at the top of the page.
+         */
         function updateStats() {
             const total = scrimsData.length;
             const wins = scrimsData.filter((s) => s.result === "WIN").length;
@@ -337,11 +340,19 @@
             winRateSpan.textContent = `${winRate}%`;
         }
 
-        // Funkcja pomocnicza do znajdowania gracza po nazwie championa (może być użyta w sortowaniu)
+        /**
+         * Finds a player's data object within an array of players based on their champion name.
+         * @param {Array<Object>} playersArray - An array of player objects from a match.
+         * @param {string} championName - The champion name to search for.
+         * @returns {Object|undefined} The player object if found, otherwise undefined.
+         */
         function findPlayerByChampionName(playersArray, championName) {
             return playersArray.find(player => player.champion && player.champion.trim().toLowerCase() === championName.trim().toLowerCase());
         }
 
+        /**
+         * Renders the main scrim history table, including expandable player details.
+         */
         function renderTable() {
             scrimTableBody.innerHTML = "";
 
@@ -418,21 +429,22 @@
                     deleteBtn.style.display = 'block'; // Lub 'inline-block' w zależności od potrzeb
                     deleteBtn.addEventListener("click", async (e) => {
                         e.stopPropagation();
-                        if (
-                            confirm(
-                                `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`
-                            )
-                        ) {
-                            await deleteScrim(scrim.id);
-                        }
+                        // Zastąpienie alert() i confirm() własnym MessageBoxem
+                        showMessageBox(
+                            `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`,
+                            'confirm', // Typ wiadomości dla potwierdzenia
+                            async () => { await deleteScrim(scrim.id); } // Callback po potwierdzeniu
+                        );
                     });
                 } else { // Jeśli użytkownik nie jest zalogowany, ukryj przycisk i dodaj obsługę kliknięcia z komunikatem
                     deleteBtn.style.display = 'block'; // Nadal widoczny, ale zmieni się jego zachowanie
                     deleteBtn.addEventListener("click", (e) => {
                         e.stopPropagation();
-                        alert("Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.");
-                        // Przekierowanie do strony logowania - załóżmy, że masz plik login.html
-                        window.location.href = "login.html";
+                        showMessageBox(
+                            "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
+                            'info', // Typ wiadomości informacyjnej
+                            () => { window.location.href = "login.html"; } // Callback po zamknięciu
+                        );
                     });
                 }
                 actionsTd.appendChild(deleteBtn);
@@ -453,7 +465,7 @@
 
                 // Posortowanie naszych graczy zgodnie z kolejnością championów
                 const sortedOurPlayers = ourChampsToDisplay
-                    .map(champName => findPlayerByChampionName(scrim.players || [], champName))
+                    .map(champName => scrim.players.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
                     .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
 
                 // Obliczanie sumy złota dla naszej drużyny
@@ -461,7 +473,8 @@
                 const ourPlayersRows = sortedOurPlayers
                     .map(player => {
                         const championName = player.champion;
-                        const displayPlayerName = player ? player.name : 'N/A';
+                        // TUTAJ ZMIANA: Wyświetlanie "Zmiennik" jeśli gracz był zmiennikiem
+                        const displayPlayerName = player.substitute === true ? 'Zmiennik' : player.name;
                         const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
                         const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
                         const displayGold = player && player.gold !== undefined ? player.gold : 'N/A';
@@ -510,7 +523,7 @@
 
                 // Posortowanie graczy przeciwnika zgodnie z kolejnością championów
                 const sortedEnemyPlayers = enemyChampsToDisplay
-                    .map(champName => findPlayerByChampionName(scrim.enemyPlayers || [], champName))
+                    .map(champName => scrim.enemyPlayers.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
                     .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
 
 
@@ -594,19 +607,74 @@
             updateStats();
         }
 
+        /**
+         * Displays a custom message box for alerts or confirmations instead of native browser pop-ups.
+         * @param {string} message - The message to display.
+         * @param {string} type - Type of message ('success', 'error', 'info', 'confirm').
+         * @param {function} [onConfirm] - Callback function to execute on confirmation (only for 'confirm' type).
+         * @param {function} [onClose] - Callback function to execute when the message box is closed (for all types).
+         */
+        function showMessageBox(message, type, onConfirm = null, onClose = null) {
+            const messageBox = document.createElement('div');
+            messageBox.className = 'message-box';
+            
+            let buttonsHtml = '';
+            if (type === 'confirm') {
+                buttonsHtml = `
+                    <button class="confirm-button">Tak</button>
+                    <button class="cancel-button">Nie</button>
+                `;
+            } else {
+                let buttonClass = '';
+                if (type === 'success') buttonClass = 'success-button';
+                else if (type === 'error') buttonClass = 'error-button';
+                else buttonClass = 'ok-button'; // Default for info
+
+                buttonsHtml = `<button class="${buttonClass}">OK</button>`;
+            }
+
+            messageBox.innerHTML = `
+                <p>${message}</p>
+                <div>${buttonsHtml}</div>
+            `;
+            document.body.appendChild(messageBox);
+
+            if (type === 'confirm') {
+                messageBox.querySelector('.confirm-button').addEventListener('click', () => {
+                    messageBox.remove();
+                    if (onConfirm) onConfirm();
+                    if (onClose) onClose();
+                });
+                messageBox.querySelector('.cancel-button').addEventListener('click', () => {
+                    messageBox.remove();
+                    if (onClose) onClose();
+                });
+            } else {
+                messageBox.querySelector('button').addEventListener('click', () => {
+                    messageBox.remove();
+                    if (onClose) onClose();
+                });
+            }
+        }
+
         // Usuwanie scrimu z Firebase
         async function deleteScrim(id) {
             if (!currentUser) {
-                alert("Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.");
-                window.location.href = "login.html"; // Przekierowanie do strony logowania
+                showMessageBox(
+                    "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
+                    'info',
+                    null, // Brak onConfirm
+                    () => { window.location.href = "login.html"; } // Callback po zamknięciu
+                );
                 return; // Zatrzymaj dalsze wykonywanie funkcji
             }
             try {
                 await remove(ref(db, `scrims/${id}`));
                 console.log(`Scrim ${id} usunięty pomyślnie.`);
+                showMessageBox("Scrim usunięty pomyślnie!", 'success');
             } catch (err) {
                 console.error("Błąd podczas usuwania scrimu:", err);
-                alert("Błąd podczas usuwania scrimu: " + err.message);
+                showMessageBox(`Błąd podczas usuwania scrimu: ${err.message}`, 'error');
             }
         }
 
@@ -632,7 +700,8 @@
                 renderTable();
             }, (error) => {
                 console.error("Błąd podczas ładowania danych z Firebase:", error);
-                alert("Błąd podczas ładowania danych z Firebase: " + error.message);
+                // Użyj MessageBox zamiast alert
+                showMessageBox(`Błąd podczas ładowania danych z Firebase: ${error.message}. Spróbuj odświeżyć stronę.`, 'error');
             });
         }
 
