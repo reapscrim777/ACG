@@ -1,658 +1,868 @@
 <!DOCTYPE html>
+
 <html lang="pl">
+
 <head>
+
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Dodaj Mecz</title>
-    <!-- Zewnętrzny plik style.css został przeniesiony bezpośrednio do tego pliku dla ułatwienia użycia. -->
+
+    <link rel="stylesheet" href="style.css" />
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
     <style>
-        /* General body styling */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0d0d0d; /* Dark background */
-            color: #f0f0f0; /* Light text color */
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
 
-        /* Navbar styles */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #1a1a1a;
-            border-bottom: 1px solid #333;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-        }
+        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
 
-        .navbar .logo-section {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .navbar .site-name {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #f0f0f0;
-        }
-
-        .navbar .nav-links {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap; /* Allow links to wrap */
-            justify-content: center; /* Center links if they wrap */
-        }
-
-        .navbar .nav-links a {
-            color: #f0f0f0;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 5px 0;
-            transition: color 0.3s ease, border-bottom 0.3s ease;
-        }
-
-        .navbar .nav-links a:hover,
-        .navbar .nav-links a.active {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-        }
-
-        /* Minimal styles for icons and table appearance */
         .champion-icon {
+
             width: 24px;
+
             height: 24px;
+
             margin-right: 2px;
+
             vertical-align: middle;
+
             border-radius: 3px;
+
             border: 1px solid #ccc;
+
         }
+
         .champion-icons-container {
+
             display: flex;
+
             gap: 2px;
+
             flex-wrap: wrap;
+
         }
+
         .win {
+
             color: green;
+
             font-weight: bold;
+
         }
+
         .lose {
+
             color: red;
+
             font-weight: bold;
+
         }
-        
-        /* Form specific styles for dodajmecz.html */
-        main {
-            flex: 1;
-            padding: 20px;
-            box-sizing: border-box;
+
+        /* Style formularza specyficzne dla dodajmecz.html */
+
+        body {
+
             display: flex;
+
             flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+
+            min-height: 100vh;
+
+            margin: 0;
+
+            padding: 0;
+
         }
+
+
+        main {
+
+            flex: 1;
+
+            padding: 20px;
+
+            box-sizing: border-box;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+        }
+
 
         main h1 {
+
             margin-top: 0 !important;
+
             padding-top: 0 !important;
+
             margin-bottom: 20px !important;
+
             text-align: center;
+
             color: #f0f0f0;
+
             width: 100%;
+
         }
+
         .add-scrim-form {
+
             background-color: #1a1a1a;
+
             padding: 20px;
+
             border-radius: 8px;
+
             margin-bottom: 30px;
+
             width: 90%;
+
             max-width: 800px;
+
             color: #f0f0f0;
+
         }
+
 
         .add-scrim-form h2 {
+
             text-align: center;
+
             margin-bottom: 20px;
+
             color: #f0f0f0;
+
         }
+
 
         .form-group {
+
             margin-bottom: 15px;
+
         }
+
 
         .form-group label {
+
             display: block;
+
             margin-bottom: 5px;
+
             font-weight: 500;
+
         }
+
 
         .form-group input[type="date"],
+
         .form-group input[type="text"],
+
         .form-group select {
+
             width: calc(100% - 20px);
+
             padding: 10px;
+
             border: 1px solid #555;
+
             border-radius: 5px;
+
             background-color: #444;
+
             color: #f0f0f0;
+
         }
+
 
         .team-champions {
+
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 10px;
+
             margin-bottom: 20px;
+
         }
+
 
         .team-champions input {
+
             flex: 1;
+
             min-width: 100px;
-            max-width: calc(20% - 8px); /* 5 inputs in a row */
+
+            max-width: calc(20% - 8px); /* 5 inputów w rzędzie */
+
         }
+
         
+
         .player-stats-section {
+
             border: 1px solid #555;
+
             border-radius: 8px;
+
             padding: 15px;
+
             margin-top: 20px;
+
             background-color: #2a2a2a;
+
         }
+
         .player-stats-section h3 {
+
             margin-top: 0;
+
             color: #f0f0f0;
+
             border-bottom: 1px solid #555;
+
             padding-bottom: 10px;
+
             margin-bottom: 15px;
+
         }
+
         .player-entry {
+
             display: grid;
-            /* Grid layout: Label (with checkbox), Champion, K, D, A, Minions, Gold */
-            grid-template-columns: 1.5fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr; /* Adjusted first column for checkbox */
+
+            /* Zmieniona siatka: Etykieta, Champion, K, D, A, Miniony, Gold */
+
+            grid-template-columns: 1fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr; /* Dodano 7. kolumnę dla Golda */
+
             gap: 10px;
+
             margin-bottom: 10px;
+
             align-items: center;
+
         }
+
         .player-entry label {
-            /* flexbox within the label to align player name, checkbox, and "Zmiennik" */
-            display: flex;
-            align-items: center;
-            justify-content: flex-end; /* Align to the right for the player name */
+
+            text-align: right; /* Wyrównaj nazwę gracza do prawej */
+
             padding-right: 5px;
-            gap: 5px; /* Space between player name, checkbox, and "Zmiennik" */
-            text-align: right; /* Ensure the overall label text is right-aligned */
+
         }
-        .player-entry label .substitute-text {
-            font-size: 0.9em; /* Smaller text for "Zmiennik" */
-            color: #ccc;
-        }
-        .player-entry input[type="checkbox"] {
-            width: auto; /* Allow checkbox to take natural width */
-            margin: 0; /* Remove default margin */
-            vertical-align: middle; /* Align with text */
-        }
+
         .player-entry input {
+
             width: 100%;
+
             padding: 8px;
+
             border: 1px solid #555;
+
             border-radius: 5px;
+
             background-color: #444;
+
             color: #f0f0f0;
+
             box-sizing: border-box;
+
         }
-        /* Adjust width of KDA, Minions, Gold fields */
-        .player-kda-input, .player-minions-input, .player-gold-input {
-            max-width: 100%; /* Allow them to fill the grid cell */
+
+        /* Dopasowanie szerokości pól KDA, Minions, Gold */
+
+        .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+
+            max-width: 100%; /* Pozwól im wypełniać komórkę w siatce */
+
             text-align: center;
+
         }
+
 
         .add-scrim-form button[type="submit"] {
+
             background-color: #007bff;
+
             color: white;
+
             padding: 10px 20px;
+
             border: none;
+
             border-radius: 5px;
+
             cursor: pointer;
+
             transition: background-color 0.3s ease;
+
             width: 100%;
+
             margin-top: 20px;
+
         }
+
 
         .add-scrim-form button[type="submit"]:hover {
+
             background-color: #0056b3;
+
         }
 
-        /* Responsiveness for smaller screens */
+
+        /* Responsywność dla mniejszych ekranów */
+
         @media (max-width: 768px) {
+
             .player-entry {
-                /* Change to column layout for small screens to prevent squeezing */
-                grid-template-columns: 1fr; /* All elements in one column */
+
+                /* Zmień na układ kolumnowy dla małych ekranów, aby uniknąć ściskania */
+
+                grid-template-columns: 1fr; /* Wszystkie elementy w jednej kolumnie */
+
                 text-align: center;
+
             }
+
             .player-entry label {
-                flex-direction: column; /* Stack label elements vertically on small screens */
-                align-items: center;
-                justify-content: center;
+
                 text-align: center;
+
             }
-            .player-entry label .substitute-text {
-                margin-top: 5px; /* Add some space if stacked */
-            }
+
             .player-entry input {
+
                 max-width: 100%;
+
                 margin: 0 auto;
+
             }
-            .player-kda-input, .player-minions-input, .player-gold-input {
-                max-width: unset; /* Remove width restrictions */
+
+            .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+
+                max-width: unset; /* Usuń ograniczenia szerokości */
+
             }
+
         }
 
-        /* Hide form by default until user is verified */
+
+        /* Ukryj formularz domyślnie, dopóki użytkownik nie zostanie zweryfikowany */
+
         #protectedContent {
+
             display: none;
+
             width: 100%; /* Ensure it takes full width when visible */
+
             align-items: center; /* Center content vertically */
+
             flex-direction: column;
+
         }
+
 
         #loadingMessage {
+
             text-align: center;
+
             margin-top: 50px;
+
             font-size: 1.2em;
+
             color: #aaa;
+
         }
 
-        /* Custom Message Box styles (for replacing alert()) */
-        .custom-message-box {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .message-content {
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            color: #f0f0f0;
-            max-width: 90%;
-            width: 300px;
-        }
-        .message-content p {
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-        .message-content button {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .message-content button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Footer styles */
-        footer {
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            text-align: center;
-            padding: 15px;
-            margin-top: auto; /* Pushes the footer to the bottom */
-            border-top: 1px solid #333;
-        }
     </style>
+
 </head>
+
 <body>
+
     <header class="navbar">
+
         <div class="logo-section">
-            <!-- Ensure logo.png is in the same directory or update the path -->
-            <img src="logo.png" alt="Logo" class="logo" /> 
+
+            <img src="logo.png" alt="Logo" class="logo" />
+
             <span class="site-name"></span>
+
         </div>
+
         <nav class="nav-links">
+
             <a href="index.html">STRONA GŁÓWNA</a>
+
             <a href="historia.html">HISTORIA GIER</a>
+
             <a href="statystyki.html">STATYSTYKI</a>
+
             <a href="soloq.html">SOLOQ</a>
+
             <a href="dodajmecz.html">DODAJ MECZ</a>
+
             <a href="login.html" id="loginLogoutLink">Zaloguj/Wyloguj</a>
+
         </nav>
+
     </header>
 
+
     <main>
+
         <div id="loadingMessage">Ładowanie... Sprawdzanie uprawnień...</div>
 
+
         <div id="protectedContent">
+
             <h1>Dodaj Nowy Mecz</h1>
 
+
             <section class="add-scrim-form">
+
                 <form id="matchForm">
+
                     <div class="form-group">
+
                         <label for="matchDate">Data:</label>
+
                         <input type="date" id="matchDate" required />
+
                     </div>
+
                     <div class="form-group">
+
                         <label for="matchResult">Wynik:</label>
+
                         <select id="matchResult" required>
+
                             <option value="">Wybierz wynik</option>
+
                             <option value="WIN">WIN</option>
+
                             <option value="LOSE">LOSE</option>
+
                         </select>
+
                     </div>
+
                     <div class="form-group">
+
                         <label for="matchTime">Czas Gry:</label>
+
                         <input type="text" id="matchTime" placeholder="np. 35:12" required />
+
                     </div>
+
 
                     <h3>Teamcomp Ogólny (Nasza Drużyna)</h3>
+
                     <div class="form-group team-champions">
+
                         <input type="text" class="our-champion-input" placeholder="Top" required />
+
                         <input type="text" class="our-champion-input" placeholder="Jungle" required />
+
                         <input type="text" class="our-champion-input" placeholder="Mid" required />
+
                         <input type="text" class="our-champion-input" placeholder="Adc" required />
+
                         <input type="text" class="our-champion-input" placeholder="Support" required />
+
                     </div>
+
 
                     <h3>Teamcomp Ogólny (Przeciwnicy)</h3>
+
                     <div class="form-group team-champions">
+
                         <input type="text" class="enemy-champion-input" placeholder="Top" required />
+
                         <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
+
                         <input type="text" class="enemy-champion-input" placeholder="Mid" required />
+
                         <input type="text" class="enemy-champion-input" placeholder="Adc" required />
+
                         <input type="text" class="enemy-champion-input" placeholder="Support" required />
+
                     </div>
 
+
                     <div class="player-stats-section">
+
                         <h3>Statystyki Zawodników (Nasza Drużyna)</h3>
+
                         <div id="ourPlayerStatsContainer">
+
                         </div>
+
                     </div>
 
+
                     <div class="player-stats-section">
+
                         <h3>Statystyki Zawodników (Przeciwnicy)</h3>
+
                         <div id="enemyPlayerStatsContainer">
+
                         </div>
+
                     </div>
+
 
                     <button type="submit">Dodaj Mecz</button>
+
                 </form>
+
             </section>
+
         </div>
+
     </main>
 
+
     <footer>
+
         <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+
     </footer>
 
+
     <script type="module">
-        // Import Firebase Firestore and Auth libraries
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global variables provided by the Canvas environment for Firebase configuration
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
-        // Initialize Firebase services
+        import {
+
+            getDatabase,
+
+            ref,
+
+            push,
+
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        import {
+
+            getAuth,
+
+            onAuthStateChanged
+
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+
+        // Firebase config
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+
+            authDomain: "acg-skrimy.firebaseapp.com",
+
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+
+            projectId: "acg-skrimy",
+
+            storageBucket: "acg-skrimy.firebaseapp.com",
+
+            messagingSenderId: "78237268518",
+
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+
+            measurementId: "G-6VDFPFX560",
+
+        };
+
+
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+
+        const db = getDatabase(app);
+
         const auth = getAuth(app);
 
-        // Firestore collection reference for storing scrims data.
-        // Data is stored under 'public/data' path to be accessible by all authenticated users.
-        const scrimsCollectionRef = collection(db, `artifacts/${appId}/public/data/scrims`);
+        const scrimsRef = ref(db, "scrims");
 
-        // Admin UID - This UID is hardcoded as provided by the user.
-        // In a production application, consider more robust role management (e.g., Firestore roles).
+
+        // Admin UID - WAŻNE: ZMIENIONO NA PODANY UID
+
         const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
 
+
         // UI Elements
+
         const protectedContent = document.getElementById('protectedContent');
+
         const loadingMessage = document.getElementById('loadingMessage');
-        const loginLogoutLink = document.getElementById('loginLogoutLink');
+
+        const loginLogoutLink = document.getElementById('loginLogoutLink'); // Dla paska nawigacyjnego
+
 
         // Form elements
+
         const matchForm = document.getElementById("matchForm");
+
         const matchDateInput = document.getElementById("matchDate");
+
         const matchResultInput = document.getElementById("matchResult");
+
         const matchTimeInput = document.getElementById("matchTime");
+
         const ourChampionInputs = document.querySelectorAll(".our-champion-input");
+
         const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
+
         const ourPlayerStatsContainer = document.getElementById("ourPlayerStatsContainer");
+
         const enemyPlayerStatsContainer = document.getElementById("enemyPlayerStatsContainer");
 
-        // Lists of predefined player names
+
         const ourPlayersList = [
+
             "Likht", "Weedolas", "reap777", "Kohayushi", "None"
+
         ];
+
         const enemyPlayersList = [
+
             "Enemy 1", "Enemy 2", "Enemy 3", "Enemy 4", "Enemy 5"
+
         ];
 
-        /**
-         * Displays a custom message box instead of the native alert() function.
-         * This provides a consistent UI experience within the iframe.
-         * @param {string} message - The message text to be displayed.
-         * @param {string} type - The type of message (e.g., 'info', 'error'). Not currently used for styling, but good practice.
-         */
-        function showMessage(message, type = 'info') {
-            const messageBox = document.createElement('div');
-            messageBox.className = `custom-message-box ${type}`; // Add type for potential future styling
-            messageBox.innerHTML = `
-                <div class="message-content">
-                    <p>${message}</p>
-                    <button class="close-message-box">OK</button>
-                </div>
-            `;
-            document.body.appendChild(messageBox);
 
-            // Add event listener to close the message box when OK is clicked
-            messageBox.querySelector('.close-message-box').addEventListener('click', () => {
-                messageBox.remove();
-            });
-        }
-
-        /**
-         * Dynamically generates input fields for player statistics, including champion, KDA, minions, gold,
-         * and a checkbox for 'isSubstitute'.
-         * @param {HTMLElement} containerElement - The DOM element where the player inputs will be appended.
-         * @param {string[]} playersArray - An array of player names to generate inputs for.
-         * @param {string} playerTypePrefix - A prefix for generating unique IDs and data attributes (e.g., 'our', 'enemy').
-         */
         function generatePlayerInputs(containerElement, playersArray, playerTypePrefix) {
-            containerElement.innerHTML = ''; // Clear any existing inputs to prevent duplicates
+
+            containerElement.innerHTML = '';
+
             playersArray.forEach((player, index) => {
+
                 const playerEntryDiv = document.createElement("div");
+
                 playerEntryDiv.className = "player-entry";
+
                 playerEntryDiv.innerHTML = `
-                    <label for="${playerTypePrefix}-champion-${index}">${player}:
-                        <input type="checkbox" id="${playerTypePrefix}-substitute-${index}" class="player-substitute-input" data-player-type="${playerTypePrefix}" data-player-id="${index}" />
-                        <span class="substitute-text">Zmiennik</span>
-                    </label>
+
+                    <label for="${playerTypePrefix}-champion-${index}">${player}:</label>
+
                     <input type="text" id="${playerTypePrefix}-champion-${index}" class="player-champion-input" placeholder="Postać" data-player-type="${playerTypePrefix}" data-player-id="${index}" required />
+
                     <input type="number" id="${playerTypePrefix}-kda-k-${index}" class="player-kda-input" placeholder="K" data-kda-part="k" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+
                     <input type="number" id="${playerTypePrefix}-kda-d-${index}" class="player-kda-input" placeholder="D" data-kda-part="d" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+
                     <input type="number" id="${playerTypePrefix}-kda-a-${index}" class="player-kda-input" placeholder="A" data-kda-part="a" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+
                     <input type="number" id="${playerTypePrefix}-minions-${index}" class="player-minions-input" placeholder="Miniony" data-minions-part="cs" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+
                     <input type="number" id="${playerTypePrefix}-gold-${index}" class="player-gold-input" placeholder="Gold" data-gold-part="gold" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+
                 `;
+
                 containerElement.appendChild(playerEntryDiv);
+
             });
+
         }
 
-        /**
-         * Gathers player statistics data from the form inputs, including the 'isSubstitute' status.
-         * @param {string[]} playersArray - The array of player names.
-         * @param {HTMLElement} containerElement - The DOM container element holding the player inputs.
-         * @param {string} playerTypePrefix - The prefix used for player input IDs ('our' or 'enemy').
-         * @returns {Object[]} An array of objects, each representing a player's statistics.
-         */
+
         function getPlayerDataFromForm(playersArray, containerElement, playerTypePrefix) {
+
             const data = [];
+
             playersArray.forEach((player, index) => {
+
                 const championInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][class*="player-champion-input"]`);
+
                 const kInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="k"]`);
+
                 const dInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="d"]`);
+
                 const aInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="a"]`);
+
                 const minionsInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-minions-part="cs"]`);
+
                 const goldInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-gold-part="gold"]`);
-                const substituteInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][class*="player-substitute-input"]`);
+
 
                 data.push({
+
                     name: player,
+
                     champion: championInput ? championInput.value.trim() : '',
+
                     kda: {
+
                         k: parseInt(kInput ? kInput.value : '0'),
+
                         d: parseInt(dInput ? dInput.value : '0'),
+
                         a: parseInt(aInput ? aInput.value : '0'),
+
                     },
+
                     minions: parseInt(minionsInput ? minionsInput.value : '0'),
-                    gold: parseInt(goldInput ? goldInput.value : '0'),
-                    isSubstitute: substituteInput ? substituteInput.checked : false // New field: true if checkbox is checked
+
+                    gold: parseInt(goldInput ? goldInput.value : '0')
+
                 });
+
             });
+
             return data;
+
         }
 
-        // --- Authentication and Authorization Logic ---
-        /**
-         * Handles the initial Firebase authentication. It attempts to sign in with a custom token
-         * provided by the environment. If no token is available, it signs in anonymously.
-         * Errors during authentication are caught and reported via showMessage.
-         */
-        async function authenticateAndAuthorize() {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error:", error);
-                showMessage("Wystąpił błąd podczas logowania. Spróbuj ponownie.", 'error');
-                // Redirect to login page if authentication fails
-                window.location.href = 'login.html';
-            }
-        }
 
-        /**
-         * Firebase Authentication State Listener.
-         * This function is called whenever the user's sign-in state changes (e.g., login, logout, token refresh).
-         * It controls the visibility of the form based on whether the user is logged in as an administrator.
-         */
+        // Authentication State Listener
+
         onAuthStateChanged(auth, (user) => {
-            if (user && user.uid === ADMIN_UID) {
-                // User is logged in and is the administrator
-                loadingMessage.style.display = 'none'; // Hide loading message
-                protectedContent.style.display = 'flex'; // Show the form content
 
-                // Generate player input fields once authentication is confirmed and user is authorized
+            if (user && user.uid === ADMIN_UID) {
+
+                // Użytkownik jest zalogowany I jest administratorem
+
+                loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania
+
+                protectedContent.style.display = 'flex'; // Pokaż formularz
+
+
+                // Wygeneruj pola wejściowe graczy
+
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+
                 
-                // Update the navigation link for logging out
+
+                // Zaktualizuj link nawigacji
+
                 loginLogoutLink.textContent = 'Wyloguj';
-                loginLogoutLink.href = '#'; // Prevent default link behavior
-                loginLogoutLink.onclick = async (e) => {
-                    e.preventDefault(); // Stop the default link action
-                    try {
-                        await auth.signOut(); // Sign out the user
-                        showMessage("Wylogowano pomyślnie.");
-                        window.location.href = 'index.html'; // Redirect to home page after logout
-                    } catch (error) {
+
+                loginLogoutLink.href = '#';
+
+                loginLogoutLink.onclick = (e) => { 
+
+                    e.preventDefault();
+
+                    auth.signOut().then(() => {
+
+                        alert("Wylogowano pomyślnie.");
+
+                        window.location.href = 'index.html'; // Przekieruj na stronę główną po wylogowaniu
+
+                    }).catch((error) => {
+
                         console.error("Błąd wylogowania:", error);
-                        showMessage("Wystąpił błąd podczas wylogowywania.", 'error');
-                    }
+
+                        alert("Wystąpił błąd podczas wylogowywania.");
+
+                    });
+
                 };
-            } else if (user && user.uid !== ADMIN_UID) {
-                // User is logged in but is NOT the administrator
-                showMessage("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.", 'error');
-                window.location.href = 'login.html'; // Redirect to login page
+
+
             } else {
-                // No user is logged in
-                showMessage("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.", 'error');
-                window.location.href = 'login.html'; // Redirect to login page
+
+                // Użytkownik NIE jest zalogowany LUB NIE jest administratorem
+
+                alert("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.");
+
+                window.location.href = 'login.html'; // Przekieruj na stronę logowania
+
             }
+
         });
 
-        // Initial authentication call when the script loads to check user's status
-        authenticateAndAuthorize();
 
-        // --- Form Submission Logic ---
-        /**
-         * Handles the form submission event. It prevents the default form submission,
-         * performs a final authorization check, gathers all match data including player stats
-         * and substitute status, and then attempts to save it to Firestore.
-         */
+        // Handle form submission (only if user is authorized)
+
         matchForm.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevent default form submission
 
-            // Final authorization check before attempting to write to the database
+            event.preventDefault();
+
+
+            // Perform final authorization check before pushing to DB
+
             if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-                showMessage("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.", 'error');
-                return; // Stop function execution if not authorized
+
+                alert("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.");
+
+                return;
+
             }
 
-            // Gather team composition champions
-            const ourChampionsArray = Array.from(ourChampionInputs)
-                .map((input) => input.value.trim())
-                .filter(Boolean); // Filter out empty strings
-            const enemyChampionsArray = Array.from(enemyChampionInputs)
-                .map((input) => input.value.trim())
-                .filter(Boolean); // Filter out empty strings
 
-            // Gather detailed player statistics for both teams
+            const ourChampionsArray = Array.from(ourChampionInputs)
+
+                .map((input) => input.value.trim())
+
+                .filter(Boolean);
+
+            const enemyChampionsArray = Array.from(enemyChampionInputs)
+
+                .map((input) => input.value.trim())
+
+                .filter(Boolean);
+
+
             const ourPlayersData = getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our');
+
             const enemyPlayersData = getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy');
 
-            // Construct the new match object
+
             const newMatch = {
+
                 date: matchDateInput.value,
+
                 result: matchResultInput.value,
+
                 time: matchTimeInput.value,
+
                 ourChamps: ourChampionsArray,
+
                 enemyChamps: enemyChampionsArray,
+
                 players: ourPlayersData,
+
                 enemyPlayers: enemyPlayersData,
-                type: "general" // Default type for the match
+
+                type: "general"
+
             };
 
+
             try {
-                // Add the new match document to the Firestore collection
-                await addDoc(scrimsCollectionRef, newMatch);
-                showMessage("Mecz dodany pomyślnie!"); // Show success message
-                matchForm.reset(); // Reset the entire form
-                // Re-generate player inputs to clear their dynamic values (champions, KDA, etc.)
+
+                await push(scrimsRef, newMatch);
+
+                alert("Mecz dodany pomyślnie!");
+
+                matchForm.reset();
+
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+
             } catch (err) {
+
                 console.error("Błąd podczas dodawania meczu:", err);
-                showMessage("Wystąpił błąd podczas dodawania meczu: " + err.message, 'error');
+
+                alert("Wystąpił błąd podczas dodawania meczu: " + err.message);
+
             }
+
         });
+
     </script>
+
 </body>
-</html>
+
+</html> 
