@@ -36,6 +36,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif; /* Użycie fontu Inter */
         }
 
         main {
@@ -196,6 +197,53 @@
             font-size: 1.2em;
             color: #aaa;
         }
+        /* Style dla niestandardowych okienek wiadomości */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #333;
+            max-width: 90%;
+        }
+        .message-box button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+        }
+        .message-box button.ok-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .message-box button.ok-button:hover {
+            background-color: #0056b3;
+        }
+        .message-box button.error-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        .message-box button.error-button:hover {
+            background-color: #c82333;
+        }
+        .message-box button.success-button {
+            background-color: #28a745;
+            color: white;
+        }
+        .message-box button.success-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -280,41 +328,41 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import {
             getDatabase,
             ref,
             push,
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+            // You had a firebaseConfig object defined in the user prompt, but here it's removed and replaced with a global variable.
+            // signOut is not part of firebase/database, but firebase/auth.
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
         import {
             getAuth,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            signOut // Correctly imported from firebase/auth
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
-            authDomain: "acg-skrimy.firebaseapp.com",
-            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebaseapp.com",
-            messagingSenderId: "78237268518",
-            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-            measurementId: "G-6VDFPFX560",
-        };
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const scrimsRef = ref(db, "scrims");
 
-        // Admin UID - WAŻNE: ZMIENIONO NA PODANY UID
+        // Reference to the 'scrims' collection in Realtime Database, following the specified path structure
+        const scrimsRef = ref(db, `artifacts/${appId}/public/data/scrims`);
+
+        // Admin UID - This UID needs to match the UID of the administrator user in Firebase Authentication
         const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
 
         // UI Elements
         const protectedContent = document.getElementById('protectedContent');
         const loadingMessage = document.getElementById('loadingMessage');
-        const loginLogoutLink = document.getElementById('loginLogoutLink'); // Dla paska nawigacyjnego
+        const loginLogoutLink = document.getElementById('loginLogoutLink');
 
         // Form elements
         const matchForm = document.getElementById("matchForm");
@@ -326,6 +374,7 @@
         const ourPlayerStatsContainer = document.getElementById("ourPlayerStatsContainer");
         const enemyPlayerStatsContainer = document.getElementById("enemyPlayerStatsContainer");
 
+        // Lists of predefined players
         const ourPlayersList = [
             "Likht", "Weedolas", "reap777", "Kohayushi", "None"
         ];
@@ -333,8 +382,51 @@
             "Enemy 1", "Enemy 2", "Enemy 3", "Enemy 4", "Enemy 5"
         ];
 
+        /**
+         * Displays a custom message box instead of native alert().
+         * @param {string} message - The message to display.
+         * @param {string} type - Type of message ('success', 'error', 'info'). Influences button style.
+         * @param {function} [onClose] - Callback function to execute when the message box is closed.
+         * @param {string} [buttonText='OK'] - Text for the close button.
+         * @param {string} [redirectUrl] - URL to redirect to after closing.
+         */
+        function showMessageBox(message, type, onClose, buttonText = 'OK', redirectUrl = null) {
+            const messageBox = document.createElement('div');
+            messageBox.className = 'message-box';
+            let buttonClass = '';
+            if (type === 'success') {
+                buttonClass = 'success-button';
+            } else if (type === 'error') {
+                buttonClass = 'error-button';
+            } else {
+                buttonClass = 'ok-button';
+            }
+
+            messageBox.innerHTML = `
+                <p>${message}</p>
+                <button class="${buttonClass}">${buttonText}</button>
+            `;
+            document.body.appendChild(messageBox);
+
+            messageBox.querySelector('button').addEventListener('click', () => {
+                messageBox.remove();
+                if (onClose) {
+                    onClose();
+                }
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                }
+            });
+        }
+
+        /**
+         * Generates input fields for player statistics based on the provided player list.
+         * @param {HTMLElement} containerElement - The DOM element where inputs will be appended.
+         * @param {string[]} playersArray - Array of player names.
+         * @param {string} playerTypePrefix - Prefix for IDs and data attributes (e.g., 'our', 'enemy').
+         */
         function generatePlayerInputs(containerElement, playersArray, playerTypePrefix) {
-            containerElement.innerHTML = '';
+            containerElement.innerHTML = ''; // Clear existing inputs
             playersArray.forEach((player, index) => {
                 const playerEntryDiv = document.createElement("div");
                 playerEntryDiv.className = "player-entry";
@@ -349,16 +441,16 @@
                     <input type="number" id="${playerTypePrefix}-gold-${index}" class="player-gold-input" placeholder="Gold" data-gold-part="gold" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
                 `;
 
-                // Jeśli to nasz zawodnik, dodaj pole wyboru "Zmiennik". W przeciwnym razie dodaj pusty element dla zachowania siatki.
+                // Add "Zmiennik" checkbox only for 'our' players
                 if (playerTypePrefix === 'our') {
                     playerHTML += `
-                        <div style="display: flex; align-items: center; justify-content: center;">
+                        <div style="display: flex; align-items: center; justify-content: flex-start;">
                             <input type="checkbox" id="our-substitute-${index}" data-sub-id="${index}" title="Zaznacz, jeśli grał zmiennik" style="width: auto; margin-right: 5px;">
-                            <label for="our-substitute-${index}" style="font-weight: normal; text-align: left;">Zmiennik</label>
+                            <label for="our-substitute-${index}" style="font-weight: normal; text-align: left; margin-bottom: 0;">Zmiennik</label>
                         </div>
                     `;
                 } else {
-                    playerHTML += `<div></div>`; // Pusty element dla wyrównania w siatce
+                    playerHTML += `<div></div>`; // Empty div for grid alignment for enemy players
                 }
 
                 playerEntryDiv.innerHTML = playerHTML;
@@ -366,6 +458,13 @@
             });
         }
 
+        /**
+         * Extracts player data from form inputs.
+         * @param {string[]} playersArray - Array of player names.
+         * @param {HTMLElement} containerElement - The DOM element containing the player inputs.
+         * @param {string} playerTypePrefix - Prefix for data attributes (e.g., 'our', 'enemy').
+         * @returns {Object[]} An array of player data objects.
+         */
         function getPlayerDataFromForm(playersArray, containerElement, playerTypePrefix) {
             const data = [];
             playersArray.forEach((player, index) => {
@@ -388,7 +487,7 @@
                     gold: parseInt(goldInput ? goldInput.value : '0')
                 };
 
-                // Jeśli to nasz zawodnik, sprawdź stan pola "Zmiennik"
+                // If it's an 'our' player, check the 'substitute' checkbox state
                 if (playerTypePrefix === 'our') {
                     const substituteCheckbox = containerElement.querySelector(`#our-substitute-${index}`);
                     playerData.substitute = substituteCheckbox ? substituteCheckbox.checked : false;
@@ -399,48 +498,75 @@
             return data;
         }
 
-        // Authentication State Listener
+        // Initial sign-in attempt upon page load
+        (async () => {
+            try {
+                // Check if the custom token is provided by the environment
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("Signed in with custom token.");
+                } else {
+                    // If no custom token, sign in anonymously
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
+                }
+            } catch (error) {
+                console.error("Firebase sign-in failed:", error);
+                // The onAuthStateChanged listener will handle UI based on auth state
+            }
+        })();
+
+        // Authentication State Listener: Handles UI visibility and login/logout link
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === ADMIN_UID) {
-                // Użytkownik jest zalogowany I jest administratorem
-                loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania
-                protectedContent.style.display = 'flex'; // Pokaż formularz
+                // User is logged in and is the administrator
+                loadingMessage.style.display = 'none'; // Hide loading message
+                protectedContent.style.display = 'flex'; // Show the form
 
-                // Wygeneruj pola wejściowe graczy
+                // Generate player input fields once the user is authorized
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
                 
-                // Zaktualizuj link nawigacji
+                // Update navigation link for logout
                 loginLogoutLink.textContent = 'Wyloguj';
-                loginLogoutLink.href = '#';
+                loginLogoutLink.href = '#'; // Prevent actual navigation
                 loginLogoutLink.onclick = (e) => { 
-                    e.preventDefault();
-                    auth.signOut().then(() => {
-                        alert("Wylogowano pomyślnie.");
-                        window.location.href = 'index.html'; // Przekieruj na stronę główną po wylogowaniu
+                    e.preventDefault(); // Stop default link behavior
+                    signOut(auth).then(() => {
+                        showMessageBox("Wylogowano pomyślnie.", 'success', () => {
+                            window.location.href = 'index.html'; // Redirect after message close
+                        });
                     }).catch((error) => {
                         console.error("Błąd wylogowania:", error);
-                        alert("Wystąpił błąd podczas wylogowywania.");
+                        showMessageBox(`Wystąpił błąd podczas wylogowywania: ${error.message}`, 'error');
                     });
                 };
-
             } else {
-                // Użytkownik NIE jest zalogowany LUB NIE jest administratorem
-                alert("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.");
-                window.location.href = 'login.html'; // Przekieruj na stronę logowania
+                // User is not logged in OR is not the administrator
+                loadingMessage.style.display = 'none'; // Hide loading message
+                protectedContent.style.display = 'none'; // Ensure content is hidden
+
+                showMessageBox(
+                    "Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.",
+                    'error',
+                    null, // No specific callback needed before redirect
+                    "Przejdź do logowania",
+                    'login.html' // Redirect to login page on button click
+                );
             }
         });
 
         // Handle form submission (only if user is authorized)
         matchForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
+            event.preventDefault(); // Prevent default form submission
 
-            // Perform final authorization check before pushing to DB
+            // Double-check authorization before submitting data
             if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-                alert("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.");
+                showMessageBox("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.", 'error');
                 return;
             }
 
+            // Get champion data for both teams
             const ourChampionsArray = Array.from(ourChampionInputs)
                 .map((input) => input.value.trim())
                 .filter(Boolean);
@@ -448,29 +574,33 @@
                 .map((input) => input.value.trim())
                 .filter(Boolean);
 
+            // Get detailed player statistics, including the 'substitute' flag for our players
             const ourPlayersData = getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our');
             const enemyPlayersData = getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy');
 
+            // Construct the new match object
             const newMatch = {
                 date: matchDateInput.value,
                 result: matchResultInput.value,
                 time: matchTimeInput.value,
                 ourChamps: ourChampionsArray,
                 enemyChamps: enemyChampionsArray,
-                players: ourPlayersData,
+                players: ourPlayersData, // This array now includes the 'substitute' boolean for each player
                 enemyPlayers: enemyPlayersData,
-                type: "general"
+                type: "general" // Default type, can be expanded if needed
             };
 
             try {
+                // Push the new match data to Firebase Realtime Database
                 await push(scrimsRef, newMatch);
-                alert("Mecz dodany pomyślnie!");
-                matchForm.reset();
+                showMessageBox("Mecz dodany pomyślnie!", 'success');
+                matchForm.reset(); // Clear the form fields
+                // Regenerate player input fields to clear their values as well
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
             } catch (err) {
                 console.error("Błąd podczas dodawania meczu:", err);
-                alert("Wystąpił błąd podczas dodawania meczu: " + err.message);
+                showMessageBox(`Wystąpił błąd podczas dodawania meczu: ${err.message}`, 'error');
             }
         });
     </script>
