@@ -36,7 +36,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif; /* Użycie fontu Inter */
+            font-family: 'Poppins', sans-serif;
         }
 
         main {
@@ -333,30 +333,36 @@
             getDatabase,
             ref,
             push,
-            // You had a firebaseConfig object defined in the user prompt, but here it's removed and replaced with a global variable.
-            // signOut is not part of firebase/database, but firebase/auth.
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
         import {
             getAuth,
-            signInAnonymously,
-            signInWithCustomToken,
             onAuthStateChanged,
-            signOut // Correctly imported from firebase/auth
+            signOut
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // Twoja oryginalna konfiguracja Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebaseapp.com",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
 
-        // Initialize Firebase
+        // Inicjalizacja Firebase z Twoją konfiguracją
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Reference to the 'scrims' collection in Realtime Database, following the specified path structure
-        const scrimsRef = ref(db, `artifacts/${appId}/public/data/scrims`);
+        // Referencja do kolekcji 'scrims' w Realtime Database
+        // Zgodnie z wcześniejszymi instrukcjami, ścieżka powinna być /artifacts/{appId}/public/data/scrims
+        // W tym przypadku użyliśmy Twojej konfiguracji, więc odwołujemy się bezpośrednio do 'scrims'
+        const scrimsRef = ref(db, "scrims"); 
 
-        // Admin UID - This UID needs to match the UID of the administrator user in Firebase Authentication
+        // Admin UID - WAŻNE: UPEWNIJ SIĘ, ŻE TO UID JEST PRAWIDŁOWE DLA TWOJEGO KONTA ADMINISTRATORA W FIREBASE AUTHENTICATION
         const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
 
         // UI Elements
@@ -498,75 +504,72 @@
             return data;
         }
 
-        // Initial sign-in attempt upon page load
-        (async () => {
-            try {
-                // Check if the custom token is provided by the environment
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                    console.log("Signed in with custom token.");
-                } else {
-                    // If no custom token, sign in anonymously
-                    await signInAnonymously(auth);
-                    console.log("Signed in anonymously.");
-                }
-            } catch (error) {
-                console.error("Firebase sign-in failed:", error);
-                // The onAuthStateChanged listener will handle UI based on auth state
-            }
-        })();
-
         // Authentication State Listener: Handles UI visibility and login/logout link
         onAuthStateChanged(auth, (user) => {
-            if (user && user.uid === ADMIN_UID) {
-                // User is logged in and is the administrator
-                loadingMessage.style.display = 'none'; // Hide loading message
-                protectedContent.style.display = 'flex'; // Show the form
+            if (user) {
+                console.log("Użytkownik zalogowany. UID:", user.uid);
+                console.log("Oczekiwany ADMIN_UID:", ADMIN_UID);
+                if (user.uid === ADMIN_UID) {
+                    // Użytkownik jest zalogowany I jest administratorem
+                    loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania
+                    protectedContent.style.display = 'flex'; // Pokaż formularz
 
-                // Generate player input fields once the user is authorized
-                generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
-                generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
-                
-                // Update navigation link for logout
-                loginLogoutLink.textContent = 'Wyloguj';
-                loginLogoutLink.href = '#'; // Prevent actual navigation
-                loginLogoutLink.onclick = (e) => { 
-                    e.preventDefault(); // Stop default link behavior
-                    signOut(auth).then(() => {
-                        showMessageBox("Wylogowano pomyślnie.", 'success', () => {
-                            window.location.href = 'index.html'; // Redirect after message close
+                    // Wygeneruj pola wejściowe graczy
+                    generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+                    generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+                    
+                    // Zaktualizuj link nawigacji
+                    loginLogoutLink.textContent = 'Wyloguj';
+                    loginLogoutLink.href = '#'; // Zapobiegaj domyślnej nawigacji
+                    loginLogoutLink.onclick = (e) => { 
+                        e.preventDefault();
+                        signOut(auth).then(() => {
+                            showMessageBox("Wylogowano pomyślnie.", 'success', () => {
+                                window.location.href = 'index.html';
+                            });
+                        }).catch((error) => {
+                            console.error("Błąd wylogowania:", error);
+                            showMessageBox(`Wystąpił błąd podczas wylogowywania: ${error.message}`, 'error');
                         });
-                    }).catch((error) => {
-                        console.error("Błąd wylogowania:", error);
-                        showMessageBox(`Wystąpił błąd podczas wylogowywania: ${error.message}`, 'error');
-                    });
-                };
+                    };
+                } else {
+                    // Użytkownik jest zalogowany, ale NIE jest administratorem
+                    console.log("Użytkownik zalogowany, ale nie jest administratorem.");
+                    loadingMessage.style.display = 'none';
+                    protectedContent.style.display = 'none';
+                    showMessageBox(
+                        "Brak uprawnień. Zaloguj się jako administrator, aby dodawać mecze.",
+                        'error',
+                        null,
+                        "Przejdź do logowania",
+                        'login.html'
+                    );
+                }
             } else {
-                // User is not logged in OR is not the administrator
-                loadingMessage.style.display = 'none'; // Hide loading message
-                protectedContent.style.display = 'none'; // Ensure content is hidden
-
+                // Użytkownik NIE jest zalogowany
+                console.log("Użytkownik nie jest zalogowany.");
+                loadingMessage.style.display = 'none';
+                protectedContent.style.display = 'none';
                 showMessageBox(
                     "Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.",
                     'error',
-                    null, // No specific callback needed before redirect
+                    null,
                     "Przejdź do logowania",
-                    'login.html' // Redirect to login page on button click
+                    'login.html'
                 );
             }
         });
 
         // Handle form submission (only if user is authorized)
         matchForm.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
-            // Double-check authorization before submitting data
+            // Final authorization check before pushing to DB
             if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
                 showMessageBox("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.", 'error');
                 return;
             }
 
-            // Get champion data for both teams
             const ourChampionsArray = Array.from(ourChampionInputs)
                 .map((input) => input.value.trim())
                 .filter(Boolean);
@@ -574,28 +577,24 @@
                 .map((input) => input.value.trim())
                 .filter(Boolean);
 
-            // Get detailed player statistics, including the 'substitute' flag for our players
             const ourPlayersData = getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our');
             const enemyPlayersData = getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy');
 
-            // Construct the new match object
             const newMatch = {
                 date: matchDateInput.value,
                 result: matchResultInput.value,
                 time: matchTimeInput.value,
                 ourChamps: ourChampionsArray,
                 enemyChamps: enemyChampionsArray,
-                players: ourPlayersData, // This array now includes the 'substitute' boolean for each player
+                players: ourPlayersData,
                 enemyPlayers: enemyPlayersData,
-                type: "general" // Default type, can be expanded if needed
+                type: "general"
             };
 
             try {
-                // Push the new match data to Firebase Realtime Database
                 await push(scrimsRef, newMatch);
                 showMessageBox("Mecz dodany pomyślnie!", 'success');
-                matchForm.reset(); // Clear the form fields
-                // Regenerate player input fields to clear their values as well
+                matchForm.reset();
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
             } catch (err) {
