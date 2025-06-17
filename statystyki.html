@@ -384,7 +384,8 @@
                 <li>Przegrane: <strong id="sidebarTotalLosses">0</strong></li>
                 <li>Win Rate: <strong id="sidebarTotalWinRate">0%</strong></li>
                 <li>avG KDA: <strong id="sidebarAverageKDA">N/A</strong></li>
-                <li>avG CS: <strong id="sidebarAverageCSOverall">N/A</strong></li> </ul>
+                <li>avG CS: <strong id="sidebarAverageCSOverall">N/A</strong></li>
+            </ul>
 
             <div class="champion-specific-stats" id="championSpecificStatsSection">
                 <h3 id="sidebarChampionNameTitle">
@@ -532,6 +533,11 @@
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
         const FALLBACK_ICON_URL = "https://via.placeholder.com/28x28?text=N/A"; // Domyślna ikona w razie błędu ładowania
 
+        /**
+         * Pobiera URL ikony championa z DDragon, obsługując niestandardowe nazwy.
+         * @param {string} championName - Nazwa championa.
+         * @returns {string} URL ikony championa lub URL ikony awaryjnej.
+         */
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
             let cleanedName = championName
@@ -540,7 +546,7 @@
                 .replace(/[.'-]/g, "") // Usuwa apostrofy i myślniki
                 .replace(/\s+/g, ""); // Usuwa spacje
 
-            // Mapa do obsługi niestandardowych nazw championów z DDragon
+            // Mapa do obsługi niestandardowych nazw championów z DDragon (np. Wukong -> MonkeyKing)
             const nameMap = {
                 "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu",
                 "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
@@ -590,11 +596,22 @@
         }
 
         // --- Funkcje pomocnicze ---
+        /**
+         * Normalizuje nazwę gracza, usuwając spacje, kropki i konwertując na małe litery.
+         * @param {string} name - Nazwa gracza.
+         * @returns {string} Znormalizowana nazwa.
+         */
         function normalizePlayerName(name) {
             return name.trim().replace(/\s/g, '').replace(/\./g, '').toLowerCase();
         }
 
-        // Funkcja do obliczania KDA
+        /**
+         * Oblicza KDA.
+         * @param {number} kills - Liczba zabójstw.
+         * @param {number} deaths - Liczba śmierci.
+         * @param {number} assists - Liczba asyst.
+         * @returns {string} Obliczone KDA, sformatowane do dwóch miejsc po przecinku.
+         */
         function calculateKDA(kills, deaths, assists) {
             if (deaths === 0) {
                 return (kills + assists).toFixed(2);
@@ -603,6 +620,9 @@
         }
 
         // --- Generowanie linków graczy ---
+        /**
+         * Generuje i wyświetla linki do wyboru graczy.
+         */
         function populatePlayerLinks() {
             playerLinksContainer.innerHTML = '';
             playersList.forEach(player => {
@@ -614,7 +634,10 @@
             });
         }
 
-        // Przełączanie zakładek
+        /**
+         * Przełącza aktywną zakładkę i wyświetla odpowiednią tabelę.
+         * @param {string} tabName - Nazwa zakładki ('champion-stats' lub 'match-history').
+         */
         function switchTab(tabName) {
             currentActiveTab = tabName;
 
@@ -654,6 +677,10 @@
 
 
         // --- Funkcje wyświetlania i logiki ---
+        /**
+         * Wyświetla statystyki dla wybranego gracza, filtrując mecze, w których był zmiennikiem.
+         * @param {string} playerName - Nazwa wybranego gracza.
+         */
         function displayPlayerStats(playerName) {
             playerScrimsTableBody.innerHTML = "";
             championStatsTableBody.innerHTML = "";
@@ -681,6 +708,13 @@
             allMatchesData.forEach(match => {
                 if (match.players && Array.isArray(match.players)) {
                     const playerMatchData = match.players.find(p => normalizePlayerName(p.name) === normalizedPlayerName);
+
+                    // Sprawdzamy, czy gracz był zmiennikiem w tym meczu.
+                    // Jeśli tak, POMIJAMY TEN MECZ w obliczeniach statystyk i historii.
+                    if (playerMatchData && playerMatchData.substitute === true) {
+                        console.log(`Mecz ${match.id} pominięty dla gracza ${playerName}, ponieważ był zmiennikiem.`);
+                        return; // Pomijamy ten mecz i przechodzimy do następnego
+                    }
 
                     if (playerMatchData) {
                         hasScrims = true;
@@ -841,7 +875,10 @@
             switchTab(currentActiveTab);
         }
 
-        // Wyświetlanie statystyk dla konkretnej postaci
+        /**
+         * Wyświetla szczegółowe statystyki dla wybranego championa w panelu bocznym.
+         * @param {string} championName - Nazwa wybranego championa.
+         */
         function displayChampionSpecificStats(championName) {
             if (!championName || !currentPlayerChampionStats[championName]) {
                 championSpecificStatsSection.style.display = 'none';
@@ -877,13 +914,17 @@
         }
 
 
-        // Funkcja ładująca wszystkie mecze z Firebase
+        /**
+         * Ładuje wszystkie mecze z Firebase Realtime Database.
+         */
         function loadAllMatchesFromFirebase() {
             onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
                 allMatchesData = Object.entries(data).map(([key, value]) => ({
                     id: key,
                     ...value,
+                    // Upewnij się, że 'players' to zawsze tablica, nawet jeśli w Firebase jest obiekt.
+                    // To jest szczególnie ważne, jeśli dane graczy są indeksowane numerycznie, ale nie są faktycznie tablicą w Firebase.
                     players: Array.isArray(value.players) ? value.players :
                                 (value.players && typeof value.players === 'object' ? Object.values(value.players) : []),
                     type: value.type || 'general'
@@ -902,7 +943,7 @@
                     // Jeśli żaden gracz nie jest wybrany, upewnij się, że panel boczny jest ukryty
                     playerSpecificStatsSidebar.style.display = 'none';
                 }
-                championSpecificStatsSection.style.display = 'none'; // Na początku zawsze ukryj
+                championSpecificStatsSection.style.display = 'none'; // Na początku zawsze ukryj sekcję statystyk championa
                 switchTab(currentActiveTab); // Upewnij się, że zakładka jest prawidłowo wyświetlana po załadowaniu danych
             }, (error) => {
                 console.error("Błąd podczas ładowania danych z Firebase:", error);
