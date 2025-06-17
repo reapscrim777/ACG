@@ -384,8 +384,7 @@
                 <li>Przegrane: <strong id="sidebarTotalLosses">0</strong></li>
                 <li>Win Rate: <strong id="sidebarTotalWinRate">0%</strong></li>
                 <li>avG KDA: <strong id="sidebarAverageKDA">N/A</strong></li>
-                <li>avG CS: <strong id="sidebarAverageCSOverall">N/A</strong></li>
-            </ul>
+                <li>avG CS: <strong id="sidebarAverageCSOverall">N/A</strong></li> </ul>
 
             <div class="champion-specific-stats" id="championSpecificStatsSection">
                 <h3 id="sidebarChampionNameTitle">
@@ -682,13 +681,6 @@
             allMatchesData.forEach(match => {
                 if (match.players && Array.isArray(match.players)) {
                     const playerMatchData = match.players.find(p => normalizePlayerName(p.name) === normalizedPlayerName);
-
-                    // --- NOWY WARUNEK: Sprawdzamy, czy gracz był zmiennikiem ---
-                    // Jeśli playerMatchData istnieje i 'isSubstitute' jest true, pomijamy ten mecz dla statystyk
-                    if (playerMatchData && playerMatchData.isSubstitute === true) {
-                        return; // Pomijamy ten mecz i przechodzimy do następnego
-                    }
-                    // --- KONIEC NOWEGO WARUNKU ---
 
                     if (playerMatchData) {
                         hasScrims = true;
