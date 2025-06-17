@@ -4,10 +4,72 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dodaj Mecz</title>
-    <link rel="stylesheet" href="style.css" />
+    <!-- Zewnętrzny plik style.css został przeniesiony bezpośrednio do tego pliku dla ułatwienia użycia. -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
-        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
+        /* General body styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d0d0d; /* Dark background */
+            color: #f0f0f0; /* Light text color */
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .navbar .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar .site-name {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap; /* Allow links to wrap */
+            justify-content: center; /* Center links if they wrap */
+        }
+
+        .navbar .nav-links a {
+            color: #f0f0f0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 0;
+            transition: color 0.3s ease, border-bottom 0.3s ease;
+        }
+
+        .navbar .nav-links a:hover,
+        .navbar .nav-links a.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        /* Minimal styles for icons and table appearance */
         .champion-icon {
             width: 24px;
             height: 24px;
@@ -29,15 +91,8 @@
             color: red;
             font-weight: bold;
         }
-        /* Style formularza specyficzne dla dodajmecz.html */
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
+        
+        /* Form specific styles for dodajmecz.html */
         main {
             flex: 1;
             padding: 20px;
@@ -103,7 +158,7 @@
         .team-champions input {
             flex: 1;
             min-width: 100px;
-            max-width: calc(20% - 8px); /* 5 inputów w rzędzie */
+            max-width: calc(20% - 8px); /* 5 inputs in a row */
         }
         
         .player-stats-section {
@@ -122,15 +177,29 @@
         }
         .player-entry {
             display: grid;
-            /* Zmieniona siatka: Etykieta, Champion, K, D, A, Miniony, Gold */
-            grid-template-columns: 1fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr; /* Dodano 7. kolumnę dla Golda */
+            /* Grid layout: Label (with checkbox), Champion, K, D, A, Minions, Gold */
+            grid-template-columns: 1.5fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr; /* Adjusted first column for checkbox */
             gap: 10px;
             margin-bottom: 10px;
             align-items: center;
         }
         .player-entry label {
-            text-align: right; /* Wyrównaj nazwę gracza do prawej */
+            /* flexbox within the label to align player name, checkbox, and "Zmiennik" */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align to the right for the player name */
             padding-right: 5px;
+            gap: 5px; /* Space between player name, checkbox, and "Zmiennik" */
+            text-align: right; /* Ensure the overall label text is right-aligned */
+        }
+        .player-entry label .substitute-text {
+            font-size: 0.9em; /* Smaller text for "Zmiennik" */
+            color: #ccc;
+        }
+        .player-entry input[type="checkbox"] {
+            width: auto; /* Allow checkbox to take natural width */
+            margin: 0; /* Remove default margin */
+            vertical-align: middle; /* Align with text */
         }
         .player-entry input {
             width: 100%;
@@ -141,9 +210,9 @@
             color: #f0f0f0;
             box-sizing: border-box;
         }
-        /* Dopasowanie szerokości pól KDA, Minions, Gold */
-        .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
-            max-width: 100%; /* Pozwól im wypełniać komórkę w siatce */
+        /* Adjust width of KDA, Minions, Gold fields */
+        .player-kda-input, .player-minions-input, .player-gold-input {
+            max-width: 100%; /* Allow them to fill the grid cell */
             text-align: center;
         }
 
@@ -163,26 +232,32 @@
             background-color: #0056b3;
         }
 
-        /* Responsywność dla mniejszych ekranów */
+        /* Responsiveness for smaller screens */
         @media (max-width: 768px) {
             .player-entry {
-                /* Zmień na układ kolumnowy dla małych ekranów, aby uniknąć ściskania */
-                grid-template-columns: 1fr; /* Wszystkie elementy w jednej kolumnie */
+                /* Change to column layout for small screens to prevent squeezing */
+                grid-template-columns: 1fr; /* All elements in one column */
                 text-align: center;
             }
             .player-entry label {
+                flex-direction: column; /* Stack label elements vertically on small screens */
+                align-items: center;
+                justify-content: center;
                 text-align: center;
+            }
+            .player-entry label .substitute-text {
+                margin-top: 5px; /* Add some space if stacked */
             }
             .player-entry input {
                 max-width: 100%;
                 margin: 0 auto;
             }
-            .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
-                max-width: unset; /* Usuń ograniczenia szerokości */
+            .player-kda-input, .player-minions-input, .player-gold-input {
+                max-width: unset; /* Remove width restrictions */
             }
         }
 
-        /* Ukryj formularz domyślnie, dopóki użytkownik nie zostanie zweryfikowany */
+        /* Hide form by default until user is verified */
         #protectedContent {
             display: none;
             width: 100%; /* Ensure it takes full width when visible */
@@ -196,12 +271,63 @@
             font-size: 1.2em;
             color: #aaa;
         }
+
+        /* Custom Message Box styles (for replacing alert()) */
+        .custom-message-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .message-content {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: #f0f0f0;
+            max-width: 90%;
+            width: 300px;
+        }
+        .message-content p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .message-content button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .message-content button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto; /* Pushes the footer to the bottom */
+            border-top: 1px solid #333;
+        }
     </style>
 </head>
 <body>
     <header class="navbar">
         <div class="logo-section">
-            <img src="logo.png" alt="Logo" class="logo" />
+            <!-- Ensure logo.png is in the same directory or update the path -->
+            <img src="logo.png" alt="Logo" class="logo" /> 
             <span class="site-name"></span>
         </div>
         <nav class="nav-links">
@@ -280,41 +406,33 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            push,
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-        import {
-            getAuth,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        // Import Firebase Firestore and Auth libraries
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
-            authDomain: "acg-skrimy.firebaseapp.com",
-            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebaseapp.com",
-            messagingSenderId: "78237268518",
-            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-            measurementId: "G-6VDFPFX560",
-        };
+        // Global variables provided by the Canvas environment for Firebase configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        // Initialize Firebase services
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
         const auth = getAuth(app);
-        const scrimsRef = ref(db, "scrims");
 
-        // Admin UID - WAŻNE: ZMIENIONO NA PODANY UID
+        // Firestore collection reference for storing scrims data.
+        // Data is stored under 'public/data' path to be accessible by all authenticated users.
+        const scrimsCollectionRef = collection(db, `artifacts/${appId}/public/data/scrims`);
+
+        // Admin UID - This UID is hardcoded as provided by the user.
+        // In a production application, consider more robust role management (e.g., Firestore roles).
         const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
 
         // UI Elements
         const protectedContent = document.getElementById('protectedContent');
         const loadingMessage = document.getElementById('loadingMessage');
-        const loginLogoutLink = document.getElementById('loginLogoutLink'); // Dla paska nawigacyjnego
+        const loginLogoutLink = document.getElementById('loginLogoutLink');
 
         // Form elements
         const matchForm = document.getElementById("matchForm");
@@ -326,6 +444,7 @@
         const ourPlayerStatsContainer = document.getElementById("ourPlayerStatsContainer");
         const enemyPlayerStatsContainer = document.getElementById("enemyPlayerStatsContainer");
 
+        // Lists of predefined player names
         const ourPlayersList = [
             "Likht", "Weedolas", "reap777", "Kohayushi", "None"
         ];
@@ -333,13 +452,46 @@
             "Enemy 1", "Enemy 2", "Enemy 3", "Enemy 4", "Enemy 5"
         ];
 
+        /**
+         * Displays a custom message box instead of the native alert() function.
+         * This provides a consistent UI experience within the iframe.
+         * @param {string} message - The message text to be displayed.
+         * @param {string} type - The type of message (e.g., 'info', 'error'). Not currently used for styling, but good practice.
+         */
+        function showMessage(message, type = 'info') {
+            const messageBox = document.createElement('div');
+            messageBox.className = `custom-message-box ${type}`; // Add type for potential future styling
+            messageBox.innerHTML = `
+                <div class="message-content">
+                    <p>${message}</p>
+                    <button class="close-message-box">OK</button>
+                </div>
+            `;
+            document.body.appendChild(messageBox);
+
+            // Add event listener to close the message box when OK is clicked
+            messageBox.querySelector('.close-message-box').addEventListener('click', () => {
+                messageBox.remove();
+            });
+        }
+
+        /**
+         * Dynamically generates input fields for player statistics, including champion, KDA, minions, gold,
+         * and a checkbox for 'isSubstitute'.
+         * @param {HTMLElement} containerElement - The DOM element where the player inputs will be appended.
+         * @param {string[]} playersArray - An array of player names to generate inputs for.
+         * @param {string} playerTypePrefix - A prefix for generating unique IDs and data attributes (e.g., 'our', 'enemy').
+         */
         function generatePlayerInputs(containerElement, playersArray, playerTypePrefix) {
-            containerElement.innerHTML = '';
+            containerElement.innerHTML = ''; // Clear any existing inputs to prevent duplicates
             playersArray.forEach((player, index) => {
                 const playerEntryDiv = document.createElement("div");
                 playerEntryDiv.className = "player-entry";
                 playerEntryDiv.innerHTML = `
-                    <label for="${playerTypePrefix}-champion-${index}">${player}:</label>
+                    <label for="${playerTypePrefix}-champion-${index}">${player}:
+                        <input type="checkbox" id="${playerTypePrefix}-substitute-${index}" class="player-substitute-input" data-player-type="${playerTypePrefix}" data-player-id="${index}" />
+                        <span class="substitute-text">Zmiennik</span>
+                    </label>
                     <input type="text" id="${playerTypePrefix}-champion-${index}" class="player-champion-input" placeholder="Postać" data-player-type="${playerTypePrefix}" data-player-id="${index}" required />
                     <input type="number" id="${playerTypePrefix}-kda-k-${index}" class="player-kda-input" placeholder="K" data-kda-part="k" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
                     <input type="number" id="${playerTypePrefix}-kda-d-${index}" class="player-kda-input" placeholder="D" data-kda-part="d" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
@@ -351,6 +503,13 @@
             });
         }
 
+        /**
+         * Gathers player statistics data from the form inputs, including the 'isSubstitute' status.
+         * @param {string[]} playersArray - The array of player names.
+         * @param {HTMLElement} containerElement - The DOM container element holding the player inputs.
+         * @param {string} playerTypePrefix - The prefix used for player input IDs ('our' or 'enemy').
+         * @returns {Object[]} An array of objects, each representing a player's statistics.
+         */
         function getPlayerDataFromForm(playersArray, containerElement, playerTypePrefix) {
             const data = [];
             playersArray.forEach((player, index) => {
@@ -360,6 +519,7 @@
                 const aInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="a"]`);
                 const minionsInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-minions-part="cs"]`);
                 const goldInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-gold-part="gold"]`);
+                const substituteInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][class*="player-substitute-input"]`);
 
                 data.push({
                     name: player,
@@ -370,64 +530,105 @@
                         a: parseInt(aInput ? aInput.value : '0'),
                     },
                     minions: parseInt(minionsInput ? minionsInput.value : '0'),
-                    gold: parseInt(goldInput ? goldInput.value : '0')
+                    gold: parseInt(goldInput ? goldInput.value : '0'),
+                    isSubstitute: substituteInput ? substituteInput.checked : false // New field: true if checkbox is checked
                 });
             });
             return data;
         }
 
-        // Authentication State Listener
+        // --- Authentication and Authorization Logic ---
+        /**
+         * Handles the initial Firebase authentication. It attempts to sign in with a custom token
+         * provided by the environment. If no token is available, it signs in anonymously.
+         * Errors during authentication are caught and reported via showMessage.
+         */
+        async function authenticateAndAuthorize() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+                showMessage("Wystąpił błąd podczas logowania. Spróbuj ponownie.", 'error');
+                // Redirect to login page if authentication fails
+                window.location.href = 'login.html';
+            }
+        }
+
+        /**
+         * Firebase Authentication State Listener.
+         * This function is called whenever the user's sign-in state changes (e.g., login, logout, token refresh).
+         * It controls the visibility of the form based on whether the user is logged in as an administrator.
+         */
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === ADMIN_UID) {
-                // Użytkownik jest zalogowany I jest administratorem
-                loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania
-                protectedContent.style.display = 'flex'; // Pokaż formularz
+                // User is logged in and is the administrator
+                loadingMessage.style.display = 'none'; // Hide loading message
+                protectedContent.style.display = 'flex'; // Show the form content
 
-                // Wygeneruj pola wejściowe graczy
+                // Generate player input fields once authentication is confirmed and user is authorized
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
                 
-                // Zaktualizuj link nawigacji
+                // Update the navigation link for logging out
                 loginLogoutLink.textContent = 'Wyloguj';
-                loginLogoutLink.href = '#';
-                loginLogoutLink.onclick = (e) => { 
-                    e.preventDefault();
-                    auth.signOut().then(() => {
-                        alert("Wylogowano pomyślnie.");
-                        window.location.href = 'index.html'; // Przekieruj na stronę główną po wylogowaniu
-                    }).catch((error) => {
+                loginLogoutLink.href = '#'; // Prevent default link behavior
+                loginLogoutLink.onclick = async (e) => {
+                    e.preventDefault(); // Stop the default link action
+                    try {
+                        await auth.signOut(); // Sign out the user
+                        showMessage("Wylogowano pomyślnie.");
+                        window.location.href = 'index.html'; // Redirect to home page after logout
+                    } catch (error) {
                         console.error("Błąd wylogowania:", error);
-                        alert("Wystąpił błąd podczas wylogowywania.");
-                    });
+                        showMessage("Wystąpił błąd podczas wylogowywania.", 'error');
+                    }
                 };
-
+            } else if (user && user.uid !== ADMIN_UID) {
+                // User is logged in but is NOT the administrator
+                showMessage("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.", 'error');
+                window.location.href = 'login.html'; // Redirect to login page
             } else {
-                // Użytkownik NIE jest zalogowany LUB NIE jest administratorem
-                alert("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.");
-                window.location.href = 'login.html'; // Przekieruj na stronę logowania
+                // No user is logged in
+                showMessage("Brak dostępu. Zaloguj się jako administrator, aby dodawać mecze.", 'error');
+                window.location.href = 'login.html'; // Redirect to login page
             }
         });
 
-        // Handle form submission (only if user is authorized)
-        matchForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
+        // Initial authentication call when the script loads to check user's status
+        authenticateAndAuthorize();
 
-            // Perform final authorization check before pushing to DB
+        // --- Form Submission Logic ---
+        /**
+         * Handles the form submission event. It prevents the default form submission,
+         * performs a final authorization check, gathers all match data including player stats
+         * and substitute status, and then attempts to save it to Firestore.
+         */
+        matchForm.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Final authorization check before attempting to write to the database
             if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-                alert("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.");
-                return;
+                showMessage("Brak uprawnień do dodawania meczów. Zaloguj się jako administrator.", 'error');
+                return; // Stop function execution if not authorized
             }
 
+            // Gather team composition champions
             const ourChampionsArray = Array.from(ourChampionInputs)
                 .map((input) => input.value.trim())
-                .filter(Boolean);
+                .filter(Boolean); // Filter out empty strings
             const enemyChampionsArray = Array.from(enemyChampionInputs)
                 .map((input) => input.value.trim())
-                .filter(Boolean);
+                .filter(Boolean); // Filter out empty strings
 
+            // Gather detailed player statistics for both teams
             const ourPlayersData = getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our');
             const enemyPlayersData = getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy');
 
+            // Construct the new match object
             const newMatch = {
                 date: matchDateInput.value,
                 result: matchResultInput.value,
@@ -436,18 +637,20 @@
                 enemyChamps: enemyChampionsArray,
                 players: ourPlayersData,
                 enemyPlayers: enemyPlayersData,
-                type: "general"
+                type: "general" // Default type for the match
             };
 
             try {
-                await push(scrimsRef, newMatch);
-                alert("Mecz dodany pomyślnie!");
-                matchForm.reset();
+                // Add the new match document to the Firestore collection
+                await addDoc(scrimsCollectionRef, newMatch);
+                showMessage("Mecz dodany pomyślnie!"); // Show success message
+                matchForm.reset(); // Reset the entire form
+                // Re-generate player inputs to clear their dynamic values (champions, KDA, etc.)
                 generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
                 generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
             } catch (err) {
                 console.error("Błąd podczas dodawania meczu:", err);
-                alert("Wystąpił błąd podczas dodawania meczu: " + err.message);
+                showMessage("Wystąpił błąd podczas dodawania meczu: " + err.message, 'error');
             }
         });
     </script>
