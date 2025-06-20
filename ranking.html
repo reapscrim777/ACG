@@ -561,49 +561,36 @@
             playersRankingContainer.innerHTML = ''; // Wyczyść obecną listę
             let rankCounter = 1;
 
+            // Sortowanie graczy: najpierw po LP (malejąco), potem po rankOrder (rosnąco, dla tych samych LP)
+            // Jeśli nie masz rankOrder, możesz użyć po prostu LP.
+            // Dla rang Master+, Grandmaster, Challenger LP są kluczowe.
+            // Dla Diamond, Emerald itd. sortowanie może być po prostu alfabetyczne nazwy rangi i dywizji.
+            // Poniższe sortowanie zakłada, że dla Master+ lp są liczbowe, a dla innych rang `rankDivision` to string (I, II, III, IV).
+            // Możesz dostosować logikę sortowania do swoich preferencji.
             const sortedPlayers = Object.values(playersData).sort((a, b) => {
-                const rankOrder = {
-                    'challenger': 10, 'grandmaster': 9, 'master': 8,
-                    'diamond': 7, 'emerald': 6, 'platinum': 5,
-                    'gold': 4, 'silver': 3, 'bronze': 2, 'iron': 1
-                };
+                // Konwersja LP na liczbę, jeśli to string "1000LP" -> 1000
+                const lpA = typeof a.lp === 'string' ? parseInt(a.lp.replace('LP', '')) : a.lp;
+                const lpB = typeof b.lp === 'string' ? parseInt(b.lp.replace('LP', '')) : b.lp;
 
-                const divisionOrder = { 'I': 4, 'II': 3, 'III': 2, 'IV': 1 };
-
-                const rankA = rankOrder[a.rankName.toLowerCase()] || 0;
-                const rankB = rankOrder[b.rankName.toLowerCase()] || 0;
-
-                // Sortuj po randze (wyższa ranga to wyższy numer)
-                if (rankA !== rankB) {
-                    return rankB - rankA;
+                if (lpA !== lpB) {
+                    return lpB - lpA; // Sortuj malejąco po LP
                 }
 
-                // Dla Master+, Grandmaster, Challenger sortuj po LP
-                if (['master', 'grandmaster', 'challenger'].includes(a.rankName.toLowerCase())) {
-                    const lpA = typeof a.lp === 'string' ? parseInt(a.lp.replace('LP', '')) : a.lp;
-                    const lpB = typeof b.lp === 'string' ? parseInt(b.lp.replace('LP', '')) : b.lp;
-                    if (lpA !== lpB) {
-                        return lpB - lpA; // Malejąco po LP
-                    }
-                } else {
-                    // Dla niższych rang, sortuj po dywizji (I > II > III > IV)
-                    const divA = divisionOrder[a.rankDivision] || 0;
-                    const divB = divisionOrder[b.rankDivision] || 0;
-                    if (divA !== divB) {
-                        return divB - divA; // Malejąco po dywizji (wyższa dywizja to wyższy numer)
-                    }
+                // Dla tych samych LP, sortuj po rankOrder (jeśli istnieje)
+                if (a.rankOrder && b.rankOrder) {
+                    return a.rankOrder - b.rankOrder;
                 }
                 
-                // Na koniec, jeśli wszystko inne jest takie samo, sortuj alfabetycznie po nazwie
+                // Jeśli LP są takie same i brak rankOrder, sortuj alfabetycznie po nazwie gracza
                 return a.name.localeCompare(b.name);
             });
 
 
             sortedPlayers.forEach(player => {
-                // Użyj unikalnego klucza z Firebase jako dataset.firebaseKey
-                const firebaseKey = player.key; 
-                const rankIconSrc = `Images/${rankImageMap[player.rankName.toLowerCase()] || 'default.png'}`; 
+                const playerId = player.name; // Używamy nazwy gracza jako ID (lub możesz użyć klucza Firebase)
+                const rankIconSrc = `Images/${rankImageMap[player.rankName.toLowerCase()] || 'default.png'}`; // Użyj default.png jeśli brak
                 
+                // Zbuduj pełny tekst rangi
                 let fullRankText = player.rankName;
                 if (player.rankDivision) {
                     fullRankText += ` ${player.rankDivision}`;
@@ -611,8 +598,9 @@
 
                 const playerRankItem = document.createElement('div');
                 playerRankItem.className = 'player-rank-item';
-                playerRankItem.dataset.playerName = player.name; // Dodano dataset dla nazwy gracza
-                playerRankItem.dataset.firebaseKey = firebaseKey; // Przechowuj klucz Firebase tutaj
+                playerRankItem.dataset.playerId = playerId;
+                // Tutaj zapiszemy klucz Firebase dla gracza, aby móc go aktualizować
+                playerRankItem.dataset.firebaseKey = player.key; 
 
                 playerRankItem.innerHTML = `
                     <div class="rank-number">${rankCounter}.</div>
@@ -684,7 +672,7 @@
                 if (playersData) {
                     // Dodaj klucz Firebase do każdego obiektu gracza
                     const playersWithKeys = Object.keys(playersData).map(key => ({
-                        key: key, // To jest klucz (np. "Likht", "Weedolas")
+                        key: key,
                         ...playersData[key]
                     }));
                     renderRanking(playersWithKeys);
@@ -708,8 +696,7 @@
             }
 
             currentEditedPlayerItem = buttonElement.closest('.player-rank-item');
-            // Zmieniamy pobieranie klucza - teraz pochodzi z datasetu
-            currentEditedPlayerKey = currentEditedPlayerItem.dataset.firebaseKey; 
+            currentEditedPlayerKey = currentEditedPlayerItem.dataset.firebaseKey; // Pobierz klucz Firebase
 
             const playerName = currentEditedPlayerItem.querySelector('.player-name').textContent;
             const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
@@ -745,12 +732,7 @@
         }
 
         async function saveChanges() {
-            if (!currentEditedPlayerItem || !currentEditedPlayerKey) {
-                console.error("Brak wybranego gracza do edycji lub jego klucza Firebase.");
-                alert("Wystąpił błąd: brak danych gracza do zapisu.");
-                closeEditModal();
-                return;
-            }
+            if (!currentEditedPlayerItem || !currentEditedPlayerKey) return;
             
             if (!isAdminLoggedIn) { // Dodatkowe zabezpieczenie po stronie klienta
                 alert("Brak uprawnień do edycji rankingu.");
@@ -762,26 +744,17 @@
             const newRankName = document.getElementById('playerRankModal').value;
             const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim();
 
-            if (isNaN(newLP) || newLP < 0) {
-                alert("Proszę wprowadzić prawidłową liczbę LP (nieujemną).");
-                return;
-            }
-            if (!newRankName) {
-                alert("Proszę wybrać rangę.");
-                return;
-            }
+            const updates = {};
+            updates[`/${currentEditedPlayerKey}/lp`] = newLP;
+            updates[`/${currentEditedPlayerKey}/rankName`] = newRankName;
+            updates[`/${currentEditedPlayerKey}/rankDivision`] = newRankDivision;
 
-            // Utwórz referencję do konkretnego gracza w bazie danych
-            const playerToUpdateRef = ref(db, `playersRanking/${currentEditedPlayerKey}`);
+            // Opcjonalnie, jeśli masz pole `rankOrder` w bazie danych, możesz je zaktualizować na podstawie LP
+            // lub ustalić inną logikę.
+            // updates[`/${currentEditedPlayerKey}/rankOrder`] = calculateRankOrder(newRankName, newLP); // Przykładowa funkcja
 
             try {
-                // Użyj `update` na referencji do konkretnego gracza
-                await update(playerToUpdateRef, {
-                    lp: newLP,
-                    rankName: newRankName,
-                    rankDivision: newRankDivision
-                    // Jeśli masz rankOrder i chcesz go aktualizować, dodaj tutaj logikę
-                });
+                await update(playersRankingRef, updates); // Użyj update na playersRankingRef
                 alert("Zmiany zapisane pomyślnie w Firebase!");
                 closeEditModal();
             } catch (error) {
