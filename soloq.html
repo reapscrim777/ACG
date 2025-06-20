@@ -1,255 +1,68 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SOLOQ Statystyki</title>
-    <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-    <style>
-        /* Styl dla kontenera, który wyśrodkowuje i ogranicza szerokość treści main */
-        main {
-            max-width: 1400px; /* Maksymalna szerokość zawartości, możesz dostosować */
-            margin: 0 auto; /* Wyśrodkowanie bloku main na stronie */
-            padding: 20px; /* Dodatkowy padding, żeby treść nie kleiła się do krawędzi */
-            box-sizing: border-box; /* Ważne, żeby padding nie zwiększał szerokości */
-        }
-
-        /* Styl dla sekcji wyboru zawodnika - przyciski */
-        .player-selection-section {
-            display: flex;
-            flex-direction: column; /* Nagłówek i przyciski w kolumnie */
-            align-items: center; /* Wyśrodkowanie horyzontalne */
-            gap: 15px; /* Odstęp między elementami */
-            margin-bottom: 25px; /* Margines pod tą sekcją */
-            padding: 20px;
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .player-selection-section h2 { /* Styl dla nagłówka "Wybierz Zawodnika" */
-            color: #f0f0f0;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-
-        .player-buttons-container { /* Kontener dla samych przycisków */
-            display: flex;
-            flex-wrap: wrap; /* Zawijanie przycisków, jeśli jest ich za dużo */
-            justify-content: center; /* Wyśrodkowanie przycisków w kontenerze */
-            gap: 10px; /* Odstęp między przyciskami */
-            width: 100%; /* Zajmuje całą szerokość rodzica */
-            max-width: 700px; /* Ograniczenie szerokości kontenera przycisków */
-        }
-
-        .player-buttons-container button {
-            padding: 12px 25px;
-            background-color: #3a3a3a; /* Ciemniejszy szary jak na zdjęciu */
-            color: #f0f0f0;
-            border: none;
-            border-radius: 6px; /* Lekko zaokrąglone rogi */
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 500;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            flex-grow: 1; /* Przyciski będą się rozciągać, aby wypełnić dostępną przestrzeń */
-            min-width: 120px; /* Minimalna szerokość przycisku */
-            text-align: center;
-        }
-
-        .player-buttons-container button:hover {
-            background-color: #5a5a5a; /* Jaśniejszy szary po najechaniu */
-            transform: translateY(-2px); /* Lekkie uniesienie przycisku */
-        }
-
-        .player-buttons-container button:active {
-            background-color: #2a2a2a; /* Ciemniejszy po kliknięciu */
-            transform: translateY(0);
-        }
-
-        /* Styl dla kontenera ramki iframe */
-        .iframe-container {
-            width: 100%; /* Będzie zajmować 100% szerokości sekcji main */
-            height: 2400px; /* Wysokość ramki, możesz dostosować */
-
-            border: 1px solid #333;
-            overflow: hidden;
-            margin: 20px 0; /* Margines góra/dół */
-
-            background-color: #1a1a1a; /* Kolor tła, gdyby iframe się nie załadował */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #f0f0f0;
-            font-size: 1.1em;
-            text-align: center;
-        }
-
-        .iframe-container iframe {
-            display: block;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyszukiwarka Graczy SoloQ</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header class="navbar">
-        <div class="logo-section">
-            <img src="logo.png" alt="Logo" class="logo" />
-            <span class="site-name"></span>
-        </div>
-        <nav class="nav-links">
-            <a href="index.html">STRONA GŁÓWNA</a>
-            <a href="historia.html">HISTORIA GIER</a>
-            <a href="statystyki.html">STATYSTYKI</a>
-            <a href="soloq.html">SOLOQ</a>
-            <a href="ranking.html">RANKING</a>
-            <a href="dodajmecz.html">DODAJ MECZ</a>
+<body class="soloq-page">
+
+    <header>
+        <nav class="navbar">
+            <div class="logo-section">
+                <img src="logo.png" alt="Logo gry" class="logo">
+                <span class="site-name">eSport Stats</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Strona Główna</a>
+                <a href="soloq.html">SoloQ</a>
+                <a href="historia.html">Historia Scrimów</a>
+                <a href="gracze.html">Gracze</a>
+            </div>
         </nav>
     </header>
 
-    <main>
-        <h1>Statystyki SoloQ Zawodników</h1>
+    <main class="soloq-main">
+        <h1>Wyszukiwarka Graczy League of Legends</h1>
+        
+        <section id="searchSection" class="search-section">
+            <h2>Wyszukaj Gracza</h2>
+            <div class="search-box">
+                <input type="text" id="summonerNameInput" placeholder="Wpisz Riot ID (np. Gracz#EUNE)">
+                <button id="searchButton">Szukaj</button>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
 
-        <section class="player-selection-section">
-            <h2>Wybierz Zawodnika</h2>
-            <div class="player-buttons-container" id="playerButtons">
+            <div class="player-select-buttons">
+                <button class="player-select-button" data-summoner-name="Likht#EUNE">Likht</button>
+                <button class="player-select-button" data-summoner-name="Weedolas#EUNE">Weedolas</button>
+                <button class="player-select-button" data-summoner-name="TofcioPL#EUNE">TofcioPL</button>
+                <button class="player-select-button" data-summoner-name="Czaro3#EUNE">Czaro3</button>
+                <button class="player-select-button" data-summoner-name="Tymonowo#EUNE">Tymonowo</button>
             </div>
         </section>
 
-        <div class="iframe-container">
-            <iframe
-                id="soloqIframe"
-                src="about:blank" width="100%"
-                height="100%"
-                frameborder="0"
-                allowfullscreen
-                style="border: none;"
-            >
-                Twoja przeglądarka nie obsługuje ramek iframe lub strona zewnętrzna blokuje osadzanie.
-            </iframe>
-        </div>
+        <section id="playerProfileSection" class="player-profile-section">
+            <p id="initialPlayerProfileMessage" class="initial-message">Wyszukaj gracza (NazwaGry#Tagline) lub wybierz z listy powyżej.</p>
+            
+            <div id="summonerHeaderContainer" class="summoner-header-container"></div>
+            <div id="summonerDetailsContainer" class="summoner-details-container"></div>
+            <button id="refreshButton" class="refresh-button" style="display: none;">Odśwież Dane</button>
+
+            <section id="matchHistorySection" class="match-history-section" style="display: none;">
+                <h3>Ostatnie Mecze</h3>
+                <div id="matchesContainer" class="matches-container">
+                    </div>
+                <button id="loadMoreMatchesButton" class="load-more-button" style="display: none;">Załaduj Więcej Meczy</button>
+            </section>
+        </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+        <p>&copy; 2024 eSport Stats</p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            set,    // Dodane do zapisu danych
-            get,    // Dodane do odczytu danych
-            // onValue, // onValue nie jest potrzebne tutaj, ponieważ chcemy odczytać tylko raz przy ładowaniu
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-        // import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js"; // Analytics nie jest tu potrzebne
-
-        // === KONFIGURACJA FIREBASE ===
-        // Użyj tej samej konfiguracji co w historia.html
-        const firebaseConfig = {
-            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
-            authDomain: "acg-skrimy.firebaseapp.com",
-            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebasestorage.app",
-            messagingSenderId: "78237268518",
-            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-            measurementId: "G-6VDFPFX560",
-        };
-
-        // Inicjalizacja Firebase
-        const app = initializeApp(firebaseConfig);
-        // const analytics = getAnalytics(app); // Nie potrzebne do tej funkcjonalności
-        const db = getDatabase(app);
-
-        // Referencja do miejsca w Realtime Database, gdzie będzie przechowywany ostatnio wybrany zawodnik
-        // Będzie to ścieżka 'settings/lastSelectedPlayer'
-        const playerPreferenceRef = ref(db, 'settings/lastSelectedPlayer');
-
-
-        // === RESZTA KODU JS ===
-        const playerSummonerNames = {
-            "Likht": "likht-eune",
-            "Weedolas": "Weedolas-4WB",
-            "reap777": "pizza%20fanboy-EUNE",
-            "Kohayushi": "kohayushi-acg",
-            "Yanny": "hideonfpl-eune", // Zmiana z "None": null, na "Yanny"
-        };
-
-        const soloqIframe = document.getElementById("soloqIframe");
-        const playerButtonsContainer = document.getElementById("playerButtons");
-        const baseUrl = "https://leaguestats.gg/summoner/eune/";
-
-        // Funkcja do ładowania statystyk wybranego zawodnika i zapisywania w Firebase RTDB
-        async function loadPlayerStats(playerDisplayName) {
-            const summonerName = playerSummonerNames[playerDisplayName];
-
-            if (summonerName) {
-                soloqIframe.src = `${baseUrl}${summonerName}`;
-                try {
-                    // Zapisz wybranego zawodnika w Firebase Realtime Database
-                    await set(playerPreferenceRef, playerDisplayName);
-                    console.log("Wybrany zawodnik zapisany w Firebase RTDB:", playerDisplayName);
-                } catch (error) {
-                    console.error("Błąd podczas zapisywania w Firebase RTDB:", error);
-                }
-            } else {
-                soloqIframe.src = "about:blank"; // Wyczyść ramkę
-                alert("Nieprawidłowa nazwa przywoływacza lub zawodnik jeszcze nieprzydzielony.");
-                try {
-                    // Jeśli wybrano zawodnika bez przypisanego summonerName, ustaw wartość na null w Firebase RTDB
-                    await set(playerPreferenceRef, null);
-                    console.log("Wybór zawodnika usunięty/ustawiony na null w Firebase RTDB.");
-                } catch (error) {
-                    console.error("Błąd podczas usuwania/ustawiania na null w Firebase RTDB:", error);
-                }
-            }
-        }
-
-        // Funkcja do generowania przycisków (bez zmian)
-        function generatePlayerButtons() {
-            playerButtonsContainer.innerHTML = '';
-
-            for (const playerName in playerSummonerNames) {
-                const button = document.createElement("button");
-                button.textContent = playerName;
-                button.setAttribute("data-player-display-name", playerName);
-                button.addEventListener("click", () => {
-                    const selectedPlayerDisplayName = button.getAttribute("data-player-display-name");
-                    loadPlayerStats(selectedPlayerDisplayName);
-                });
-                playerButtonsContainer.appendChild(button);
-            }
-        }
-
-        // Zainicjuj przyciski i załaduj ostatnio wybranego zawodnika z Firebase RTDB po załadowaniu DOM
-        document.addEventListener("DOMContentLoaded", async () => {
-            generatePlayerButtons();
-
-            const defaultPlayerDisplayName = "Likht";
-
-            try {
-                // Spróbuj odczytać ostatnio wybranego zawodnika z Firebase Realtime Database
-                const snapshot = await get(playerPreferenceRef);
-                if (snapshot.exists()) {
-                    const lastSelectedPlayer = snapshot.val(); // Pobierz wartość bezpośrednio
-                    if (lastSelectedPlayer && playerSummonerNames[lastSelectedPlayer]) {
-                        loadPlayerStats(lastSelectedPlayer);
-                    } else {
-                        // Jeśli zapisany zawodnik nie istnieje już na liście lub wartość jest null/pusta, załaduj domyślnego
-                        loadPlayerStats(defaultPlayerDisplayName);
-                    }
-                } else {
-                    // Jeśli nie ma zapisu w Firebase RTDB, załaduj domyślnego zawodnika
-                    loadPlayerStats(defaultPlayerDisplayName);
-                }
-            } catch (error) {
-                console.error("Błąd podczas wczytywania z Firebase RTDB:", error);
-                // W przypadku błędu z Firebase, załaduj domyślnego zawodnika
-                loadPlayerStats(defaultPlayerDisplayName);
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
