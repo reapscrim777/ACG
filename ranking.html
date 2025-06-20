@@ -24,6 +24,7 @@
         const db = firebase.firestore();
     </script>
     <style>
+        /* Twoje style CSS - BEZ ZMIAN */
         /* General Body and Navbar styles - taken from your provided HTML */
         body {
             background-color: #222; /* Tło strony */
@@ -365,14 +366,19 @@
     </footer>
 
     <script>
-        // Funkcja do pobierania danych i aktualizowania interfejsu
-        async function loadPlayerRanks() {
+        // Funkcja pomocnicza do konwersji rzymskich cyfr na int (dla dywizji)
+        function romanToInt(roman) {
+            const map = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4 };
+            return map[roman] || 0; // Zwraca 0, jeśli nie znaleziono (np. dla unranked, master bez dywizji)
+        }
+
+        // Funkcja do pobierania i aktualizowania danych rankingu w czasie rzeczywistym
+        function setupPlayerRanksListener() {
             const playersRankingContainer = document.getElementById('players-ranking-container');
             playersRankingContainer.innerHTML = '<p>Ładowanie rankingu...</p>';
 
-            try {
-                // Pobierz dane z Firestore i posortuj je
-                const snapshot = await db.collection('playerRanks').get();
+            // Nasłuchiwanie zmian w kolekcji 'playerRanks'
+            db.collection('playerRanks').onSnapshot(snapshot => {
                 let players = [];
                 snapshot.forEach(doc => {
                     players.push(doc.data());
@@ -388,28 +394,17 @@
                 players.sort((a, b) => {
                     const aRankName = a.rank ? a.rank.split(' ')[0] : 'Unranked';
                     const bRankName = b.rank ? b.rank.split(' ')[0] : 'Unranked';
-                    // Konwersja dywizji rzymskiej na int, obsługuje brak dywizji (np. Master, Grandmaster, Challenger)
                     const aDivision = a.rank && a.rank.split(' ')[1] ? romanToInt(a.rank.split(' ')[1]) : 0;
                     const bDivision = b.rank && b.rank.split(' ')[1] ? romanToInt(b.rank.split(' ')[1]) : 0;
 
-                    // 1. Sortuj po głównej randze (np. Diamond vs Platinum)
                     if (rankOrder[bRankName] !== rankOrder[aRankName]) {
                         return rankOrder[bRankName] - rankOrder[aRankName];
                     }
-                    // 2. Jeśli rangi są takie same, sortuj po dywizji (I > II > III > IV)
-                    //   Mniejsza liczba rzymska to lepsza dywizja (np. I=1, II=2), więc a-b
                     if (aDivision !== bDivision) {
                         return aDivision - bDivision;
                     }
-                    // 3. Jeśli ranga i dywizja są takie same, sortuj po LP (więcej LP jest lepsze)
                     return b.lp - a.lp;
                 });
-
-                // Funkcja pomocnicza do konwersji rzymskich cyfr na int (dla dywizji)
-                function romanToInt(roman) {
-                    const map = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4 };
-                    return map[roman] || 0; // Zwraca 0, jeśli nie znaleziono (np. dla unranked, master bez dywizji)
-                }
 
                 let playersHtml = '';
                 if (players.length === 0) {
@@ -417,10 +412,11 @@
                 } else {
                     players.forEach((data, index) => {
                         const rankNumber = index + 1; // Numeracja od 1
-                        // Dzielenie nazwy rangi na część tekstową (np. Diamond) i dywizję (np. IV)
                         const rankBaseName = data.rank ? data.rank.split(' ')[0].toLowerCase() : 'unranked';
-                        // Upewnij się, że nazwa rangi do pliku grafiki jest poprawna (np. 'master' zamiast 'Master')
                         const emblemFileName = `emblem-${rankBaseName}.png`;
+
+                        // Upewnij się, że data.summonerName jest bezpieczne do użycia w URL-u
+                        const encodedSummonerName = encodeURIComponent(data.summonerName || '');
 
                         playersHtml += `
                             <div class="player-rank-item">
@@ -438,21 +434,22 @@
                                     <span>W/L: ${data.wins}W / ${data.losses}L</span>
                                 </div>
                                 <div class="player-links">
-                                    <a href="https://zeal.gg/profile/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">Zeal.gg</a>
-                                    <a href="https://op.gg/pl/lol/summoners/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">OP.GG</a>
+                                    <a href="https://zeal.gg/profile/${data.region || 'eune'}/${encodedSummonerName}" target="_blank">Zeal.gg</a>
+                                    <a href="https://op.gg/pl/lol/summoners/${data.region || 'eune'}/${encodedSummonerName}" target="_blank">OP.GG</a>
                                 </div>
                             </div>
                         `;
                     });
                 }
                 playersRankingContainer.innerHTML = playersHtml;
-            } catch (error) {
-                console.error("Błąd podczas pobierania danych z Firestore:", error);
+            }, error => {
+                console.error("Błąd podczas nasłuchiwania danych z Firestore:", error);
                 playersRankingContainer.innerHTML = '<p>Wystąpił błąd podczas ładowania rankingu. Sprawdź konsolę, aby uzyskać szczegóły.</p>';
-            }
+            });
         }
 
-        document.addEventListener('DOMContentLoaded', loadPlayerRanks);
+        // Uruchom nasłuchiwanie zmian po załadowaniu DOM
+        document.addEventListener('DOMContentLoaded', setupPlayerRanksListener);
     </script>
 </body>
 </html>
