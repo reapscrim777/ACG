@@ -6,25 +6,23 @@ const BASE_ACCOUNT_API_URL = "https://europe.api.riotgames.com";
 const BASE_LOL_API_URL = "https://eun1.api.riotgames.com";
 const BASE_MATCH_API_URL = "https://europe.api.riotgames.com";
 
-// --- ZMIENNE GLOBALNE DLA DANYCH GRY (WERSJA I OBRAZKI) ---
-let LATEST_DDRAGON_VERSION = ""; // Ta zmienna będzie przechowywać najnowszą wersję
-let DDRAGON_CDN_IMG = ""; // Ten URL będzie dynamicznie tworzony
-let championIdMap = {}; // Mapa ID postaci
+// ZMIENNE GLOBALNE DLA DANYCH GRY
+let LATEST_DDRAGON_VERSION = "";
+let DDRAGON_CDN_IMG = "";
+let championIdMap = {};
 
-// --- NOWA, ULEPSZONA FUNKCJA INICJALIZUJĄCA ---
+// NOWA ZMIENNA DO KONTROLI WYSZUKIWAŃ
+let currentSearchId = 0;
+
 async function initializeGameData() {
     try {
-        // Krok 1: Pobierz listę wszystkich wersji Data Dragon
         const versionsResponse = await fetch(`https://ddragon.leagueoflegends.com/api/versions.json`);
         if (!versionsResponse.ok) throw new Error("Nie udało się pobrać wersji gry.");
         const versions = await versionsResponse.json();
-        LATEST_DDRAGON_VERSION = versions[0]; // Pierwsza pozycja to zawsze najnowsza wersja
+        LATEST_DDRAGON_VERSION = versions[0];
         console.log(`Pobrano najnowszą wersję gry: ${LATEST_DDRAGON_VERSION}`);
-
-        // Krok 2: Ustaw dynamicznie ścieżkę do obrazków
         DDRAGON_CDN_IMG = `https://ddragon.leagueoflegends.com/cdn/${LATEST_DDRAGON_VERSION}/img`;
 
-        // Krok 3: Pobierz dane postaci używając najnowszej wersji
         const championResponse = await fetch(`https://ddragon.leagueoflegends.com/cdn/${LATEST_DDRAGON_VERSION}/data/en_US/champion.json`);
         if (!championResponse.ok) throw new Error("Nie udało się pobrać listy postaci.");
         
@@ -42,9 +40,6 @@ async function initializeGameData() {
         displayError("Nie można załadować podstawowych danych gry. Odśwież stronę.");
     }
 }
-
-
-// --- FUNKCJE POMOCNICZE (bez zmian) ---
 
 function getSpellName(spellId) {
     const spellMap = { '1': 'SummonerBoost', '3': 'SummonerExhaust', '4': 'SummonerFlash', '6': 'SummonerHaste', '7': 'SummonerHeal', '11': 'SummonerSmite', '12': 'SummonerTeleport', '13': 'SummonerMana', '14': 'SummonerDot', '21': 'SummonerBarrier' };
@@ -100,8 +95,6 @@ function createPlayerRowHtml(player, mainPlayerPuuid) {
     `;
 }
 
-// Reszta kodu pozostaje identyczna...
-// ...
 const summonerNameInput = document.getElementById("summonerNameInput");
 const searchButton = document.getElementById("searchButton");
 const errorMessageDiv = document.getElementById("errorMessage");
@@ -253,15 +246,27 @@ function renderMatchCard(match, puuid) {
         </div>`;
 }
 
-async function loadMatchHistory(puuid, clearExisting = true) {
+// ZMODYFIKOWANA funkcja do ładowania historii meczów
+async function loadMatchHistory(puuid, clearExisting = true, searchId) {
+    // Sprawdź, czy to wyszukiwanie jest wciąż aktualne
+    if (searchId !== currentSearchId) {
+        console.log("Rozpoczęto nowe wyszukiwanie, anulowanie starego ładowania historii meczów.");
+        return;
+    }
+
     matchHistorySection.style.display = 'block';
     if (clearExisting) {
         matchesContainer.innerHTML = `<p style="text-align: center; color: #bbb;">Ładowanie historii meczów...</p>`;
         currentMatchStartIndex = 0;
     }
+    
     const matchIds = await getMatchIds(puuid, currentMatchStartIndex, MATCHES_PER_LOAD);
     if (!matchIds) return;
+
+    if (searchId !== currentSearchId) { return; } // Sprawdź ponownie po pobraniu ID
+
     if (clearExisting) matchesContainer.innerHTML = '';
+    
     if (matchIds.length === 0) {
         if(clearExisting) matchesContainer.innerHTML = `<p style="text-align: center; color: #ccc;">Brak historii meczów dla tego gracza.</p>`;
         loadMoreMatchesButton.style.display = 'none';
@@ -269,36 +274,51 @@ async function loadMatchHistory(puuid, clearExisting = true) {
     }
 
     for (const matchId of matchIds) {
+        if (searchId !== currentSearchId) {
+            console.log("Rozpoczęto nowe wyszukiwanie, przerywanie pętli ładowania meczów.");
+            return; 
+        }
+
         const matchDetails = await getMatchDetails(matchId);
         if (matchDetails) {
-            matchesContainer.insertAdjacentHTML('beforeend', renderMatchCard(matchDetails, puuid));
+            if (searchId === currentSearchId) {
+                matchesContainer.insertAdjacentHTML('beforeend', renderMatchCard(matchDetails, puuid));
+            }
         }
         await delay(API_CALL_DELAY_MS);
     }
+    
     currentMatchStartIndex += matchIds.length;
     loadMoreMatchesButton.style.display = (matchIds.length < MATCHES_PER_LOAD) ? 'none' : 'block';
 }
 
+// ZMODYFIKOWANA funkcja do wyświetlania danych gracza
 async function displaySummonerData(gameName, tagLine) {
+    currentSearchId++;
+    const thisSearchId = currentSearchId;
+
     initialPlayerProfileMessage.style.display = 'none';
     playerProfileDiv.style.display = 'block';
     matchHistorySection.style.display = 'block';
     summonerHeaderContainer.innerHTML = `<p style="text-align: center; color: #bbb;">Ładowanie danych dla ${gameName}#${tagLine}...</p>`;
     summonerDetailsContainer.innerHTML = '';
+    matchesContainer.innerHTML = '';
     clearError();
     refreshButton.style.display = 'none';
 
     currentSearchedPlayer = { gameName, tagLine, puuid: null };
     const accountData = await getAccountByRiotId(gameName, tagLine);
-    if (!accountData) return;
+    
+    if (thisSearchId !== currentSearchId || !accountData) return;
+    
     currentSearchedPlayer.puuid = accountData.puuid;
-
     const summonerData = await getSummonerByPuuid(accountData.puuid);
-    if (!summonerData) return;
+    
+    if (thisSearchId !== currentSearchId || !summonerData) return;
 
     const rankData = await getSummonerRank(summonerData.id);
-    
-    // Używamy dynamicznej ścieżki do obrazków
+    if (thisSearchId !== currentSearchId) return;
+
     const profileIconUrl = `${DDRAGON_CDN_IMG}/profileicon/${summonerData.profileIconId}.png`;
     summonerHeaderContainer.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap: 15px;"><img src="${profileIconUrl}" style="width: 80px; height: 80px; border-radius: 50%;"><div class="summoner-info"><h2 style="margin:0;">${accountData.gameName}#${accountData.tagLine}</h2><p style="margin:0;">Poziom: ${summonerData.summonerLevel}</p></div></div>`;
     
@@ -312,14 +332,13 @@ async function displaySummonerData(gameName, tagLine) {
     summonerDetailsContainer.innerHTML = rankInfoHtml;
 
     refreshButton.style.display = 'block';
-    await loadMatchHistory(currentSearchedPlayer.puuid, true);
+    await loadMatchHistory(currentSearchedPlayer.puuid, true, thisSearchId);
 }
 
 // --- Główna funkcja inicjalizująca ---
 async function main() {
-    await initializeGameData(); // Najpierw ładujemy dane gry
+    await initializeGameData();
 
-    // Dopiero potem podpinamy event listenery, które mogą z nich korzystać
     searchButton.addEventListener("click", () => {
         const fullRiotId = summonerNameInput.value.trim();
         const parts = fullRiotId.split('#');
@@ -332,7 +351,12 @@ async function main() {
 
     summonerNameInput.addEventListener("keypress", e => { if (e.key === "Enter") searchButton.click(); });
     refreshButton.addEventListener("click", () => { if (currentSearchedPlayer.gameName) displaySummonerData(currentSearchedPlayer.gameName, currentSearchedPlayer.tagLine); });
-    loadMoreMatchesButton.addEventListener("click", () => { if (currentSearchedPlayer.puuid) loadMatchHistory(currentSearchedPlayer.puuid, false); });
+    
+    loadMoreMatchesButton.addEventListener("click", () => {
+        if (currentSearchedPlayer.puuid) {
+            loadMatchHistory(currentSearchedPlayer.puuid, false, currentSearchId);
+        }
+    });
 
     playerSelectButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -358,6 +382,5 @@ async function main() {
         initialPlayerProfileMessage.style.display = 'block';
     }
 }
-
 
 document.addEventListener("DOMContentLoaded", main);
