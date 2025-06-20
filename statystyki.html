@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* Twoje istniejące style CSS - NIC NIE ZMIENIONO W TEJ SEKcji */
+        /* Twoje oryginalne style CSS - BEZ ZMIAN */
         :root {
             --background-color: #1a1a2e;
             --text-color: #e0e0e0;
@@ -569,20 +569,20 @@
          */
         function normalizeChampionName(name) {
             if (!name) return 'nieznany';
-            // Użyj replace(/[.'\s-]/g, "") aby usunąć kropki, apostrofy, spacje i myślniki
+            // Usuń apostrofy, spacje, myślniki i kropki, konwertuj na małe litery
             return name.trim().toLowerCase().replace(/[.'\s-]/g, "");
         }
 
         /**
          * Generuje URL do ikony championa z DDragon.
          * Używa znormalizowanej nazwy do wyszukiwania w mapie i generowania URL.
-         * @param {string} championName - Nazwa championa (może być surowa lub znormalizowana).
+         * @param {string} championName - Nazwa championa (może być surowa).
          * @returns {string} Pełny URL do ikony championa.
          */
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
 
-            // Normalizujemy nazwę od razu na wejściu, aby zapewnić spójność z kluczami w nameMap
+            // Normalizujemy nazwę od razu na wejściu
             const cleanedName = normalizeChampionName(championName);
 
             // Mapa do obsługi niestandardowych nazw championów z DDragon (np. Wukong -> MonkeyKing)
@@ -629,23 +629,24 @@
             // Jeśli nie znaleziono w mapie, spróbuj standardowej konwersji (pierwsza litera duża)
             // To działa dla większości championów, gdzie nazwa w DDragon to po prostu capitalized version
             if (!dataDragonName && cleanedName.length > 0) {
-                 // Dla championów z myślnikami, które są po prostu Capitalized (np. LeBlanc, KhaZix), trzeba to ręcznie ogarnąć
-                 // lub dodać do mapy, bo .replace(/[.'\s-]/g, "") usunie myślnik.
-                 // Np. 'khazix' -> 'KhaZix'
-                 if (cleanedName === 'khazix') dataDragonName = 'KhaZix';
-                 else if (cleanedName === 'leesin') dataDragonName = 'LeeSin';
-                 else if (cleanedName === 'masteryi') dataDragonName = 'MasterYi';
-                 else if (cleanedName === 'missfortune') dataDragonName = 'MissFortune';
-                 else if (cleanedName === 'nunu') dataDragonName = 'Nunu'; // Nunu & Willump w DDragon to Nunu
-                 else if (cleanedName === 'tahmkench') dataDragonName = 'TahmKench';
-                 else if (cleanedName === 'twistedfate') dataDragonName = 'TwistedFate';
-                 else if (cleanedName === 'xinzhao') dataDragonName = 'XinZhao';
+                 // Sprawdzamy specyficzne przypadki, które nie zawsze pasują do prostego Capitalize
+                 // Mogą być już w nameMap, ale dla pewności zostawiamy tutaj fallback
+                 if (cleanedName === 'kaisa') dataDragonName = 'Kaisa';
                  else if (cleanedName === 'chogath') dataDragonName = 'ChoGath';
                  else if (cleanedName === 'drmundo') dataDragonName = 'DrMundo';
                  else if (cleanedName === 'jarvaniv') dataDragonName = 'JarvanIV';
+                 else if (cleanedName === 'khazix') dataDragonName = 'KhaZix';
+                 else if (cleanedName === 'kogmaw') dataDragonName = 'KogMaw';
+                 else if (cleanedName === 'leesin') dataDragonName = 'LeeSin';
+                 else if (cleanedName === 'masteryi') dataDragonName = 'MasterYi';
+                 else if (cleanedName === 'missfortune') dataDragonName = 'MissFortune';
+                 else if (cleanedName === 'nunu') dataDragonName = 'Nunu';
                  else if (cleanedName === 'reksai') dataDragonName = 'RekSai';
                  else if (cleanedName === 'renataglasc') dataDragonName = 'RenataGlasc';
+                 else if (cleanedName === 'tahmkench') dataDragonName = 'TahmKench';
+                 else if (cleanedName === 'twistedfate') dataDragonName = 'TwistedFate';
                  else if (cleanedName === 'velkoz') dataDragonName = 'Velkoz';
+                 else if (cleanedName === 'xinzhao') dataDragonName = 'XinZhao';
                  else if (cleanedName === 'ksante') dataDragonName = 'KSante';
                  else if (cleanedName === 'belveth') dataDragonName = 'BelVeth';
                  else if (cleanedName === 'aurelionsol') dataDragonName = 'AurelionSol';
@@ -653,7 +654,6 @@
                      dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
                  }
             }
-
 
             const finalUrl = `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
             return finalUrl;
@@ -808,7 +808,7 @@
                         const playerChampionNormalized = normalizeChampionName(playerChampionOriginal);
 
 
-                        if (playerChampionNormalized !== 'nieznany') { // Zmiana z 'Nieznany' na 'nieznany'
+                        if (playerChampionNormalized !== 'nieznany') { // Sprawdź czy nie jest "nieznany" po normalizacji
                             hasChampionStats = true;
                             if (!championStats[playerChampionNormalized]) {
                                 championStats[playerChampionNormalized] = {
@@ -830,7 +830,7 @@
                         }
 
                         // Dodawanie wiersza do historii meczów
-                        const row = playerScrimsTableBody.insertCell();
+                        const row = playerScrimsTableBody.insertRow();
                         const dateCell = row.insertCell();
                         if (match.date) {
                             const [year, month, day] = match.date.split('-');
@@ -847,7 +847,7 @@
                         const championIconContainer = document.createElement("div");
                         championIconContainer.className = "champion-icons-container";
 
-                        if (playerChampionNormalized !== 'nieznany') { // Zmiana z 'Nieznany' na 'nieznany'
+                        if (playerChampionNormalized !== 'nieznany') { // Sprawdź czy nie jest "nieznany" po normalizacji
                             const img = document.createElement("img");
                             img.className = "champion-icon";
                             // Użyj oryginalnej nazwy dla getChampionIconUrl, bo ona sama normalizuje
