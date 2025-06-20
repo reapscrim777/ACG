@@ -151,19 +151,17 @@
             color: #bbb;
             white-space: nowrap;
         }
-        .player-lp-display { /* Styl dla wyświetlania LP pod rangą */
-            font-size: 0.8em;
-            color: #7fffd4; /* Kolor LP */
-            margin-top: 2px; /* Mały odstęp od tekstu rangi */
-            white-space: nowrap;
-        }
 
         .player-stats {
-            display: flex; /* Zmienione na flex, aby przycisk był po prawej */
-            align-items: center; /* Wyśrodkowanie pionowe */
+            display: flex; /* Zmienione na flex, aby przycisk był obok */
+            align-items: center; /* Wyśrodkowanie pionowe elementu wewnątrz */
             justify-content: flex-end; /* Przycisk na prawo */
+            font-size: 0.85em;
+            color: #ccc;
             min-width: 60px; /* Może być mniejszy, skoro tylko przycisk */
+            text-align: right;
             flex-shrink: 0;
+            /* Usunięto margin-right: 15px, bo przycisk jest ostatni w kontenerze */
         }
         
         .edit-button {
@@ -175,6 +173,7 @@
             font-size: 0.8em;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            /* Usunięto margin-left, bo teraz to jedyny element lub będzie automatycznie się układać */
             white-space: nowrap; /* Zapobiega łamaniu się tekstu przycisku */
         }
 
@@ -338,11 +337,9 @@
                 justify-content: flex-end; /* Przycisk na prawo */
             }
             .edit-button {
-                margin-left: 0; /* Usunięto margines, bo teraz będzie po prawej */
+                margin-left: 0; /* Usuń margines, bo teraz będzie po prawej */
             }
-            .player-lp-display { /* Na małych ekranach LP pod rangą też się ładnie ułożą */
-                font-size: 0.75em;
-            }
+            /* Usunięto media query dla .player-stats span, bo już nie ma span LP */
         }
         @media (max-width: 480px) {
             .ranking-content h1 {
@@ -357,6 +354,7 @@
             .player-rank-text {
                 font-size: 0.75em;
             }
+            /* Usunięto .player-stats span, bo nie ma już span z LP */
         }
 
         /* Footer links */
@@ -436,8 +434,7 @@
                     <img src="Images/challenger.png" alt="Ikona Rangi Challenger" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Likht</span>
-                        <span class="player-rank-text">Challenger 1000LP</span>
-                        <span class="player-lp-display" data-lp-text>LP: 1000</span> 
+                        <span class="player-rank-text" data-rank-text data-lp-value="1000">Challenger 1000LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
@@ -451,8 +448,7 @@
                     <img src="Images/grandmaster.png" alt="Ikona Rangi Grandmaster" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Weedolas</span>
-                        <span class="player-rank-text">Grandmaster 750LP</span>
-                        <span class="player-lp-display" data-lp-text>LP: 750</span> 
+                        <span class="player-rank-text" data-rank-text data-lp-value="750">Grandmaster 750LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
@@ -466,8 +462,7 @@
                     <img src="Images/master.png" alt="Ikona Rangi Master" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">reap777</span>
-                        <span class="player-rank-text">Master 500LP</span>
-                        <span class="player-lp-display" data-lp-text>LP: 500</span> 
+                        <span class="player-rank-text" data-rank-text data-lp-value="500">Master 500LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
@@ -481,8 +476,7 @@
                     <img src="Images/diamond.png" alt="Ikona Rangi Diamond" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Kohayushi</span>
-                        <span class="player-rank-text">Diamond I</span>
-                        <span class="player-lp-display" data-lp-text>LP: 75</span> 
+                        <span class="player-rank-text" data-rank-text data-lp-value="75">Diamond I</span> 
                     </div>
                 </div>
                 <div class="player-stats">
@@ -496,8 +490,7 @@
                     <img src="Images/emerald.png" alt="Ikona Rangi Emerald" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Yanny</span>
-                        <span class="player-rank-text">Emerald IV</span>
-                        <span class="player-lp-display" data-lp-text>LP: 20</span> 
+                        <span class="player-rank-text" data-rank-text data-lp-value="20">Emerald IV</span> 
                     </div>
                 </div>
                 <div class="player-stats">
@@ -588,31 +581,29 @@
             currentEditedPlayerItem = buttonElement.closest('.player-rank-item');
             const playerName = currentEditedPlayerItem.querySelector('.player-name').textContent;
             const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
-            const lpDisplayElement = currentEditedPlayerItem.querySelector('[data-lp-text]'); // Element wyświetlający LP
+            
+            // Pobieranie LP z atrybutu data-lp-value, a nie z widocznego tekstu
+            const currentLP = currentEditedPlayerItem.querySelector('[data-rank-text]').dataset.lpValue || '0';
 
-            const currentLPText = lpDisplayElement.textContent; // Np. "LP: 1000"
-            const currentRankText = rankTextElement.textContent; // Np. "Challenger 1000LP"
+            const currentRankText = rankTextElement.textContent; // Np. "Challenger 1000LP" lub "Diamond I"
 
             // Parsowanie aktualnej rangi i LP
-            let currentLP = parseInt(currentLPText.replace('LP: ', '')) || 0;
-
             let currentRankName = '';
             let currentRankDivision = '';
             
             // Regex do wyciągania rangi i dywizji/LP. Obsługuje "Master 500LP", "Diamond I", "Challenger"
-            // Szukamy nazwy rangi (słowo) i opcjonalnie dywizji (np. I, II, III, IV) lub LP (np. 500LP)
             const match = currentRankText.match(/^([a-zA-Z]+)(?:\s([IVXLCDM]+|\d+LP))?$/);
 
             if (match) {
-                currentRankName = match[1].toLowerCase(); // Np. "challenger"
+                currentRankName = match[1].toLowerCase();
                 if (match[2]) {
-                    currentRankDivision = match[2]; // Np. "I" lub "500LP"
+                    currentRankDivision = match[2];
                 }
             }
 
 
             document.getElementById('playerNameModal').value = playerName;
-            document.getElementById('playerLPModal').value = currentLP; // Używamy wartości pobranej z elementu LP
+            document.getElementById('playerLPModal').value = currentLP; // Używamy wartości pobranej z data-lp-value
             document.getElementById('playerRankModal').value = currentRankName; // Ustawia wybraną rangę
             document.getElementById('playerRankDivisionModal').value = currentRankDivision; // Ustawia dywizję
 
@@ -632,25 +623,18 @@
             const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim(); // Np. 'I', 'IV', '500LP'
 
             const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
-            const lpDisplayElement = currentEditedPlayerItem.querySelector('[data-lp-text]'); // Element wyświetlający LP
             const rankIconElement = currentEditedPlayerItem.querySelector('.rank-icon');
 
-            // Aktualizuj wyświetlanie LP pod rangą
-            lpDisplayElement.textContent = `LP: ${newLP}`;
+            // Zaktualizuj atrybut data-lp-value
+            rankTextElement.dataset.lpValue = newLP;
 
             // Zbuduj pełny tekst rangi (np. "Challenger 1000LP" lub "Diamond I")
             let fullRankText = newRankName.charAt(0).toUpperCase() + newRankName.slice(1); // Kapitalizuj pierwszą literę
-            
-            // Dodajemy dywizję lub "LP" do tekstu rangi tylko jeśli jest to Master+, Grandmaster lub Challenger
-            // Inaczej, jeśli jest dywizja (I, II, III, IV), to ją dodajemy
-            if (['master', 'grandmaster', 'challenger'].includes(newRankName)) {
-                // Dla tych rang, jeśli user wpisze coś w pole dywizji (np. "500LP"), to to użyjemy.
-                // Jeśli nie, to tekst rangi będzie sama nazwa (np. "Challenger")
-                if (newRankDivision) {
-                    fullRankText += ` ${newRankDivision}`; // Np. Master 500LP
-                }
-            } else if (newRankDivision) { // Dla innych rang, jeśli jest dywizja (I, II, III, IV)
-                fullRankText += ` ${newRankDivision}`; // Np. Diamond I
+            if (newRankDivision) {
+                fullRankText += ` ${newRankDivision}`; // Np. "Diamond I" lub "Master 500LP"
+            } else if (['master', 'grandmaster', 'challenger'].includes(newRankName) && newLP) {
+                 // Dla Master+, Grandmaster, Challenger, jeśli nie ma dywizji, ale są LP, dodaj je do tekstu
+                 fullRankText += ` ${newLP}LP`;
             }
 
 
