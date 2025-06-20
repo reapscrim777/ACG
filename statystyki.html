@@ -371,6 +371,7 @@
             <a href="historia.html">HISTORIA GIER</a>
             <a href="statystyki.html">STATYSTYKI</a>
             <a href="soloq.html">SOLOQ</a>
+            <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
     </header>
@@ -529,8 +530,9 @@
         let allMatchesData = [];
         let currentPlayerChampionStats = {};
 
+        // ZMIANA: Usunięto "None" i dodano "Yanny"
         const playersList = [
-            "Likht", "Weedolas", "reap777", "Kohayushi", "None"
+            "Likht", "Weedolas", "reap777", "Kohayushi", "Yanny"
         ];
 
         const DDRAGON_VERSION = "14.12.1"; // Zaktualizuj do najbardziej aktualnej wersji, jeśli to konieczne. Możesz sprawdzić na https://ddragon.leagueoflegends.com/api/versions.json
@@ -627,27 +629,24 @@
          */
         function getChampionIconUrl(championName) {
             if (!championName || championName === "Nieznany") return FALLBACK_ICON_URL;
-            // Tutaj używamy już ZNORMALIZOWANEJ nazwy championa, więc nie potrzebujemy dodatkowej logiki mapowania
-            // Jeśli twoja mapa championNameNormalizationMap jest wystarczająco kompletna,
-            // to championName powinien być już w formacie DDragon.
-            // Jeśli nie, możesz mieć tu jeszcze jedną warstwę konwersji,
-            // ale najlepiej jest, aby normalizeChampionName już zwracała format DDragon.
-
-            // Sprawdzamy, czy normalizedChampionName odpowiada kluczowi z wartością zgodną z DDragon
-            // (np. "kaisa" -> "Kaisa" - wtedy tutaj podajemy "Kaisa" do URL).
-            // W naszej strukturze, normalizeChampionName powinien już zwrócić "Kaisa" dla różnych wariantów "Kai'Sa".
-
             return `${CHAMPION_IMAGE_BASE_URL}${championName}.png`;
         }
 
         // --- Funkcje pomocnicze ---
         /**
          * Normalizuje nazwę gracza, usuwając spacje, kropki i konwertując na małe litery.
+         * Dodatkowo, jeśli znormalizowana nazwa to "none", to również zostanie obsłużona.
          * @param {string} name - Nazwa gracza.
          * @returns {string} Znormalizowana nazwa.
          */
         function normalizePlayerName(name) {
-            return name.trim().replace(/\s/g, '').replace(/\./g, '').toLowerCase();
+            if (!name) return ""; // Zwróć pusty string dla null/undefined
+            let normalized = name.trim().replace(/\s/g, '').replace(/\./g, '').toLowerCase();
+            // Jeśli "none" miałoby się pojawić w danych, upewniamy się, że nie jest brane pod uwagę
+            if (normalized === 'none') {
+                return ''; // Lub inną wartość, która zasygnalizuje pominięcie
+            }
+            return normalized;
         }
 
         /**
@@ -670,6 +669,7 @@
          */
         function populatePlayerLinks() {
             playerLinksContainer.innerHTML = '';
+            // Przechodzimy po playersList, która już nie zawiera "None"
             playersList.forEach(player => {
                 const link = document.createElement('a');
                 link.classList.add('player-link-item');
@@ -735,6 +735,26 @@
             displayChampionSpecificStats(null); // Ukryj sekcję statystyk postaci w sidebarze
 
             const normalizedPlayerName = normalizePlayerName(playerName);
+
+            // ZMIANA: Jeśli normalizedPlayerName jest pusty (czyli był "none"), nie przetwarzaj statystyk
+            if (normalizedPlayerName === '') {
+                sidebarPlayerName.textContent = `Statystyki dla: ${playerName}`;
+                sidebarTotalGames.textContent = "0";
+                sidebarTotalWins.textContent = "0";
+                sidebarTotalLosses.textContent = "0";
+                sidebarTotalWinRate.textContent = "0%";
+                sidebarAverageKDA.textContent = "N/A";
+                sidebarAverageCSOverall.textContent = "N/A";
+                playerSpecificStatsSidebar.style.display = 'none';
+                noPlayerScrimsMessage.textContent = "Brak dostępnych meczów dla tego zawodnika.";
+                noPlayerScrimsMessage.style.display = 'block';
+                playerScrimsTable.style.display = 'none';
+                noChampionStatsMessage.textContent = "Brak statystyk dla postaci tego zawodnika.";
+                noChampionStatsMessage.style.display = 'block';
+                championStatsTable.style.display = 'none';
+                return;
+            }
+
 
             let totalKills = 0;
             let totalDeaths = 0;
@@ -1050,9 +1070,6 @@
                 // ZMIANA: Pobierz znormalizowaną nazwę championa z datasetu wiersza (którą tam umieściliśmy)
                 // lub z elementu span, który wyświetla znormalizowaną nazwę.
                 const championName = targetCell.querySelector('span').textContent; // Pobierze to, co jest wyświetlane
-                // Jeśli chcesz mieć 100% pewności, że to jest znormalizowana nazwa, możesz ją jeszcze raz przepuścić przez normalizeChampionName,
-                // ale powinno być już OK, jeśli `displayPlayerStats` używa normalizeChampionName.
-                // const championName = normalizeChampionName(targetCell.querySelector('span').textContent);
 
                 currentSelectedChampion = championName; // Ustaw aktualnie wybraną postać
                 targetCell.classList.add('selected'); // Dodaj klasę 'selected' do klikniętej postaci

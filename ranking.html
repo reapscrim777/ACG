@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking Graczy - ACG</title>
+    <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Global box-sizing for consistent layout - helps prevent horizontal scrollbars */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         /* General Body and Navbar styles */
         body {
             background-color: #222;
@@ -17,6 +23,8 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-y: auto;
+            /* Ukryj horyzontalny pasek przewijania */
+            overflow-x: hidden;
         }
 
         .navbar {
@@ -31,11 +39,13 @@
             top: 0;
             left: 0;
             z-index: 1000;
+            box-sizing: border-box;
         }
 
         .navbar .logo-section {
             display: flex;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .navbar .logo {
@@ -47,29 +57,43 @@
             color: #fff;
             font-size: 1.5em;
             font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            flex-grow: 1;
+            margin-left: 20px;
+            gap: 15px;
         }
 
         .navbar .nav-links a {
             color: #fff;
             text-decoration: none;
-            margin-left: 25px;
             font-weight: 500;
             transition: color 0.3s ease;
+            white-space: nowrap;
         }
 
         .navbar .nav-links a:hover {
             color: #007bff;
         }
 
-        /* Ranking Content and List Styles */
+        /* Ranking Content and List Styles - Dostosowano padding i szerokość z index.html */
         .ranking-content {
-            padding: 100px 20px 40px 20px;
+            padding: 20px; /* Zmieniono z 100px 20px 40px 20px */
             text-align: center;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 30px;
+            max-width: 1400px; /* Dodano z index.html */
+            margin: 0 auto; /* Dodano z index.html */
+            box-sizing: border-box; /* Dodano z index.html */
         }
 
         .ranking-content h1 {
@@ -81,21 +105,21 @@
         .ranking-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px; /* Zwiększony odstęp między elementami listy */
             width: 100%;
-            max-width: 700px;
+            max-width: 850px; /* Zwiększona maksymalna szerokość tabeli */
             margin: 0 auto;
         }
 
         .player-rank-item {
             background-color: #333;
-            border-radius: 8px;
-            padding: 10px 15px;
+            border-radius: 10px; /* Nieco większy promień zaokrąglenia */
+            padding: 15px 25px; /* Zwiększony padding */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.95em;
+            font-size: 1.1em; /* Zwiększony rozmiar czcionki */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-sizing: border-box;
         }
@@ -106,28 +130,27 @@
         }
 
         .rank-number {
-            font-size: 1.5em;
+            font-size: 1.8em; /* Zwiększony rozmiar cyfry rankingu */
             font-weight: bold;
             color: #007bff;
-            min-width: 40px;
+            min-width: 50px; /* Zwiększona minimalna szerokość */
             text-align: right;
-            margin-right: 15px;
+            margin-right: 20px; /* Zwiększony margines */
         }
 
         .player-info {
             display: flex;
             align-items: center;
             flex-grow: 1;
-            gap: 10px;
+            gap: 15px; /* Zwiększony odstęp */
             text-align: left;
         }
 
-        /* Styl dla ikony rangi */
         .rank-icon {
-            width: 40px;
-            height: 40px;
+            width: 50px; /* Zwiększony rozmiar ikony */
+            height: 50px; /* Zwiększony rozmiar ikony */
             flex-shrink: 0;
-            object-fit: contain; /* Upewnia się, że cały obrazek jest widoczny */
+            object-fit: contain;
         }
 
         .player-name-and-rank {
@@ -135,10 +158,10 @@
             flex-direction: column;
             align-items: flex-start;
             flex-grow: 1;
-            min-width: 100px;
+            min-width: 120px; /* Zwiększona minimalna szerokość */
         }
         .player-name {
-            font-size: 1.1em;
+            font-size: 1.3em; /* Zwiększony rozmiar nazwy gracza */
             font-weight: 600;
             color: #eee;
             line-height: 1.2;
@@ -147,35 +170,36 @@
             text-overflow: ellipsis;
         }
         .player-rank-text {
-            font-size: 0.8em;
+            font-size: 1em; /* Zwiększony rozmiar tekstu rangi */
             color: #bbb;
             white-space: nowrap;
         }
-        .player-lp-display { /* Styl dla wyświetlania LP pod rangą */
-            font-size: 0.8em;
-            color: #7fffd4; /* Kolor LP */
-            margin-top: 2px; /* Mały odstęp od tekstu rangi */
+        .player-lp-display {
+            font-size: 0.9em; /* Zwiększony rozmiar LP */
+            color: #7fffd4;
+            margin-top: 5px; /* Zwiększony odstęp */
             white-space: nowrap;
         }
 
         .player-stats {
-            display: flex; /* Zmienione na flex, aby przycisk był po prawej */
-            align-items: center; /* Wyśrodkowanie pionowe */
-            justify-content: flex-end; /* Przycisk na prawo */
-            min-width: 60px; /* Może być mniejszy, skoro tylko przycisk */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 80px; /* Zwiększona minimalna szerokość */
             flex-shrink: 0;
         }
-        
+
         .edit-button {
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
-            padding: 5px 10px;
-            font-size: 0.8em;
+            padding: 8px 15px; /* Zwiększony padding przycisku */
+            font-size: 0.9em; /* Zwiększony rozmiar czcionki przycisku */
             cursor: pointer;
             transition: background-color 0.3s ease;
-            white-space: nowrap; /* Zapobiega łamaniu się tekstu przycisku */
+            white-space: nowrap;
+            display: none;
         }
 
         .edit-button:hover {
@@ -184,15 +208,15 @@
 
         /* Modal (Pop-up) styles */
         .modal {
-            display: none; /* Ukryte domyślnie */
-            position: fixed; /* Zawsze na wierzchu */
-            z-index: 1001; /* Wyżej niż navbar */
+            display: none;
+            position: fixed;
+            z-index: 1001;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Włącz scrollowanie, jeśli treść jest za duża */
-            background-color: rgba(0,0,0,0.7); /* Czarne, półprzezroczyste tło */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
             justify-content: center;
             align-items: center;
         }
@@ -200,74 +224,70 @@
         .modal-content {
             background-color: #333;
             margin: auto;
-            padding: 20px;
+            padding: 25px; /* Zwiększony padding modala */
             border: 1px solid #888;
             border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
+            width: 85%; /* Nieco większa szerokość modala */
+            max-width: 450px; /* Zwiększona maksymalna szerokość modala */
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             color: #eee;
-            position: relative; /* Dla pozycjonowania przycisku zamknięcia */
+            position: relative;
         }
 
         .modal-content h2 {
             color: #007bff;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px; /* Zwiększony margines */
             text-align: center;
+            font-size: 1.8em; /* Zwiększony rozmiar nagłówka modala */
         }
 
         .modal-content label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* Zwiększony margines */
             font-weight: 500;
+            font-size: 1.1em; /* Zwiększony rozmiar czcionki label */
         }
 
         .modal-content input[type="text"],
-        .modal-content input[type="number"] {
+        .modal-content input[type="number"],
+        .modal-content select { /* Zastosowanie dla select */
             width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 12px; /* Zwiększony padding pól input/select */
+            margin-bottom: 20px; /* Zwiększony margines */
             border: 1px solid #555;
-            border-radius: 5px;
+            border-radius: 6px; /* Nieco większy promień zaokrąglenia */
             background-color: #444;
             color: #eee;
             box-sizing: border-box;
+            font-size: 1.1em; /* Zwiększony rozmiar czcionki input/select */
         }
-        
+
         /* Styl dla listy rozwijanej rang */
         .modal-content select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-            border-radius: 5px;
-            background-color: #444;
-            color: #eee;
-            box-sizing: border-box;
-            -webkit-appearance: none; /* Usuwa domyślny styl strzałki w Chrome/Safari */
-            -moz-appearance: none;    /* Usuwa domyślny styl strzałki w Firefox */
-            appearance: none;         /* Usuwa domyślny styl strzałki */
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23eee%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E'); /* Niestandardowa strzałka */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23eee%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
-            background-position: right 0.7em top 50%, 0 0;
-            background-size: 0.65em auto, 100%;
+            background-position: right 0.8em top 50%, 0 0; /* Nieco większy odstęp */
+            background-size: 0.7em auto, 100%; /* Nieco większy rozmiar strzałki */
         }
 
 
         .modal-buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 15px; /* Zwiększony odstęp */
+            margin-top: 25px; /* Zwiększony margines */
         }
 
         .modal-buttons button {
-            padding: 10px 20px;
+            padding: 12px 25px; /* Zwiększony padding przycisków */
             border: none;
-            border-radius: 5px;
+            border-radius: 6px; /* Nieco większy promień zaokrąglenia */
             cursor: pointer;
-            font-size: 1em;
+            font-size: 1.1em; /* Zwiększony rozmiar czcionki przycisków */
             font-weight: 600;
             transition: background-color 0.3s ease;
         }
@@ -292,10 +312,10 @@
 
         .close-button {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 15px; /* Nieco większy odstęp */
+            right: 20px; /* Nieco większy odstęp */
             color: #aaa;
-            font-size: 28px;
+            font-size: 32px; /* Zwiększony rozmiar */
             font-weight: bold;
             cursor: pointer;
         }
@@ -307,16 +327,32 @@
             cursor: pointer;
         }
 
-        /* Loading state for ranking */
-        #rankingLoadingMessage {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 1.2em;
-            color: #aaa;
-        }
 
         /* Responsiveness */
         @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 15px;
+            }
+
+            .navbar .logo-section {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+
+            .navbar .nav-links {
+                width: 100%;
+                justify-content: center;
+                margin-left: 0;
+                gap: 10px;
+            }
+
+            .navbar .nav-links a {
+                margin: 0 5px;
+            }
+
             .ranking-list {
                 max-width: 100%;
             }
@@ -324,34 +360,54 @@
                 flex-wrap: wrap;
                 justify-content: flex-start;
                 padding: 10px;
+                font-size: 1em; /* Zmiana rozmiaru czcionki dla mniejszych ekranów */
             }
             .rank-number {
                 margin-right: 10px;
                 min-width: unset;
                 text-align: left;
                 order: 1;
+                font-size: 1.5em; /* Zmiana rozmiaru cyfry rankingu dla mniejszych ekranów */
             }
             .player-info {
                 flex-grow: unset;
                 width: calc(100% - 50px);
                 order: 2;
+                gap: 10px;
             }
             .player-stats {
-                width: calc(100% - 55px); /* Dostosuj szerokość, żeby przycisk był ładnie na linii */
-                align-items: flex-end; /* Przycisk na prawo */
+                width: calc(100% - 55px);
+                align-items: flex-end;
                 margin-top: 5px;
-                margin-left: 55px; /* wyrównanie z info o graczu */
-                flex-direction: row; /* Przycisk na prawo w jednym rzędzie */
-                justify-content: flex-end; /* Przycisk na prawo */
+                margin-left: 55px;
+                flex-direction: row;
+                justify-content: flex-end;
             }
             .edit-button {
-                margin-left: 0; /* Usunięto margines, bo teraz będzie po prawej */
+                margin-left: 0;
+                padding: 6px 12px; /* Zmiana paddingu przycisku dla mniejszych ekranów */
+                font-size: 0.85em;
             }
-            .player-lp-display { /* Na małych ekranach LP pod rangą też się ładnie ułożą */
-                font-size: 0.75em;
+            .player-lp-display {
+                font-size: 0.8em;
+            }
+            .rank-icon {
+                width: 45px; /* Zmiana rozmiaru ikony dla mniejszych ekranów */
+                height: 45px;
+            }
+            .player-name {
+                font-size: 1.1em;
+            }
+            .player-rank-text {
+                font-size: 0.9em;
             }
         }
         @media (max-width: 480px) {
+            .navbar .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
             .ranking-content h1 {
                 font-size: 2em;
             }
@@ -364,47 +420,30 @@
             .player-rank-text {
                 font-size: 0.75em;
             }
-        }
-
-        /* Footer links */
-        .footer-bottom-links {
-            background-color: #1a1a1a;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            margin-top: auto;
-        }
-
-        .footer-bottom-links a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #fff;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .footer-bottom-links a:hover {
-            color: #007bff;
-        }
-
-        .footer-bottom-links img {
-            height: 40px;
-            width: 40px;
-            border-radius: 50%;
-            margin-bottom: 5px;
-            border: 2px solid transparent;
-            transition: border-color 0.3s ease;
-        }
-
-        .footer-bottom-links a:hover img {
-            border-color: #007bff;
+            .player-rank-item {
+                padding: 8px 10px;
+            }
+            .rank-icon {
+                width: 35px;
+                height: 35px;
+            }
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+            }
+            .modal-content h2 {
+                font-size: 1.5em;
+            }
+            .modal-buttons button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .modal-content input[type="text"],
+            .modal-content input[type="number"],
+            .modal-content select {
+                font-size: 1em;
+                padding: 10px;
+            }
         }
 
         /* Main footer */
@@ -414,13 +453,16 @@
             text-align: center;
             padding: 15px 20px;
             font-size: 0.8em;
+            /* Upewnij się, że stopka jest zawsze na dole, nawet po usunięciu sekcji footer-bottom-links */
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
     <header class="navbar">
         <div class="logo-section">
-            <img src="logo.png" alt="Logo" class="logo"> <span class="site-name"></span>
+            <img src="logo.png" alt="Logo" class="logo">
+            <span class="site-name"></span>
         </div>
         <nav class="nav-links">
             <a href="index.html">STRONA GŁÓWNA</a>
@@ -429,41 +471,16 @@
             <a href="soloq.html">SOLOQ</a>
             <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
-            <a href="login.html" id="loginLogoutLink">Zaloguj/Wyloguj</a>
         </nav>
     </header>
 
     <main class="ranking-content">
         <h1>Ranking Graczy ACG</h1>
-        
-        <div id="rankingLoadingMessage">Ładowanie rankingu...</div>
-        <div id="players-ranking-container" class="ranking-list" style="display: none;">
-            </div>
+
+        <div id="players-ranking-container" class="ranking-list">
+        </div>
 
     </main>
-
-    <footer2 class="footer-bottom-links">
-        <a href="https://op.gg/pl/lol/summoners/eune/likht-EUNE" target="_blank">
-            <img src="top.png" alt="Ikona 1">
-            <span>LIKHT</span>
-        </a>
-        <a href="https://op.gg/pl/lol/summoners/eune/Weedolas-4WB" target="_blank">
-            <img src="jg.png" alt="Ikona 2">
-            <span>WEEDOLAS</span>
-        </a>
-        <a href="https://op.gg/pl/lol/summoners/eune/pizza%20fanboy-EUNE" target="_blank">
-            <img src="mid.png" alt="Ikona 3">
-            <span>REAP</span>
-        </a>
-        <a href="https://op.gg/pl/lol/summoners/eune/kohayushi-acg" target="_blank">
-            <img src="bot.png" alt="Ikona 4">
-            <span>KOHAYUSHI</span>
-        </a>
-        <a href="strona5.html" target="_blank">
-            <img src="sup.png" alt="Ikona 5">
-            <span>NONE</span>
-        </a>
-    </footer2>
 
     <footer>
         <p>2025 &copy; ACG - AC GDAŃSK</p>
@@ -502,41 +519,38 @@
     </div>
 
     <script type="module">
-        // Zmieniono wersje Firebase SDK na 10.7.1
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // Twoja oryginalna konfiguracja Firebase (skopiowana z dodajmecz.html)
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
             authDomain: "acg-skrimy.firebaseapp.com",
             databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebaseapp.com",
+            storageBucket: "acg-skrimy.firebasestorage.app",
             messagingSenderId: "78237268518",
             appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-            measurementId: "G-6VDFPFX560",
+            measurementId: "G-6VDFPFX560"
         };
 
-        // Inicjalizacja Firebase z Twoją konfiguracją
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Referencja do kolekcji 'playersRanking' w Realtime Database
-        // WAŻNE: Upewnij się, że ta ścieżka istnieje i zawiera dane graczy
-        const playersRankingRef = ref(db, "playersRanking"); 
+        const playersRef = ref(db, 'playersRanking');
+        const playersContainer = document.getElementById('players-ranking-container');
 
-        // Admin UID - WAŻNE: UPEWNIJ SIĘ, ŻE TO UID JEST PRAWIDŁOWE DLA TWOJEGO KONTA ADMINISTRATORA W FIREBASE AUTHENTICATION
+        // Ustawienie UID administratora
         const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
 
-        // UI Elements
-        const playersRankingContainer = document.getElementById('players-ranking-container');
-        const rankingLoadingMessage = document.getElementById('rankingLoadingMessage');
-        const loginLogoutLink = document.getElementById('loginLogoutLink');
+        let currentEditedPlayerKey = null;
+        let currentEditedPlayerItem = null;
 
-        // Tablica mapująca nazwy rang do nazw plików obrazków (małe litery, bez podziału na dywizje)
         const rankImageMap = {
             'iron': 'iron.png',
             'bronze': 'bronze.png',
@@ -550,177 +564,124 @@
             'challenger': 'challenger.png'
         };
 
-        let currentEditedPlayerItem = null; // Przechowuje aktualnie edytowany element gracza
-        let currentEditedPlayerKey = null; // Przechowuje klucz Firebase aktualnie edytowanego gracza
+        const rankValueMap = {
+            'iron': 0,
+            'bronze': 1,
+            'silver': 2,
+            'gold': 3,
+            'platinum': 4,
+            'emerald': 5,
+            'diamond': 6,
+            'master': 7,
+            'grandmaster': 8,
+            'challenger': 9
+        };
 
-        // Zmienna do przechowywania stanu zalogowania admina
-        let isAdminLoggedIn = false; 
+        const divisionValueMap = {
+            'i': 4,
+            'ii': 3,
+            'iii': 2,
+            'iv': 1
+        };
 
-        // Funkcja do dynamicznego renderowania rankingu
-        function renderRanking(playersData) {
-            playersRankingContainer.innerHTML = ''; // Wyczyść obecną listę
-            let rankCounter = 1;
+        function loadRanking(isAdmin) {
+            onValue(playersRef, (snapshot) => {
+                const playersData = [];
+                snapshot.forEach((childSnapshot) => {
+                    const playerKey = childSnapshot.key;
+                    const playerData = childSnapshot.val();
+                    playersData.push({ key: playerKey, ...playerData });
+                });
 
-            const sortedPlayers = Object.values(playersData).sort((a, b) => {
-                const rankOrder = {
-                    'challenger': 10, 'grandmaster': 9, 'master': 8,
-                    'diamond': 7, 'emerald': 6, 'platinum': 5,
-                    'gold': 4, 'silver': 3, 'bronze': 2, 'iron': 1
-                };
+                playersData.sort((a, b) => {
+                    const rankAValue = rankValueMap[a.rankName.toLowerCase()] || 0;
+                    const rankBValue = rankValueMap[b.rankName.toLowerCase()] || 0;
 
-                const divisionOrder = { 'I': 4, 'II': 3, 'III': 2, 'IV': 1 };
-
-                const rankA = rankOrder[a.rankName.toLowerCase()] || 0;
-                const rankB = rankOrder[b.rankName.toLowerCase()] || 0;
-
-                // Sortuj po randze (wyższa ranga to wyższy numer)
-                if (rankA !== rankB) {
-                    return rankB - rankA;
-                }
-
-                // Dla Master+, Grandmaster, Challenger sortuj po LP
-                if (['master', 'grandmaster', 'challenger'].includes(a.rankName.toLowerCase())) {
-                    const lpA = typeof a.lp === 'string' ? parseInt(a.lp.replace('LP', '')) : a.lp;
-                    const lpB = typeof b.lp === 'string' ? parseInt(b.lp.replace('LP', '')) : b.lp;
-                    if (lpA !== lpB) {
-                        return lpB - lpA; // Malejąco po LP
+                    if (rankAValue !== rankBValue) {
+                        return rankBValue - rankAValue;
                     }
-                } else {
-                    // Dla niższych rang, sortuj po dywizji (I > II > III > IV)
-                    const divA = divisionOrder[a.rankDivision] || 0;
-                    const divB = divisionOrder[b.rankDivision] || 0;
-                    if (divA !== divB) {
-                        return divB - divA; // Malejąco po dywizji (wyższa dywizja to wyższy numer)
+
+                    if (!['master', 'grandmaster', 'challenger'].includes(a.rankName.toLowerCase())) {
+                        const divisionAValue = divisionValueMap[a.rankDivision?.toLowerCase()] || 0;
+                        const divisionBValue = divisionValueMap[b.rankDivision?.toLowerCase()] || 0;
+                        if (divisionAValue !== divisionBValue) {
+                            return divisionBValue - divisionAValue;
+                        }
                     }
-                }
-                
-                // Na koniec, jeśli wszystko inne jest takie samo, sortuj alfabetycznie po nazwie
-                return a.name.localeCompare(b.name);
-            });
 
+                    return b.lp - a.lp;
+                });
 
-            sortedPlayers.forEach(player => {
-                // Użyj unikalnego klucza z Firebase jako dataset.firebaseKey
-                const firebaseKey = player.key; 
-                const rankIconSrc = `Images/${rankImageMap[player.rankName.toLowerCase()] || 'default.png'}`; 
-                
-                let fullRankText = player.rankName;
-                if (player.rankDivision) {
-                    fullRankText += ` ${player.rankDivision}`;
-                }
+                playersContainer.innerHTML = '';
 
-                const playerRankItem = document.createElement('div');
-                playerRankItem.className = 'player-rank-item';
-                playerRankItem.dataset.playerName = player.name; // Dodano dataset dla nazwy gracza
-                playerRankItem.dataset.firebaseKey = firebaseKey; // Przechowuj klucz Firebase tutaj
+                playersData.forEach((player, index) => {
+                    const rankNumber = index + 1;
+                    const rankNameDisplay = player.rankName.charAt(0).toUpperCase() + player.rankName.slice(1);
+                    let fullRankText = rankNameDisplay;
 
-                playerRankItem.innerHTML = `
-                    <div class="rank-number">${rankCounter}.</div>
-                    <div class="player-info">
-                        <img src="${rankIconSrc}" alt="Ikona Rangi ${player.rankName}" class="rank-icon">
-                        <div class="player-name-and-rank">
-                            <span class="player-name">${player.name}</span>
-                            <span class="player-rank-text" data-rank-text>${fullRankText}</span>
-                            <span class="player-lp-display" data-lp-text>LP: ${player.lp}</span> 
+                    if (['master', 'grandmaster', 'challenger'].includes(player.rankName.toLowerCase())) {
+                        if (player.rankDivision) {
+                            fullRankText += ` ${player.rankDivision}`;
+                        }
+                    } else if (player.rankDivision) {
+                        fullRankText += ` ${player.rankDivision}`;
+                    }
+
+                    const playerItem = document.createElement('div');
+                    playerItem.classList.add('player-rank-item');
+                    playerItem.setAttribute('data-player-key', player.key);
+
+                    const iconFileName = rankImageMap[player.rankName.toLowerCase()];
+                    const iconPath = iconFileName ? `Images/${iconFileName}` : 'Images/default.png';
+
+                    playerItem.innerHTML = `
+                        <div class="rank-number">${rankNumber}.</div>
+                        <div class="player-info">
+                            <img src="${iconPath}" alt="Ikona Rangi ${rankNameDisplay}" class="rank-icon">
+                            <div class="player-name-and-rank">
+                                <span class="player-name">${player.name}</span>
+                                <span class="player-rank-text" data-rank-text>${fullRankText}</span>
+                                <span class="player-lp-display" data-lp-text>LP: ${player.lp}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="player-stats">
-                        <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                    </div>
-                `;
-                playersRankingContainer.appendChild(playerRankItem);
-                rankCounter++;
-            });
-
-            // Ukryj przyciski edycji, jeśli użytkownik nie jest adminem
-            if (!isAdminLoggedIn) {
-                document.querySelectorAll('.edit-button').forEach(button => {
-                    button.style.display = 'none';
+                        <div class="player-stats">
+                            <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
+                        </div>
+                    `;
+                    playersContainer.appendChild(playerItem);
                 });
-            } else {
-                 document.querySelectorAll('.edit-button').forEach(button => {
-                    button.style.display = 'inline-block'; // Pokaż, jeśli admin zalogowany
+
+                const editButtons = document.querySelectorAll('.edit-button');
+                editButtons.forEach(button => {
+                    if (isAdmin) {
+                        button.style.display = 'inline-block';
+                    } else {
+                        button.style.display = 'none';
+                    }
                 });
-            }
 
-            rankingLoadingMessage.style.display = 'none'; // Ukryj komunikat ładowania
-            playersRankingContainer.style.display = 'flex'; // Pokaż kontener rankingu
-        }
-
-        // Authentication State Listener
-        onAuthStateChanged(auth, (user) => {
-            if (user && user.uid === ADMIN_UID) {
-                console.log("Admin zalogowany.");
-                isAdminLoggedIn = true;
-                loginLogoutLink.textContent = 'Wyloguj';
-                loginLogoutLink.href = '#';
-                loginLogoutLink.onclick = (e) => {
-                    e.preventDefault();
-                    signOut(auth).then(() => {
-                        alert("Wylogowano pomyślnie.");
-                        window.location.reload(); // Odśwież stronę po wylogowaniu
-                    }).catch((error) => {
-                        console.error("Błąd wylogowania:", error);
-                        alert(`Wystąpił błąd podczas wylogowywania: ${error.message}`);
-                    });
-                };
-            } else {
-                console.log("Użytkownik niezalogowany lub nie jest adminem.");
-                isAdminLoggedIn = false;
-                loginLogoutLink.textContent = 'Zaloguj';
-                loginLogoutLink.href = 'login.html';
-                loginLogoutLink.onclick = null; // Usuń handler, jeśli ma prowadzić do login.html
-            }
-            // Po ustawieniu stanu admina, pobierz i wyrenderuj ranking
-            // Spowoduje to również prawidłowe ukrycie/pokazanie przycisków edycji
-            fetchAndRenderRanking(); 
-        });
-
-
-        // Funkcja do pobierania danych z Firebase i renderowania
-        function fetchAndRenderRanking() {
-            onValue(playersRankingRef, (snapshot) => {
-                const playersData = snapshot.val();
-                if (playersData) {
-                    // Dodaj klucz Firebase do każdego obiektu gracza
-                    const playersWithKeys = Object.keys(playersData).map(key => ({
-                        key: key, // To jest klucz (np. "Likht", "Weedolas")
-                        ...playersData[key]
-                    }));
-                    renderRanking(playersWithKeys);
-                } else {
-                    playersRankingContainer.innerHTML = '<p>Brak danych rankingu do wyświetlenia.</p>';
-                    rankingLoadingMessage.style.display = 'none';
-                    playersRankingContainer.style.display = 'flex';
-                }
             }, (error) => {
-                console.error("Błąd pobierania danych rankingu z Firebase:", error);
-                rankingLoadingMessage.textContent = 'Błąd ładowania rankingu.';
+                console.error("Błąd podczas pobierania danych rankingu:", error);
+                alert("Nie udało się załadować rankingu. Spróbuj ponownie później.");
             });
         }
 
-
-        // MODAL FUNCTIONS
-        function openEditModal(buttonElement) {
-            if (!isAdminLoggedIn) {
-                alert("Brak uprawnień do edycji rankingu. Zaloguj się jako administrator.");
-                return;
-            }
-
+        window.openEditModal = function(buttonElement) {
             currentEditedPlayerItem = buttonElement.closest('.player-rank-item');
-            // Zmieniamy pobieranie klucza - teraz pochodzi z datasetu
-            currentEditedPlayerKey = currentEditedPlayerItem.dataset.firebaseKey; 
+            currentEditedPlayerKey = currentEditedPlayerItem.getAttribute('data-player-key');
 
             const playerName = currentEditedPlayerItem.querySelector('.player-name').textContent;
             const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
             const lpDisplayElement = currentEditedPlayerItem.querySelector('[data-lp-text]');
 
-            const currentLP = parseInt(lpDisplayElement.textContent.replace('LP: ', '')) || 0;
+            const currentLPText = lpDisplayElement.textContent;
             const currentRankText = rankTextElement.textContent;
+
+            let currentLP = parseInt(currentLPText.replace('LP: ', '')) || 0;
 
             let currentRankName = '';
             let currentRankDivision = '';
-            
+
             const match = currentRankText.match(/^([a-zA-Z]+)(?:\s([IVXLCDM]+|\d+LP))?$/);
 
             if (match) {
@@ -728,6 +689,9 @@
                 if (match[2]) {
                     currentRankDivision = match[2];
                 }
+            } else {
+                currentRankName = currentRankText.toLowerCase();
+                currentRankDivision = '';
             }
 
             document.getElementById('playerNameModal').value = playerName;
@@ -738,23 +702,16 @@
             document.getElementById('editModal').style.display = 'flex';
         }
 
-        function closeEditModal() {
+        window.closeEditModal = function() {
             document.getElementById('editModal').style.display = 'none';
-            currentEditedPlayerItem = null;
             currentEditedPlayerKey = null;
+            currentEditedPlayerItem = null;
         }
 
-        async function saveChanges() {
-            if (!currentEditedPlayerItem || !currentEditedPlayerKey) {
-                console.error("Brak wybranego gracza do edycji lub jego klucza Firebase.");
-                alert("Wystąpił błąd: brak danych gracza do zapisu.");
-                closeEditModal();
-                return;
-            }
-            
-            if (!isAdminLoggedIn) { // Dodatkowe zabezpieczenie po stronie klienta
-                alert("Brak uprawnień do edycji rankingu.");
-                closeEditModal();
+        window.saveChanges = async function() {
+            if (!currentEditedPlayerKey) {
+                console.error("Brak klucza gracza do edycji.");
+                alert("Wystąpił błąd podczas zapisywania zmian.");
                 return;
             }
 
@@ -763,35 +720,27 @@
             const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim();
 
             if (isNaN(newLP) || newLP < 0) {
-                alert("Proszę wprowadzić prawidłową liczbę LP (nieujemną).");
-                return;
-            }
-            if (!newRankName) {
-                alert("Proszę wybrać rangę.");
+                alert("Proszę wprowadzić prawidłową wartość LP (liczbę dodatnią).");
                 return;
             }
 
-            // Utwórz referencję do konkretnego gracza w bazie danych
-            const playerToUpdateRef = ref(db, `playersRanking/${currentEditedPlayerKey}`);
+            const updates = {
+                lp: newLP,
+                rankName: newRankName,
+                rankDivision: newRankDivision
+            };
 
             try {
-                // Użyj `update` na referencji do konkretnego gracza
-                await update(playerToUpdateRef, {
-                    lp: newLP,
-                    rankName: newRankName,
-                    rankDivision: newRankDivision
-                    // Jeśli masz rankOrder i chcesz go aktualizować, dodaj tutaj logikę
-                });
-                alert("Zmiany zapisane pomyślnie w Firebase!");
+                await update(ref(db, `playersRanking/${currentEditedPlayerKey}`), updates);
+                console.log(`Gracz ${document.getElementById('playerNameModal').value} zaktualizowany pomyślnie.`);
+                alert("Zmiany zapisane pomyślnie!");
                 closeEditModal();
             } catch (error) {
-                console.error("Błąd zapisu zmian do Firebase:", error);
-                alert("Wystąpił błąd podczas zapisu zmian: " + error.message);
+                console.error("Błąd podczas zapisywania zmian w Firebase:", error);
+                alert("Nie udało się zapisać zmian. Błąd: " + error.message);
             }
         }
 
-
-        // Zamykanie modala po kliknięciu poza nim
         window.onclick = function(event) {
             const modal = document.getElementById('editModal');
             if (event.target == modal) {
@@ -799,13 +748,15 @@
             }
         }
 
-        // Upewnij się, że funkcje openEditModal, closeEditModal, saveChanges są dostępne globalnie
-        // dla atrybutów onclick w HTML
-        window.openEditModal = openEditModal;
-        window.closeEditModal = closeEditModal;
-        window.saveChanges = saveChanges;
-        
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === ADMIN_UID) {
+                console.log("Admin zalogowany.");
+                loadRanking(true);
+            } else {
+                console.log("Użytkownik niezalogowany lub nie jest adminem.");
+                loadRanking(false);
+            }
+        });
     </script>
-
 </body>
 </html>

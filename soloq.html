@@ -72,13 +72,13 @@
         .iframe-container {
             width: 100%; /* Będzie zajmować 100% szerokości sekcji main */
             height: 2400px; /* Wysokość ramki, możesz dostosować */
-            
+
             border: 1px solid #333;
-            overflow: hidden; 
+            overflow: hidden;
             margin: 20px 0; /* Margines góra/dół */
-            
+
             background-color: #1a1a1a; /* Kolor tła, gdyby iframe się nie załadował */
-            display: flex; 
+            display: flex;
             justify-content: center;
             align-items: center;
             color: #f0f0f0;
@@ -87,7 +87,7 @@
         }
 
         .iframe-container iframe {
-            display: block; 
+            display: block;
         }
     </style>
 </head>
@@ -102,6 +102,7 @@
             <a href="historia.html">HISTORIA GIER</a>
             <a href="statystyki.html">STATYSTYKI</a>
             <a href="soloq.html">SOLOQ</a>
+            <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
     </header>
@@ -112,9 +113,9 @@
         <section class="player-selection-section">
             <h2>Wybierz Zawodnika</h2>
             <div class="player-buttons-container" id="playerButtons">
-                </div>
+            </div>
         </section>
-        
+
         <div class="iframe-container">
             <iframe
                 id="soloqIframe"
@@ -173,12 +174,12 @@
             "Weedolas": "Weedolas-4WB",
             "reap777": "pizza%20fanboy-EUNE",
             "Kohayushi": "kohayushi-acg",
-            "None": null, // Pamiętaj, aby zmienić na rzeczywistą nazwę, gdy będzie dostępny!
+            "Yanny": "hideonfpl-eune", // Zmiana z "None": null, na "Yanny"
         };
 
         const soloqIframe = document.getElementById("soloqIframe");
         const playerButtonsContainer = document.getElementById("playerButtons");
-        const baseUrl = "https://leaguestats.gg/summoner/eune/"; 
+        const baseUrl = "https://leaguestats.gg/summoner/eune/";
 
         // Funkcja do ładowania statystyk wybranego zawodnika i zapisywania w Firebase RTDB
         async function loadPlayerStats(playerDisplayName) {
@@ -197,7 +198,7 @@
                 soloqIframe.src = "about:blank"; // Wyczyść ramkę
                 alert("Nieprawidłowa nazwa przywoływacza lub zawodnik jeszcze nieprzydzielony.");
                 try {
-                    // Jeśli wybrano "None" lub błąd, ustaw wartość na null w Firebase RTDB
+                    // Jeśli wybrano zawodnika bez przypisanego summonerName, ustaw wartość na null w Firebase RTDB
                     await set(playerPreferenceRef, null);
                     console.log("Wybór zawodnika usunięty/ustawiony na null w Firebase RTDB.");
                 } catch (error) {
@@ -208,15 +209,15 @@
 
         // Funkcja do generowania przycisków (bez zmian)
         function generatePlayerButtons() {
-            playerButtonsContainer.innerHTML = ''; 
+            playerButtonsContainer.innerHTML = '';
 
             for (const playerName in playerSummonerNames) {
                 const button = document.createElement("button");
                 button.textContent = playerName;
-                button.setAttribute("data-player-display-name", playerName); 
+                button.setAttribute("data-player-display-name", playerName);
                 button.addEventListener("click", () => {
                     const selectedPlayerDisplayName = button.getAttribute("data-player-display-name");
-                    loadPlayerStats(selectedPlayerDisplayName); 
+                    loadPlayerStats(selectedPlayerDisplayName);
                 });
                 playerButtonsContainer.appendChild(button);
             }
@@ -225,8 +226,8 @@
         // Zainicjuj przyciski i załaduj ostatnio wybranego zawodnika z Firebase RTDB po załadowaniu DOM
         document.addEventListener("DOMContentLoaded", async () => {
             generatePlayerButtons();
-            
-            const defaultPlayerDisplayName = "Likht"; 
+
+            const defaultPlayerDisplayName = "Likht";
 
             try {
                 // Spróbuj odczytać ostatnio wybranego zawodnika z Firebase Realtime Database
