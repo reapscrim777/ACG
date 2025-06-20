@@ -126,7 +126,6 @@
         .rank-icon {
             width: 40px;
             height: 40px;
-            /* Te ikonki są już okrągłe, więc border-radius: 50% nie jest konieczny, ale można zostawić */
             /* Usunięto/zakomentowano: border: 2px solid #007bff; */
             flex-shrink: 0;
             object-fit: contain; /* Upewnia się, że cały obrazek jest widoczny */
@@ -160,11 +159,14 @@
             align-items: flex-end;
             font-size: 0.85em;
             color: #ccc;
-            min-width: 120px;
+            min-width: 60px; /* Zmniejszono minimalną szerokość, skoro mniej treści */
             text-align: right;
             flex-shrink: 0;
+            margin-right: 15px; /* Dodatkowy margines, by oddzielić od nazwy */
         }
 
+        /* Sekcja linków graczy zostanie usunięta */
+        /*
         .player-links {
             display: flex;
             flex-direction: column;
@@ -184,6 +186,7 @@
             color: #00bfff;
             text-decoration: underline;
         }
+        */
 
         /* Responsiveness */
         @media (max-width: 768px) {
@@ -213,6 +216,8 @@
                 margin-left: 50px;
                 order: 3;
             }
+            /* Usunięto media query dla .player-links */
+            /*
             .player-links {
                 width: 100%;
                 align-items: flex-start;
@@ -220,6 +225,7 @@
                 margin-left: 50px;
                 order: 4;
             }
+            */
         }
         @media (max-width: 480px) {
             .ranking-content h1 {
@@ -237,9 +243,12 @@
             .player-stats span {
                 font-size: 0.8em;
             }
+            /* Usunięto media query dla .player-links a */
+            /*
             .player-links a {
                 font-size: 0.7em;
             }
+            */
         }
 
         /* Footer links */
@@ -324,14 +333,8 @@
                 </div>
                 <div class="player-stats">
                     <span>LP: 1000</span> 
-                    <span>WR: 65%</span>
-                    <span>W/L: 300W / 160L</span>
+                    </div>
                 </div>
-                <div class="player-links">
-                    <a href="https://op.gg/pl/lol/summoners/eune/likht-EUNE" target="_blank">OP.GG</a>
-                    <a href="https://zeal.gg/profile/eune/likht-EUNE" target="_blank">Zeal.gg</a>
-                </div>
-            </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">2.</div>
@@ -344,14 +347,8 @@
                 </div>
                 <div class="player-stats">
                     <span>LP: 750</span> 
-                    <span>WR: 60%</span>
-                    <span>W/L: 250W / 160L</span>
+                    </div>
                 </div>
-                <div class="player-links">
-                    <a href="https://op.gg/pl/lol/summoners/eune/Weedolas-4WB" target="_blank">OP.GG</a>
-                    <a href="https://zeal.gg/profile/eune/Weedolas-4WB" target="_blank">Zeal.gg</a>
-                </div>
-            </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">3.</div>
@@ -364,14 +361,8 @@
                 </div>
                 <div class="player-stats">
                     <span>LP: 500</span> 
-                    <span>WR: 58%</span>
-                    <span>W/L: 220W / 160L</span>
+                    </div>
                 </div>
-                <div class="player-links">
-                    <a href="https://op.gg/pl/lol/summoners/eune/pizza%20fanboy-EUNE" target="_blank">OP.GG</a>
-                    <a href="https://zeal.gg/profile/eune/pizza%20fanboy-EUNE" target="_blank">Zeal.gg</a>
-                </div>
-            </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">4.</div>
@@ -384,14 +375,8 @@
                 </div>
                 <div class="player-stats">
                     <span>LP: 75</span> 
-                    <span>WR: 55%</span>
-                    <span>W/L: 180W / 145L</span>
+                    </div>
                 </div>
-                <div class="player-links">
-                    <a href="https://op.gg/pl/lol/summoners/eune/kohayushi-acg" target="_blank">OP.GG</a>
-                    <a href="https://zeal.gg/profile/eune/kohayushi-acg" target="_blank">Zeal.gg</a>
-                </div>
-            </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">5.</div>
@@ -404,14 +389,8 @@
                 </div>
                 <div class="player-stats">
                     <span>LP: 20</span> 
-                    <span>WR: 51%</span>
-                    <span>W/L: 100W / 95L</span>
+                    </div>
                 </div>
-                <div class="player-links">
-                    <a href="https://op.gg/pl/lol/summoners/eune/yanny-eune" target="_blank">OP.GG</a> 
-                    <a href="https://zeal.gg/profile/eune/yanny-eune" target="_blank">Zeal.gg</a> 
-                </div>
-            </div>
             </div>
 
     </main>
