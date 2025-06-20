@@ -1,530 +1,498 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statystyki Graczy - Scrim Stats</title>
-    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/48/league-of-legends.png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="firebase-config.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Statystyki</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
-        /* Twoje oryginalne style CSS - BEZ ZMIAN */
-        :root {
-            --background-color: #1a1a2e;
-            --text-color: #e0e0e0;
-            --accent-color: #0f3460;
-            --secondary-accent-color: #533483;
-            --link-color: #e94560;
-            --button-bg: #e94560;
-            --button-hover: #ff6a80;
-            --table-header-bg: #0f3460;
-            --table-row-bg-odd: #16213e;
-            --table-row-bg-even: #1a1a2e;
-            --table-border: #0d1b2a;
-            --sidebar-bg: #16213e;
-            --win-color: #4CAF50;
-            --lose-color: #F44336;
-        }
-
-        * {
-            box-sizing: border-box;
+        /* Styl dla "sticky footer" zastosowany tylko na tej stronie */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
         }
 
-        html, body {
-            height: 100%;
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            background-color: var(--accent-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--secondary-accent-color);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .logo h1 {
-            color: var(--text-color);
-            font-size: 1.8rem;
-            margin: 0;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        nav a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-
-        nav a:hover {
-            color: var(--link-color);
-        }
-
+        /* Nowy kontener dla układu głównego z bocznym panelem */
         .main-content-wrapper {
-            flex: 1;
             display: flex;
+            flex: 1; /* Pozwala mu rozciągnąć się, aby footer był na dole */
             padding: 20px;
-            gap: 20px;
+            box-sizing: border-box;
+            gap: 20px; /* Odstęp między panelem bocznym a główną zawartością */
+            justify-content: center; /* Wyśrodkowanie zawartości wrapper'a */
+            max-width: 1200px; /* Ogranicz maksymalną szerokość */
+            margin: 0 auto; /* Wyśrodkuj wrapper */
+            width: 100%; /* Upewnij się, że zajmuje całą dostępną szerokość */
         }
 
-        .sidebar-left {
-            width: 300px;
-            background-color: var(--sidebar-bg);
+
+        main {
+            flex: 3; /* Główna zawartość zajmuje więcej miejsca */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #1a1a1a; /* Przenieś tło na main lub na sekcje wewnętrzne */
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 20px; /* Adjust as needed for sticky positioning */
-            height: fit-content; /* Ensure sidebar takes only necessary height */
-            align-self: flex-start; /* Align to the start of the flex container */
+        }
+
+        /* Nowy styl dla lewego panelu bocznego */
+        .sidebar-left {
+            flex: 1; /* Panel boczny zajmuje mniej miejsca */
+            background-color: #1a1a1a; /* Tło panelu bocznego */
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 250px; /* Minimalna szerokość, aby zawartość była czytelna */
+            max-width: 300px; /* Maksymalna szerokość */
+            box-sizing: border-box;
+            color: #f0f0f0;
+            display: none; /* Domyślnie ukryte, pokażemy po wybraniu gracza */
         }
 
         .sidebar-left h2 {
-            color: var(--link-color);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--secondary-accent-color);
-            padding-bottom: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
         }
 
-        .player-stats-summary p,
-        .champion-stats-summary p {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
+        .sidebar-left ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-left ul li {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            font-size: 0.95em;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px dashed #3a3a5e;
         }
 
-        .player-stats-summary p:last-child,
-        .champion-stats-summary p:last-child {
-            border-bottom: none;
+        .sidebar-left ul li strong {
+            color: #f0f0f0;
         }
 
-        .player-stats-summary strong,
-        .champion-stats-summary strong {
-            color: var(--link-color);
-            font-weight: bold;
+        /* Style dla sekcji statystyk konkretnej postaci w sidebarze */
+        .sidebar-left .champion-specific-stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            display: none; /* Domyślnie ukryte */
         }
 
-        .champion-stats-summary img.champion-icon-sidebar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            vertical-align: middle;
-            border: 2px solid var(--secondary-accent-color);
-        }
-
-        .champion-specific-stats h3 {
-            color: var(--link-color);
-            margin-top: 20px;
+        .sidebar-left .champion-specific-stats h3 {
+            text-align: center;
             margin-bottom: 15px;
-            font-size: 1.3rem;
-            border-bottom: 2px solid var(--secondary-accent-color);
-            padding-bottom: 10px;
+            color: #007bff;
+            font-size: 1.1em;
             display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        main {
-            flex: 1;
-            background-color: var(--sidebar-bg);
-            padding: 20px;
+        .sidebar-left .champion-specific-stats h3 img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #007bff;
+        }
+
+        .sidebar-left .champion-specific-stats ul li {
+            background-color: #2a2a2a;
+        }
+
+        main h1 {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            margin-bottom: 20px !important;
+            text-align: center;
+            color: #f0f0f0;
+            width: 100%;
+        }
+
+        footer {
+            margin-top: auto;
+            background-color: #0e0e0e;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .player-list-section { /* Upewnij się, że ta sekcja ma odpowiednie marginesy/padding */
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 30px auto; /* Dodaj dolny margines, by oddzielić od statystyk */
+            background-color: rgba(0, 0, 0, 0.5);
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .player-list-section h2,
-        .player-stats-content h2 {
-            color: var(--link-color);
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #f0f0f0;
             text-align: center;
         }
 
-        .player-links {
+        .player-list-section h2 {
+            color: #f0f0f0;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .player-links-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            margin-bottom: 30px;
+            min-height: 50px;
+            align-items: center;
         }
 
         .player-link-item {
-            background-color: var(--button-bg);
-            color: var(--text-color);
+            background-color: #333;
+            color: white;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
-            font-weight: bold;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            text-align: center;
+            line-height: normal;
+            display: inline-block;
             cursor: pointer;
-            border: none;
-            font-size: 1rem;
+            border: 1px solid transparent;
         }
 
         .player-link-item:hover {
-            background-color: var(--button-hover);
+            background-color: #555;
             transform: translateY(-2px);
         }
 
         .player-link-item.active {
-            background-color: var(--secondary-accent-color);
-            box-shadow: 0 0 10px var(--link-color);
+            background-color: #007bff;
+            border-color: #007bff;
+            font-weight: bold;
+            transform: translateY(-1px);
+        }
+        .player-link-item.active:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
 
-        .player-stats-content {
-            margin-top: 20px;
+        #playerStatsSection {
+            background-color: #1a1a1a; /* Tło przeniesione z #playerStatsSection na main */
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 0; /* Usunięto górny margines, bo sekcja "Wybierz Zawodnika" ma dolny */
+            width: 100%; /* Zmieniono z 90% aby lepiej wypełnić main */
+            max-width: 1000px;
+            color: #f0f0f0;
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
         }
 
+        #playerStatsSection h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        /* Sekcja podsumowania statystyk gracza (teraz w main będzie ukryta) */
+        .player-summary-stats {
+            display: none; /* Ta sekcja będzie teraz wyświetlana w panelu bocznym */
+        }
+
+        /* NOWE STYLE DLA ZAKŁADEK */
         .tabs-container {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
-            background-color: var(--accent-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            gap: 10px;
+            flex-wrap: wrap; /* Pozwala zakładkom zawijać się na mniejszych ekranach */
         }
 
         .tab-button {
-            flex: 1;
-            padding: 12px 20px;
-            background-color: var(--accent-color);
-            color: var(--text-color);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            text-align: center;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
         }
 
         .tab-button:hover {
-            background-color: var(--secondary-accent-color);
+            background-color: #555;
+            transform: translateY(-2px);
         }
 
         .tab-button.active-tab {
-            background-color: var(--link-color);
-            color: white;
+            background-color: #007bff;
+            font-weight: bold;
+            transform: translateY(-1px);
         }
 
-        table {
+        .tab-button.active-tab:hover {
+            background-color: #0056b3;
+        }
+        /* KONIEC NOWYCH STYLÓW DLA ZAKŁADEK */
+
+
+        /* Nowe style dla tabeli statystyk championów */
+        #championStatsTable {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            background-color: var(--table-row-bg-odd);
-            border-radius: 8px;
-            overflow: hidden; /* Ensures rounded corners apply to content */
+            margin-top: 0; /* Usunięto górny margines, bo zakładki już oddzielają */
+            margin-bottom: 20px;
         }
-
-        th, td {
-            padding: 12px 15px;
+        #championStatsTable th, #championStatsTable td {
+            border: 1px solid #444;
+            padding: 8px;
             text-align: left;
-            border-bottom: 1px solid var(--table-border);
+            color: #f0f0f0;
         }
-
-        th {
-            background-color: var(--table-header-bg);
-            color: var(--text-color);
-            font-weight: bold;
-            text-transform: uppercase;
+        #championStatsTable th {
+            background-color: #333;
         }
-
-        tbody tr:nth-child(odd) {
-            background-color: var(--table-row-bg-odd);
+        #championStatsTable tr:nth-child(even) {
+            background-color: #2a2a2a;
         }
-
-        tbody tr:nth-child(even) {
-            background-color: var(--table-row-bg-even);
+        #championStatsTable tr:nth-child(odd) {
+            background-color: #222;
         }
-
-        tbody tr:hover {
-            background-color: #2a2a4a;
-            cursor: pointer;
-        }
-
-        .champion-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            vertical-align: middle;
-            margin-right: 8px;
-            border: 1px solid var(--secondary-accent-color);
-        }
-
-        .champion-col {
+        #championStatsTable td.champion-col {
             display: flex;
             align-items: center;
-            cursor: pointer; /* Add pointer for clickability */
-            padding: 5px 0;
+            gap: 5px;
+            cursor: pointer; /* Dodaj kursor wskazujący, że można kliknąć */
+            transition: color 0.2s ease;
         }
-
-        .champion-col.selected {
-            background-color: rgba(var(--link-color), 0.2); /* Highlight selected champion */
+        #championStatsTable td.champion-col:hover {
+            color: #007bff; /* Podkreślenie wizualne przy najechaniu */
+        }
+        #championStatsTable .champion-icon {
+            width: 28px;
+            height: 28px;
             border-radius: 5px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        #championStatsTable td.champion-col.selected .champion-icon {
+            border-color: #007bff; /* Ramka dla wybranej postaci */
         }
 
-        td.win {
-            color: var(--win-color);
+
+        #playerScrimsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* Usunięto górny margines, bo zakładki już oddzielają */
+        }
+        #playerScrimsTable th, #playerScrimsTable td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
+            color: #f0f0f0;
+        }
+        #playerScrimsTable th {
+            background-color: #333;
+        }
+        #playerScrimsTable tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        #playerScrimsTable tr:nth-child(odd) {
+            background-color: #222;
+        }
+        .win {
+            color: green;
+            font-weight: bold;
+        }
+        .lose {
+            color: red;
             font-weight: bold;
         }
 
-        td.lose {
-            color: var(--lose-color);
-            font-weight: bold;
+        /* Style dla ikon championów */
+        .champion-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 2px;
+            vertical-align: middle;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .champion-icons-container {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .no-data-message {
-            text-align: center;
-            color: var(--text-color);
-            margin-top: 30px;
-            font-size: 1.2rem;
-            padding: 20px;
-            background-color: #2a2a4a;
-            border-radius: 8px;
-            border: 1px dashed var(--secondary-accent-color);
-        }
-
-        footer {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: auto; /* Push footer to the bottom */
-            border-top: 2px solid var(--secondary-accent-color);
-        }
-
-        /* Responsywność */
-        @media (max-width: 992px) {
-            .main-content-wrapper {
-                flex-direction: column;
-            }
-
-            .sidebar-left {
-                width: 100%;
-                position: static; /* Remove sticky on smaller screens */
-                margin-bottom: 20px; /* Add space below sidebar */
-            }
-        }
-
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-
             .main-content-wrapper {
+                flex-direction: column;
                 padding: 10px;
             }
 
-            main, .sidebar-left {
-                padding: 15px;
-            }
-
-            .player-link-item {
+            .sidebar-left, main {
+                max-width: 100%;
                 width: 100%;
-                text-align: center;
             }
 
-            .tab-button {
-                font-size: 1rem;
-                padding: 10px 15px;
-            }
-
-            th, td {
-                padding: 8px 10px;
-                font-size: 0.9rem;
-            }
-
-            .champion-icon {
-                width: 25px;
-                height: 25px;
+            .sidebar-left { /* Pokaż pasek boczny również na małych ekranach */
+                display: block !important;
             }
         }
 
-        @media (max-width: 480px) {
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-
-            .player-list-section h2,
-            .player-stats-content h2 {
-                font-size: 1.5rem;
-            }
-
-            .no-data-message {
-                font-size: 1rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <header>
-            <div class="logo">
-                <img src="https://img.icons8.com/color/48/league-of-legends.png" alt="League of Legends Icon">
-                <h1>Scrim Stats</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Strona Główna</a></li>
-                    <li><a href="statystyki.html">Statystyki</a></li>
-                    <li><a href="dodaj-mecz.html">Dodaj Mecz</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <div class="main-content-wrapper">
-            <aside class="sidebar-left" id="playerSpecificStatsSidebar" style="display: none;">
-                <div class="player-stats-summary">
-                    <h2 id="sidebarPlayerName">Statystyki dla:</h2>
-                    <p>Rozegrane gry: <strong id="sidebarTotalGames">0</strong></p>
-                    <p>Wygrane: <strong id="sidebarTotalWins">0</strong></p>
-                    <p>Przegrane: <strong id="sidebarTotalLosses">0</strong></p>
-                    <p>Win Rate: <strong id="sidebarTotalWinRate">0%</strong></p>
-                    <p>Średnie KDA: <strong id="sidebarAverageKDA">N/A</strong></p>
-                    <p>Średnie CS: <strong id="sidebarAverageCSOverall">N/A</strong></p>
-                </div>
-
-                <div class="champion-specific-stats" id="championSpecificStatsSection" style="display: none;">
-                    <h3>
-                        <img src="" alt="Champion Icon" class="champion-icon-sidebar" id="sidebarChampionIcon">
-                        <span id="sidebarChampionName"></span>
-                    </h3>
-                    <div class="champion-stats-summary">
-                        <p>Rozegrane gry: <strong id="sidebarChampTotalGames">0</strong></p>
-                        <p>Wygrane: <strong id="sidebarChampTotalWins">0</strong></p>
-                        <p>Przegrane: <strong id="sidebarChampTotalLosses">0</strong></p>
-                        <p>Win Rate: <strong id="sidebarChampWinRate">0%</strong></p>
-                        <p>Średnie KDA: <strong id="sidebarChampAverageKDA">N/A</strong></p>
-                        <p>Średnie Złoto: <strong id="sidebarChampAverageGold">N/A</strong></p>
-                        <p>Średnie CS: <strong id="sidebarChampAverageCS">N/A</strong></p>
-                    </div>
-                </div>
-            </aside>
-
-            <main>
-                <section class="player-list-section">
-                    <h2>Wybierz Zawodnika</h2>
-                    <div class="player-links" id="playerLinksContainer">
-                        </div>
-                </section>
-
-                <section class="player-stats-content" id="playerStatsSection" style="display: none;">
-                    <h2 id="currentPlayerStatsTitle">Statystyki dla:</h2>
-
-                    <div class="tabs-container">
-                        <button class="tab-button active-tab" data-tab="champion-stats">Statystyki Postaci</button>
-                        <button class="tab-button" data-tab="match-history">Historia Meczy</button>
-                    </div>
-
-                    <div id="championStatsPanel">
-                        <table id="championStatsTable" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th>Postać</th>
-                                    <th>Gry</th>
-                                    <th>Win Rate</th>
-                                    <th>Średnie KDA</th>
-                                </tr>
-                            </thead>
-                            <tbody id="championStatsTableBody">
-                                </tbody>
-                        </table>
-                        <p id="noChampionStatsMessage" class="no-data-message" style="display: none;">Brak statystyk postaci dla tego gracza.</p>
-                    </div>
-
-                    <div id="playerScrimsPanel">
-                        <table id="playerScrimsTable" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Wynik</th>
-                                    <th>Czas</th>
-                                    <th>Postać</th>
-                                    <th>KDA</th>
-                                </tr>
-                            </thead>
-                            <tbody id="playerScrimsTableBody">
-                                </tbody>
-                        </table>
-                        <p id="noPlayerScrimsMessage" class="no-data-message" style="display: none;">Brak historii meczów dla tego gracza.</p>
-                    </div>
-                </section>
-            </main>
+    <header class="navbar">
+        <div class="logo-section">
+            <img src="logo.png" alt="Logo" class="logo" />
+            <span class="site-name"></span>
         </div>
+        <nav class="nav-links">
+            <a href="index.html">STRONA GŁÓWNA</a>
+            <a href="historia.html">HISTORIA GIER</a>
+            <a href="statystyki.html">STATYSTYKI</a>
+            <a href="soloq.html">SOLOQ</a>
+            <a href="dodajmecz.html">DODAJ MECZ</a>
+        </nav>
+    </header>
 
-        <footer>
-            <p>&copy; 2024 Scrim Stats. All rights reserved.</p>
-        </footer>
+    <div class="main-content-wrapper">
+        <aside class="sidebar-left" id="playerSpecificStatsSidebar">
+            <h2 id="sidebarPlayerName">Statystyki Zawodnika</h2>
+            <ul id="playerStatsSummaryList">
+                <li>Gry: <strong id="sidebarTotalGames">0</strong></li>
+                <li>Wygrane: <strong id="sidebarTotalWins">0</strong></li>
+                <li>Przegrane: <strong id="sidebarTotalLosses">0</strong></li>
+                <li>Win Rate: <strong id="sidebarTotalWinRate">0%</strong></li>
+                <li>avG KDA: <strong id="sidebarAverageKDA">N/A</strong></li>
+                <li>avG CS: <strong id="sidebarAverageCSOverall">N/A</strong></li>
+            </ul>
+
+            <div class="champion-specific-stats" id="championSpecificStatsSection">
+                <h3 id="sidebarChampionNameTitle">
+                    <img id="sidebarChampionIcon" src="" alt="Champion Icon" style="display:none;"/>
+                    Statystyki dla: <span id="sidebarChampionName">Postać</span>
+                </h3>
+                <ul id="championStatsSummaryList">
+                    <li>Gry: <strong id="sidebarChampTotalGames">0</strong></li>
+                    <li>Wygrane: <strong id="sidebarChampTotalWins">0</strong></li>
+                    <li>Przegrane: <strong id="sidebarChampTotalLosses">0</strong></li>
+                    <li>Win Rate: <strong id="sidebarChampWinRate">0%</strong></li>
+                    <li>avG KDA: <strong id="sidebarChampAverageKDA">N/A</strong></li>
+                    <li>avG Gold: <strong id="sidebarChampAverageGold">N/A</strong></li>
+                    <li>avG CS: <strong id="sidebarChampAverageCS">N/A</strong></li>
+                </ul>
+            </div>
+
+        </aside>
+
+        <main>
+            <h1>Statystyki Zawodników</h1>
+
+            <section class="player-list-section">
+                <h2>Wybierz Zawodnika</h2>
+                <div id="playerLinksContainer" class="player-links-container">
+                </div>
+            </section>
+
+            <section id="playerStatsSection">
+                <h2 id="currentPlayerStatsTitle">Statystyki dla: [Nazwa Zawodnika]</h2>
+
+                <div class="tabs-container">
+                    <button class="tab-button active-tab" data-tab="champion-stats">Statystyki Postaci</button>
+                    <button class="tab-button" data-tab="match-history">Historia Meczy</button>
+                </div>
+
+                <table id="championStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Postać</th>
+                            <th>Gry</th>
+                            <th>Win Rate</th>
+                            <th>Średnie KDA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="championStatsTableBody">
+                    </tbody>
+                </table>
+                <p id="noChampionStatsMessage" style="display: none; color: #f0f0f0; text-align: center; margin-top: 10px;">
+                    Brak statystyk dla postaci tego zawodnika.
+                </p>
+
+                <table id="playerScrimsTable">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Result</th>
+                            <th>Czas Gry</th>
+                            <th>Postać</th>
+                            <th>KDA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playerScrimsTableBody">
+                    </tbody>
+                </table>
+                <p id="noPlayerScrimsMessage" style="display: none; color: #f0f0f0; text-align: center; margin-top: 20px;">
+                    Brak dostępnych meczów dla tego zawodnika.
+                </p>
+            </section>
+        </main>
     </div>
 
-    <script>
-        // Inicjalizacja Firebase (załóżmy, że firebase-config.js ją zawiera)
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const scrimsRef = database.ref('scrims');
+    <footer>
+        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+    </footer>
 
-        // Stałe
-        const DDRAGON_VERSION = "14.12.1"; // Sprawdź aktualną wersję na https://ddragon.leagueoflegends.com/api/versions.json
-        const CHAMPION_IMAGE_BASE_URL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = 'https://ddragon.leagueoflegends.com/cdn/img/profileicon/29.png'; // Ikona domyślna
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            onValue,
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-        // Elementy DOM
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebaseapp.com",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const scrimsRef = ref(db, "scrims");
+
         const playerLinksContainer = document.getElementById("playerLinksContainer");
         const playerStatsSection = document.getElementById("playerStatsSection");
         const currentPlayerStatsTitle = document.getElementById("currentPlayerStatsTitle");
-        const playerScrimsTableBody = document.getElementById("playerScrimsTableBody");
-        const championStatsTableBody = document.getElementById("championStatsTableBody");
-        const championStatsTable = document.getElementById("championStatsTable");
         const playerScrimsTable = document.getElementById("playerScrimsTable");
-        const noChampionStatsMessage = document.getElementById("noChampionStatsMessage");
+        const playerScrimsTableBody = document.getElementById("playerScrimsTableBody");
         const noPlayerScrimsMessage = document.getElementById("noPlayerScrimsMessage");
-        const tabsContainer = document.querySelector(".tabs-container");
 
-        // Elementy sidebara
+        // Elementy dla podsumowania statystyk (teraz w panelu bocznym)
         const playerSpecificStatsSidebar = document.getElementById("playerSpecificStatsSidebar");
         const sidebarPlayerName = document.getElementById("sidebarPlayerName");
         const sidebarTotalGames = document.getElementById("sidebarTotalGames");
@@ -534,7 +502,9 @@
         const sidebarAverageKDA = document.getElementById("sidebarAverageKDA");
         const sidebarAverageCSOverall = document.getElementById("sidebarAverageCSOverall");
 
+        // Statystyki konkretnej postaci w sidebarze
         const championSpecificStatsSection = document.getElementById("championSpecificStatsSection");
+        const sidebarChampionNameTitle = document.getElementById("sidebarChampionNameTitle");
         const sidebarChampionIcon = document.getElementById("sidebarChampionIcon");
         const sidebarChampionName = document.getElementById("sidebarChampionName");
         const sidebarChampTotalGames = document.getElementById("sidebarChampTotalGames");
@@ -546,47 +516,37 @@
         const sidebarChampAverageCS = document.getElementById("sidebarChampAverageCS");
 
 
-        // Zmienne globalne
-        let allMatchesData = [];
+        // Zakładki
+        const tabsContainer = document.querySelector(".tabs-container");
+        let currentActiveTab = 'champion-stats';
+
         let currentSelectedPlayer = null;
         let currentSelectedChampion = null;
-        let currentPlayerChampionStats = {}; // Przechowuje zagregowane statystyki championów dla aktualnie wybranego gracza
-        let currentActiveTab = 'champion-stats'; // Domyślna aktywna zakładka
+        let allMatchesData = [];
+        let currentPlayerChampionStats = {};
 
-        // Lista graczy (możesz ją dynamicznie ładować z Firebase w przyszłości)
         const playersList = [
-            "Kohayushi", "Xayoo", "Sinmiv", "Rybson", "Dawidsonek",
-            "Mithael", "TheMr", "Arigato", "Nervarien", "Kubon"
+            "Likht", "Weedolas", "reap777", "Kohayushi", "None"
         ];
 
-        // --- Funkcje do DDragon i pomocnicze ---
+        const DDRAGON_VERSION = "15.12.1"; // Upewnij się, że to jest aktualna wersja ddragona
+        const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/28x28?text=N/A"; // Domyślna ikona w razie błędu ładowania
 
         /**
-         * Normalizuje nazwę championa, usuwając spacje, apostrofy, myślniki i konwertując na małe litery.
-         * To jest kluczowe dla spójności kluczy w championStats i dla poprawnego mapowania DDragon.
-         * @param {string} name - Nazwa championa.
-         * @returns {string} Znormalizowana nazwa.
-         */
-        function normalizeChampionName(name) {
-            if (!name) return 'nieznany';
-            // Usuń apostrofy, spacje, myślniki i kropki, konwertuj na małe litery
-            return name.trim().toLowerCase().replace(/[.'\s-]/g, "");
-        }
-
-        /**
-         * Generuje URL do ikony championa z DDragon.
-         * Używa znormalizowanej nazwy do wyszukiwania w mapie i generowania URL.
-         * @param {string} championName - Nazwa championa (może być surowa).
-         * @returns {string} Pełny URL do ikony championa.
+         * Pobiera URL ikony championa z DDragon, obsługując niestandardowe nazwy.
+         * @param {string} championName - Nazwa championa.
+         * @returns {string} URL ikony championa lub URL ikony awaryjnej.
          */
         function getChampionIconUrl(championName) {
             if (!championName) return FALLBACK_ICON_URL;
-
-            // Normalizujemy nazwę od razu na wejściu
-            const cleanedName = normalizeChampionName(championName);
+            let cleanedName = championName
+                .trim()
+                .toLowerCase()
+                .replace(/[.'-]/g, "") // Usuwa apostrofy i myślniki
+                .replace(/\s+/g, ""); // Usuwa spacje
 
             // Mapa do obsługi niestandardowych nazw championów z DDragon (np. Wukong -> MonkeyKing)
-            // Klucze w tej mapie MUSZĄ być znormalizowane (małe litery, bez spacji, apostrofów itp.)
             const nameMap = {
                 "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu",
                 "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
@@ -627,32 +587,8 @@
             let dataDragonName = nameMap[cleanedName];
 
             // Jeśli nie znaleziono w mapie, spróbuj standardowej konwersji (pierwsza litera duża)
-            // To działa dla większości championów, gdzie nazwa w DDragon to po prostu capitalized version
             if (!dataDragonName && cleanedName.length > 0) {
-                 // Sprawdzamy specyficzne przypadki, które nie zawsze pasują do prostego Capitalize
-                 // Mogą być już w nameMap, ale dla pewności zostawiamy tutaj fallback
-                 if (cleanedName === 'kaisa') dataDragonName = 'Kaisa';
-                 else if (cleanedName === 'chogath') dataDragonName = 'ChoGath';
-                 else if (cleanedName === 'drmundo') dataDragonName = 'DrMundo';
-                 else if (cleanedName === 'jarvaniv') dataDragonName = 'JarvanIV';
-                 else if (cleanedName === 'khazix') dataDragonName = 'KhaZix';
-                 else if (cleanedName === 'kogmaw') dataDragonName = 'KogMaw';
-                 else if (cleanedName === 'leesin') dataDragonName = 'LeeSin';
-                 else if (cleanedName === 'masteryi') dataDragonName = 'MasterYi';
-                 else if (cleanedName === 'missfortune') dataDragonName = 'MissFortune';
-                 else if (cleanedName === 'nunu') dataDragonName = 'Nunu';
-                 else if (cleanedName === 'reksai') dataDragonName = 'RekSai';
-                 else if (cleanedName === 'renataglasc') dataDragonName = 'RenataGlasc';
-                 else if (cleanedName === 'tahmkench') dataDragonName = 'TahmKench';
-                 else if (cleanedName === 'twistedfate') dataDragonName = 'TwistedFate';
-                 else if (cleanedName === 'velkoz') dataDragonName = 'Velkoz';
-                 else if (cleanedName === 'xinzhao') dataDragonName = 'XinZhao';
-                 else if (cleanedName === 'ksante') dataDragonName = 'KSante';
-                 else if (cleanedName === 'belveth') dataDragonName = 'BelVeth';
-                 else if (cleanedName === 'aurelionsol') dataDragonName = 'AurelionSol';
-                 else {
-                     dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
-                 }
+                dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
 
             const finalUrl = `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
@@ -803,29 +739,24 @@
                             totalLossesCount++;
                         }
 
-                        // ZNORMALIZUJ NAZWĘ CHAMPIONA TUTAJ PRZED UŻYCIEM JAKO KLUCZ
-                        const playerChampionOriginal = playerMatchData.champion ? playerMatchData.champion.trim() : 'Nieznany';
-                        const playerChampionNormalized = normalizeChampionName(playerChampionOriginal);
-
-
-                        if (playerChampionNormalized !== 'nieznany') { // Sprawdź czy nie jest "nieznany" po normalizacji
+                        const playerChampion = playerMatchData.champion ? playerMatchData.champion.trim() : 'Nieznany';
+                        if (playerChampion !== 'Nieznany') {
                             hasChampionStats = true;
-                            if (!championStats[playerChampionNormalized]) {
-                                championStats[playerChampionNormalized] = {
+                            if (!championStats[playerChampion]) {
+                                championStats[playerChampion] = {
                                     games: 0, wins: 0, kills: 0, deaths: 0, assists: 0,
-                                    totalGold: 0, totalCs: 0,
-                                    originalName: playerChampionOriginal // Zachowaj oryginalną nazwę dla wyświetlania
+                                    totalGold: 0, totalCs: 0
                                 };
                             }
-                            championStats[playerChampionNormalized].games++;
-                            championStats[playerChampionNormalized].kills += k;
-                            championStats[playerChampionNormalized].deaths += d;
-                            championStats[playerChampionNormalized].assists += a;
-                            championStats[playerChampionNormalized].totalGold += gold;
-                            championStats[playerChampionNormalized].totalCs += cs;
+                            championStats[playerChampion].games++;
+                            championStats[playerChampion].kills += k;
+                            championStats[playerChampion].deaths += d;
+                            championStats[playerChampion].assists += a;
+                            championStats[playerChampion].totalGold += gold;
+                            championStats[playerChampion].totalCs += cs;
 
                             if (match.result && match.result.toLowerCase() === 'win') {
-                                championStats[playerChampionNormalized].wins++;
+                                championStats[playerChampion].wins++;
                             }
                         }
 
@@ -847,14 +778,13 @@
                         const championIconContainer = document.createElement("div");
                         championIconContainer.className = "champion-icons-container";
 
-                        if (playerChampionNormalized !== 'nieznany') { // Sprawdź czy nie jest "nieznany" po normalizacji
+                        if (playerChampion !== 'Nieznany') {
                             const img = document.createElement("img");
                             img.className = "champion-icon";
-                            // Użyj oryginalnej nazwy dla getChampionIconUrl, bo ona sama normalizuje
-                            const iconUrl = getChampionIconUrl(playerChampionOriginal);
+                            const iconUrl = getChampionIconUrl(playerChampion);
                             img.src = iconUrl;
-                            img.title = playerChampionOriginal; // W tooltipie oryginalna nazwa
-                            img.alt = playerChampionOriginal;
+                            img.title = playerChampion;
+                            img.alt = playerChampion;
                             img.onerror = function() {
                                 this.onerror = null;
                                 this.src = FALLBACK_ICON_URL;
@@ -901,14 +831,12 @@
 
             // Wypełnianie tabeli statystyk championów
             if (hasChampionStats) {
-                // Sortuj po liczbie gier malejąco
                 const sortedChampions = Object.keys(championStats).sort((a, b) => championStats[b].games - championStats[a].games);
 
-                sortedChampions.forEach(champNormalizedName => {
-                    const stats = championStats[champNormalizedName];
+                sortedChampions.forEach(champName => {
+                    const stats = championStats[champName];
                     const champRow = championStatsTableBody.insertRow();
-                    // Zapisujemy ZNORMALIZOWANĄ nazwę championa w atrybucie data
-                    champRow.dataset.championName = champNormalizedName;
+                    champRow.dataset.championName = champName; // Dodaj atrybut data
 
                     const champNameCell = champRow.insertCell();
                     const champIconContainer = document.createElement("div");
@@ -916,11 +844,9 @@
 
                     const img = document.createElement("img");
                     img.className = "champion-icon";
-                    // Użyj oryginalnej nazwy championa (jeśli dostępna, w przeciwnym razie znormalizowanej) dla ikony
-                    // getChampionIconUrl i tak sobie poradzi z normalizacją wewnętrznie
-                    img.src = getChampionIconUrl(stats.originalName || champNormalizedName);
-                    img.title = stats.originalName || champNormalizedName; // W tooltipie oryginalna nazwa
-                    img.alt = stats.originalName || champNormalizedName;
+                    img.src = getChampionIconUrl(champName);
+                    img.title = champName;
+                    img.alt = champName;
                     img.onerror = function() {
                         this.onerror = null;
                         this.src = FALLBACK_ICON_URL;
@@ -928,8 +854,7 @@
                     champIconContainer.appendChild(img);
 
                     const nameSpan = document.createElement("span");
-                    // Wyświetl oryginalną nazwę championa, jeśli jest dostępna, w przeciwnym razie znormalizowaną
-                    nameSpan.textContent = stats.originalName || champNormalizedName;
+                    nameSpan.textContent = champName;
                     champIconContainer.appendChild(nameSpan);
                     champNameCell.appendChild(champIconContainer);
 
@@ -952,24 +877,15 @@
 
         /**
          * Wyświetla szczegółowe statystyki dla wybranego championa w panelu bocznym.
-         * @param {string} championName - ZNORMALIZOWANA nazwa wybranego championa.
+         * @param {string} championName - Nazwa wybranego championa.
          */
         function displayChampionSpecificStats(championName) {
-            // Jeśli championName jest null/undefined, ukryj sekcję
-            if (!championName) {
+            if (!championName || !currentPlayerChampionStats[championName]) {
                 championSpecificStatsSection.style.display = 'none';
                 return;
             }
 
-            // Upewnij się, że używamy znormalizowanej nazwy do pobierania statystyk
-            const normalizedChampionName = normalizeChampionName(championName);
-
-            if (!currentPlayerChampionStats[normalizedChampionName]) {
-                championSpecificStatsSection.style.display = 'none';
-                return;
-            }
-
-            const stats = currentPlayerChampionStats[normalizedChampionName];
+            const stats = currentPlayerChampionStats[championName];
             const avgKDAValue = calculateKDA(stats.kills, stats.deaths, stats.assists);
             const winRateValue = ((stats.wins / stats.games) * 100).toFixed(2);
 
@@ -977,10 +893,9 @@
             const averageGold = stats.games > 0 ? (stats.totalGold / stats.games).toFixed(0) : 'N/A';
             const averageCs = stats.games > 0 ? (stats.totalCs / stats.games).toFixed(1) : 'N/A';
 
-            // Wyświetl oryginalną nazwę w sidebarze, jeśli dostępna, w przeciwnym razie znormalizowaną
-            sidebarChampionName.textContent = stats.originalName || normalizedChampionName;
-            // Przekaż oryginalną nazwę do funkcji URL, która ją sobie znormalizuje
-            sidebarChampionIcon.src = getChampionIconUrl(stats.originalName || normalizedChampionName);
+
+            sidebarChampionName.textContent = championName;
+            sidebarChampionIcon.src = getChampionIconUrl(championName);
             sidebarChampionIcon.style.display = 'inline-block';
             sidebarChampionIcon.onerror = function() {
                 this.onerror = null;
@@ -1003,7 +918,7 @@
          * Ładuje wszystkie mecze z Firebase Realtime Database.
          */
         function loadAllMatchesFromFirebase() {
-            firebase.database().ref('scrims').on('value', (snapshot) => {
+            onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
                 allMatchesData = Object.entries(data).map(([key, value]) => ({
                     id: key,
@@ -1077,24 +992,16 @@
 
         // Obsługa kliknięcia na wiersz w tabeli statystyk championów
         championStatsTableBody.addEventListener('click', (event) => {
-            const targetRow = event.target.closest('tr');
-            if (targetRow && targetRow.dataset.championName) {
+            const targetCell = event.target.closest('.champion-col');
+            if (targetCell) {
                 // Usuń klasę 'selected' ze wszystkich wierszy
-                document.querySelectorAll('#championStatsTableBody tr').forEach(row => {
-                    row.classList.remove('selected');
-                    const championCol = row.querySelector('.champion-col');
-                    if (championCol) {
-                        championCol.classList.remove('selected');
-                    }
+                document.querySelectorAll('#championStatsTableBody .champion-col').forEach(cell => {
+                    cell.classList.remove('selected');
                 });
 
-                const championName = targetRow.dataset.championName; // To jest ZNORMALIZOWANA nazwa
+                const championName = targetCell.querySelector('span').textContent;
                 currentSelectedChampion = championName; // Ustaw aktualnie wybraną postać
-                targetRow.classList.add('selected'); // Dodaj klasę 'selected' do klikniętego wiersza
-                const championCol = targetRow.querySelector('.champion-col');
-                if (championCol) {
-                    championCol.classList.add('selected'); // Dodaj klasę 'selected' do kontenera ikony/nazwy
-                }
+                targetCell.classList.add('selected'); // Dodaj klasę 'selected' do klikniętej postaci
 
                 displayChampionSpecificStats(championName);
             }
