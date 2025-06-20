@@ -126,7 +126,6 @@
         .rank-icon {
             width: 40px;
             height: 40px;
-            /* Usunięto/zakomentowano: border: 2px solid #007bff; */
             flex-shrink: 0;
             object-fit: contain; /* Upewnia się, że cały obrazek jest widoczny */
         }
@@ -159,34 +158,154 @@
             align-items: flex-end;
             font-size: 0.85em;
             color: #ccc;
-            min-width: 60px; /* Zmniejszono minimalną szerokość, skoro mniej treści */
+            min-width: 60px;
             text-align: right;
             flex-shrink: 0;
-            margin-right: 15px; /* Dodatkowy margines, by oddzielić od nazwy */
+            margin-right: 15px;
+        }
+        
+        .edit-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px; /* Margines od LP */
+            white-space: nowrap; /* Zapobiega łamaniu się tekstu przycisku */
         }
 
-        /* Sekcja linków graczy zostanie usunięta */
-        /*
-        .player-links {
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal (Pop-up) styles */
+        .modal {
+            display: none; /* Ukryte domyślnie */
+            position: fixed; /* Zawsze na wierzchu */
+            z-index: 1001; /* Wyżej niż navbar */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Włącz scrollowanie, jeśli treść jest za duża */
+            background-color: rgba(0,0,0,0.7); /* Czarne, półprzezroczyste tło */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #333;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            color: #eee;
+            position: relative; /* Dla pozycjonowania przycisku zamknięcia */
+        }
+
+        .modal-content h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #eee;
+            box-sizing: border-box;
+        }
+        
+        /* Styl dla listy rozwijanej rang */
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #eee;
+            box-sizing: border-box;
+            -webkit-appearance: none; /* Usuwa domyślny styl strzałki w Chrome/Safari */
+            -moz-appearance: none;    /* Usuwa domyślny styl strzałki w Firefox */
+            appearance: none;         /* Usuwa domyślny styl strzałki */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23eee%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E'); /* Niestandardowa strzałka */
+            background-repeat: no-repeat;
+            background-position: right 0.7em top 50%, 0 0;
+            background-size: 0.65em auto, 100%;
+        }
+
+
+        .modal-buttons {
             display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-left: 15px;
-            flex-shrink: 0;
-            text-align: right;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .player-links a {
-            color: #7fffd4;
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons .save-button {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .modal-buttons .save-button:hover {
+            background-color: #218838;
+        }
+
+        .modal-buttons .cancel-button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .modal-buttons .cancel-button:hover {
+            background-color: #c82333;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #eee;
             text-decoration: none;
-            font-size: 0.75em;
-            white-space: nowrap;
+            cursor: pointer;
         }
-        .player-links a:hover {
-            color: #00bfff;
-            text-decoration: underline;
-        }
-        */
+
 
         /* Responsiveness */
         @media (max-width: 768px) {
@@ -216,16 +335,23 @@
                 margin-left: 50px;
                 order: 3;
             }
-            /* Usunięto media query dla .player-links */
-            /*
-            .player-links {
+            .edit-button {
+                margin-left: 0;
+                margin-top: 10px; /* Dodatkowe miejsce dla przycisku edycji na małych ekranach */
                 width: 100%;
-                align-items: flex-start;
-                margin-top: 5px;
-                margin-left: 50px;
-                order: 4;
+                box-sizing: border-box;
             }
-            */
+            .player-stats {
+                flex-direction: row; /* LP i przycisk w jednym rzędzie */
+                justify-content: space-between;
+                width: calc(100% - 55px); /* dostosuj szerokość */
+                align-items: center;
+                margin-top: 5px;
+                margin-left: 55px; /* wyrównanie z info o graczu */
+            }
+            .player-stats span {
+                margin-right: 10px; /* odstęp między LP a przyciskiem */
+            }
         }
         @media (max-width: 480px) {
             .ranking-content h1 {
@@ -243,12 +369,6 @@
             .player-stats span {
                 font-size: 0.8em;
             }
-            /* Usunięto media query dla .player-links a */
-            /*
-            .player-links a {
-                font-size: 0.7em;
-            }
-            */
         }
 
         /* Footer links */
@@ -322,75 +442,80 @@
         <h1>Ranking Graczy ACG</h1>
         
         <div id="players-ranking-container" class="ranking-list">
-            <div class="player-rank-item">
+            <div class="player-rank-item" data-player-id="likht">
                 <div class="rank-number">1.</div>
                 <div class="player-info">
                     <img src="Images/challenger.png" alt="Ikona Rangi Challenger" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Likht</span>
-                        <span class="player-rank-text">Challenger 1000LP</span> 
+                        <span class="player-rank-text" data-rank-text>Challenger 1000LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 1000</span> 
-                    </div>
+                    <span data-lp-text>LP: 1000</span> 
+                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
                 </div>
+            </div>
 
-            <div class="player-rank-item">
+            <div class="player-rank-item" data-player-id="weedolas">
                 <div class="rank-number">2.</div>
                 <div class="player-info">
                     <img src="Images/grandmaster.png" alt="Ikona Rangi Grandmaster" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Weedolas</span>
-                        <span class="player-rank-text">Grandmaster 750LP</span> 
+                        <span class="player-rank-text" data-rank-text>Grandmaster 750LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 750</span> 
-                    </div>
+                    <span data-lp-text>LP: 750</span> 
+                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
                 </div>
+            </div>
 
-            <div class="player-rank-item">
+            <div class="player-rank-item" data-player-id="reap777">
                 <div class="rank-number">3.</div>
                 <div class="player-info">
                     <img src="Images/master.png" alt="Ikona Rangi Master" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">reap777</span>
-                        <span class="player-rank-text">Master 500LP</span> 
+                        <span class="player-rank-text" data-rank-text>Master 500LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 500</span> 
-                    </div>
+                    <span data-lp-text>LP: 500</span> 
+                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
                 </div>
+            </div>
 
-            <div class="player-rank-item">
+            <div class="player-rank-item" data-player-id="kohayushi">
                 <div class="rank-number">4.</div>
                 <div class="player-info">
                     <img src="Images/diamond.png" alt="Ikona Rangi Diamond" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Kohayushi</span>
-                        <span class="player-rank-text">Diamond I</span> 
+                        <span class="player-rank-text" data-rank-text>Diamond I</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 75</span> 
-                    </div>
+                    <span data-lp-text>LP: 75</span> 
+                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
                 </div>
+            </div>
 
-            <div class="player-rank-item">
+            <div class="player-rank-item" data-player-id="yanny">
                 <div class="rank-number">5.</div>
                 <div class="player-info">
                     <img src="Images/emerald.png" alt="Ikona Rangi Emerald" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Yanny</span>
-                        <span class="player-rank-text">Emerald IV</span> 
+                        <span class="player-rank-text" data-rank-text>Emerald IV</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 20</span> 
-                    </div>
+                    <span data-lp-text>LP: 20</span> 
+                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
                 </div>
+            </div>
             </div>
 
     </main>
@@ -421,6 +546,146 @@
     <footer>
         <p>2025 &copy; ACG - AC GDAŃSK</p>
     </footer>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeEditModal()">&times;</span>
+            <h2>Edytuj Rangę i LP</h2>
+            <label for="playerNameModal">Nazwa gracza:</label>
+            <input type="text" id="playerNameModal" readonly>
+
+            <label for="playerRankModal">Ranga:</label>
+            <select id="playerRankModal">
+                <option value="iron">Iron</option>
+                <option value="bronze">Bronze</option>
+                <option value="silver">Silver</option>
+                <option value="gold">Gold</option>
+                <option value="platinum">Platinum</option>
+                <option value="emerald">Emerald</option>
+                <option value="diamond">Diamond</option>
+                <option value="master">Master</option>
+                <option value="grandmaster">Grandmaster</option>
+                <option value="challenger">Challenger</option>
+            </select>
+            <input type="text" id="playerRankDivisionModal" placeholder="Np. I, II, III, IV lub brak dla Master+, np. Master 500LP">
+
+            <label for="playerLPModal">LP:</label>
+            <input type="number" id="playerLPModal" min="0">
+
+            <div class="modal-buttons">
+                <button class="save-button" onclick="saveChanges()">Zapisz</button>
+                <button class="cancel-button" onclick="closeEditModal()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tablica mapująca nazwy rang do nazw plików obrazków (małe litery, bez podziału na dywizje)
+        const rankImageMap = {
+            'iron': 'iron.png',
+            'bronze': 'bronze.png',
+            'silver': 'silver.png',
+            'gold': 'gold.png',
+            'platinum': 'platinum.png',
+            'emerald': 'emerald.png',
+            'diamond': 'diamond.png',
+            'master': 'master.png',
+            'grandmaster': 'grandmaster.png',
+            'challenger': 'challenger.png'
+        };
+
+        let currentEditedPlayerItem = null; // Przechowuje aktualnie edytowany element gracza
+
+        function openEditModal(buttonElement) {
+            currentEditedPlayerItem = buttonElement.closest('.player-rank-item');
+            const playerName = currentEditedPlayerItem.querySelector('.player-name').textContent;
+            const rankTextElement = currentEditedPlayerItem.querySelector('.player-rank-text');
+            const lpTextElement = currentEditedPlayerItem.querySelector('[data-lp-text]');
+
+            const currentRankText = rankTextElement.textContent; // Np. "Challenger 1000LP"
+            const currentLPText = lpTextElement.textContent; // Np. "LP: 1000"
+
+            // Parsowanie aktualnej rangi i LP
+            const rankParts = currentRankText.split(' ');
+            let currentRankName = '';
+            let currentRankDivision = '';
+            let currentLP = parseInt(currentLPText.replace('LP: ', '')) || 0;
+
+            if (rankParts.length > 0) {
+                currentRankName = rankParts[0].toLowerCase(); // Np. "challenger"
+                if (rankParts.length > 1 && !rankParts[1].includes('LP')) {
+                    // Jest dywizja (np. I, II, III, IV)
+                    currentRankDivision = rankParts[1];
+                }
+            }
+
+
+            document.getElementById('playerNameModal').value = playerName;
+            document.getElementById('playerLPModal').value = currentLP;
+            document.getElementById('playerRankModal').value = currentRankName; // Ustawia wybraną rangę
+            document.getElementById('playerRankDivisionModal').value = currentRankDivision; // Ustawia dywizję
+
+            document.getElementById('editModal').style.display = 'flex'; // Pokaż modal
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none'; // Ukryj modal
+            currentEditedPlayerItem = null; // Resetuj edytowany element
+        }
+
+        function saveChanges() {
+            if (!currentEditedPlayerItem) return;
+
+            const newLP = document.getElementById('playerLPModal').value;
+            const newRankName = document.getElementById('playerRankModal').value; // Np. 'challenger'
+            const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim(); // Np. 'I', 'IV', '500LP'
+
+            const lpTextElement = currentEditedPlayerItem.querySelector('[data-lp-text]');
+            const rankTextElement = currentEditedPlayerItem.querySelector('.player-rank-text');
+            const rankIconElement = currentEditedPlayerItem.querySelector('.rank-icon');
+
+            // Aktualizuj LP
+            lpTextElement.textContent = `LP: ${newLP}`;
+
+            // Zbuduj pełny tekst rangi (np. "Challenger 1000LP" lub "Diamond I")
+            let fullRankText = newRankName.charAt(0).toUpperCase() + newRankName.slice(1); // Kapitalizuj pierwszą literę
+            if (newRankDivision) {
+                // Jeśli dywizja to liczba (np. 500LP), dodaj ją jako LP, w przeciwnym razie jako dywizję
+                if (newRankDivision.toUpperCase().endsWith('LP')) {
+                    fullRankText += ` ${newRankDivision}`; // Np. "Master 500LP"
+                } else {
+                    fullRankText += ` ${newRankDivision}`; // Np. "Diamond I"
+                }
+            } else if (newLP && ['master', 'grandmaster', 'challenger'].includes(newRankName)) {
+                 // Dla Master+, Grandmaster, Challenger, jeśli nie ma dywizji, ale są LP, dodaj je
+                 fullRankText += ` ${newLP}LP`;
+            }
+
+
+            rankTextElement.textContent = fullRankText;
+
+
+            // Zaktualizuj ikonę rangi
+            const iconFileName = rankImageMap[newRankName.toLowerCase()];
+            if (iconFileName) {
+                rankIconElement.src = `Images/${iconFileName}`;
+                rankIconElement.alt = `Ikona Rangi ${fullRankText.split(' ')[0]}`; // Alt text z nazwą rangi
+            } else {
+                console.warn('Nie znaleziono pliku ikony dla rangi: ' + newRankName);
+                // Opcjonalnie: ustaw domyślną ikonę lub ukryj
+            }
+
+            closeEditModal(); // Zamknij modal po zapisaniu
+        }
+
+        // Zamykanie modala po kliknięciu poza nim
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        }
+    </script>
 
 </body>
 </html>
