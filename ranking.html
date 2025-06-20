@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking Graczy - ACG</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* General Body and Navbar styles */
@@ -123,12 +122,14 @@
             text-align: left;
         }
 
+        /* Styl dla ikony rangi */
         .rank-icon {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            border: 2px solid #007bff;
+            border-radius: 50%; /* Opcjonalnie: zaokrąglenie, jeśli ikony nie są okrągłe */
+            border: 2px solid #007bff; /* Obramowanie ikony */
             flex-shrink: 0;
+            object-fit: contain; /* Upewnia się, że cały obrazek jest widoczny */
         }
 
         .player-name-and-rank {
@@ -315,95 +316,100 @@
             <div class="player-rank-item">
                 <div class="rank-number">1.</div>
                 <div class="player-info">
-                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-diamond.png" alt="Ikona Rangi Diamond" class="rank-icon">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-challenger.png" alt="Ikona Rangi Challenger" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Likht</span>
-                        <span class="player-rank-text">Diamond I</span> 
+                        <span class="player-rank-text">Challenger 1000LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 75</span> 
-                    <span>WR: 55%</span>
-                    <span>W/L: 150W / 120L</span>
+                    <span>LP: 1000</span> 
+                    <span>WR: 65%</span>
+                    <span>W/L: 300W / 160L</span>
                 </div>
                 <div class="player-links">
                     <a href="https://op.gg/pl/lol/summoners/eune/likht-EUNE" target="_blank">OP.GG</a>
+                    <a href="https://zeal.gg/profile/eune/likht-EUNE" target="_blank">Zeal.gg</a>
                 </div>
             </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">2.</div>
                 <div class="player-info">
-                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-platinum.png" alt="Ikona Rangi Platinum" class="rank-icon">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-grandmaster.png" alt="Ikona Rangi Grandmaster" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Weedolas</span>
-                        <span class="player-rank-text">Platinum II</span> 
+                        <span class="player-rank-text">Grandmaster 750LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 50</span> 
-                    <span>WR: 52%</span>
-                    <span>W/L: 100W / 90L</span>
+                    <span>LP: 750</span> 
+                    <span>WR: 60%</span>
+                    <span>W/L: 250W / 160L</span>
                 </div>
                 <div class="player-links">
                     <a href="https://op.gg/pl/lol/summoners/eune/Weedolas-4WB" target="_blank">OP.GG</a>
+                    <a href="https://zeal.gg/profile/eune/Weedolas-4WB" target="_blank">Zeal.gg</a>
                 </div>
             </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">3.</div>
                 <div class="player-info">
-                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-emerald.png" alt="Ikona Rangi Emerald" class="rank-icon">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-master.png" alt="Ikona Rangi Master" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">reap777</span>
-                        <span class="player-rank-text">Emerald IV</span> 
+                        <span class="player-rank-text">Master 500LP</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 99</span> 
+                    <span>LP: 500</span> 
                     <span>WR: 58%</span>
-                    <span>W/L: 200W / 145L</span>
+                    <span>W/L: 220W / 160L</span>
                 </div>
                 <div class="player-links">
                     <a href="https://op.gg/pl/lol/summoners/eune/pizza%20fanboy-EUNE" target="_blank">OP.GG</a>
+                    <a href="https://zeal.gg/profile/eune/pizza%20fanboy-EUNE" target="_blank">Zeal.gg</a>
                 </div>
             </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">4.</div>
                 <div class="player-info">
-                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-gold.png" alt="Ikona Rangi Gold" class="rank-icon">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-diamond.png" alt="Ikona Rangi Diamond" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Kohayushi</span>
-                        <span class="player-rank-text">Gold III</span> 
+                        <span class="player-rank-text">Diamond I</span> 
                     </div>
                 </div>
                 <div class="player-stats">
-                    <span>LP: 30</span> 
-                    <span>WR: 49%</span>
-                    <span>W/L: 80W / 85L</span>
+                    <span>LP: 75</span> 
+                    <span>WR: 55%</span>
+                    <span>W/L: 180W / 145L</span>
                 </div>
                 <div class="player-links">
                     <a href="https://op.gg/pl/lol/summoners/eune/kohayushi-acg" target="_blank">OP.GG</a>
+                    <a href="https://zeal.gg/profile/eune/kohayushi-acg" target="_blank">Zeal.gg</a>
                 </div>
             </div>
 
             <div class="player-rank-item">
                 <div class="rank-number">5.</div>
                 <div class="player-info">
-                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-silver.png" alt="Ikona Rangi Silver" class="rank-icon">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-emerald.png" alt="Ikona Rangi Emerald" class="rank-icon">
                     <div class="player-name-and-rank">
                         <span class="player-name">Yanny</span>
-                        <span class="player-rank-text">Silver II</span> 
+                        <span class="player-rank-text">Emerald IV</span> 
                     </div>
                 </div>
                 <div class="player-stats">
                     <span>LP: 20</span> 
-                    <span>WR: 45%</span>
-                    <span>W/L: 60W / 75L</span>
+                    <span>WR: 51%</span>
+                    <span>W/L: 100W / 95L</span>
                 </div>
                 <div class="player-links">
-                    <a href="#" target="_blank">OP.GG</a> 
+                    <a href="https://op.gg/pl/lol/summoners/eune/yanny-eune" target="_blank">OP.GG</a> 
+                    <a href="https://zeal.gg/profile/eune/yanny-eune" target="_blank">Zeal.gg</a> 
                 </div>
             </div>
             </div>
