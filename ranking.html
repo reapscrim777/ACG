@@ -151,17 +151,19 @@
             color: #bbb;
             white-space: nowrap;
         }
+        .player-lp-display { /* Styl dla wyświetlania LP pod rangą */
+            font-size: 0.8em;
+            color: #7fffd4; /* Kolor LP */
+            margin-top: 2px; /* Mały odstęp od tekstu rangi */
+            white-space: nowrap;
+        }
 
         .player-stats {
-            display: flex; /* Zmienione na flex, aby przycisk był obok */
-            align-items: center; /* Wyśrodkowanie pionowe elementu wewnątrz */
+            display: flex; /* Zmienione na flex, aby przycisk był po prawej */
+            align-items: center; /* Wyśrodkowanie pionowe */
             justify-content: flex-end; /* Przycisk na prawo */
-            font-size: 0.85em;
-            color: #ccc;
             min-width: 60px; /* Może być mniejszy, skoro tylko przycisk */
-            text-align: right;
             flex-shrink: 0;
-            /* Usunięto margin-right: 15px, bo przycisk jest ostatni w kontenerze */
         }
         
         .edit-button {
@@ -173,7 +175,6 @@
             font-size: 0.8em;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            /* Usunięto margin-left, bo teraz to jedyny element lub będzie automatycznie się układać */
             white-space: nowrap; /* Zapobiega łamaniu się tekstu przycisku */
         }
 
@@ -306,6 +307,13 @@
             cursor: pointer;
         }
 
+        /* Loading state for ranking */
+        #rankingLoadingMessage {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 1.2em;
+            color: #aaa;
+        }
 
         /* Responsiveness */
         @media (max-width: 768px) {
@@ -337,9 +345,11 @@
                 justify-content: flex-end; /* Przycisk na prawo */
             }
             .edit-button {
-                margin-left: 0; /* Usuń margines, bo teraz będzie po prawej */
+                margin-left: 0; /* Usunięto margines, bo teraz będzie po prawej */
             }
-            /* Usunięto media query dla .player-stats span, bo już nie ma span LP */
+            .player-lp-display { /* Na małych ekranach LP pod rangą też się ładnie ułożą */
+                font-size: 0.75em;
+            }
         }
         @media (max-width: 480px) {
             .ranking-content h1 {
@@ -354,7 +364,6 @@
             .player-rank-text {
                 font-size: 0.75em;
             }
-            /* Usunięto .player-stats span, bo nie ma już span z LP */
         }
 
         /* Footer links */
@@ -421,82 +430,15 @@
             <a href="soloq.html">SOLOQ</a>
             <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
+            <a href="login.html" id="loginLogoutLink">Zaloguj/Wyloguj</a>
         </nav>
     </header>
 
     <main class="ranking-content">
         <h1>Ranking Graczy ACG</h1>
         
-        <div id="players-ranking-container" class="ranking-list">
-            <div class="player-rank-item" data-player-id="likht">
-                <div class="rank-number">1.</div>
-                <div class="player-info">
-                    <img src="Images/challenger.png" alt="Ikona Rangi Challenger" class="rank-icon">
-                    <div class="player-name-and-rank">
-                        <span class="player-name">Likht</span>
-                        <span class="player-rank-text" data-rank-text data-lp-value="1000">Challenger 1000LP</span> 
-                    </div>
-                </div>
-                <div class="player-stats">
-                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                </div>
-            </div>
-
-            <div class="player-rank-item" data-player-id="weedolas">
-                <div class="rank-number">2.</div>
-                <div class="player-info">
-                    <img src="Images/grandmaster.png" alt="Ikona Rangi Grandmaster" class="rank-icon">
-                    <div class="player-name-and-rank">
-                        <span class="player-name">Weedolas</span>
-                        <span class="player-rank-text" data-rank-text data-lp-value="750">Grandmaster 750LP</span> 
-                    </div>
-                </div>
-                <div class="player-stats">
-                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                </div>
-            </div>
-
-            <div class="player-rank-item" data-player-id="reap777">
-                <div class="rank-number">3.</div>
-                <div class="player-info">
-                    <img src="Images/master.png" alt="Ikona Rangi Master" class="rank-icon">
-                    <div class="player-name-and-rank">
-                        <span class="player-name">reap777</span>
-                        <span class="player-rank-text" data-rank-text data-lp-value="500">Master 500LP</span> 
-                    </div>
-                </div>
-                <div class="player-stats">
-                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                </div>
-            </div>
-
-            <div class="player-rank-item" data-player-id="kohayushi">
-                <div class="rank-number">4.</div>
-                <div class="player-info">
-                    <img src="Images/diamond.png" alt="Ikona Rangi Diamond" class="rank-icon">
-                    <div class="player-name-and-rank">
-                        <span class="player-name">Kohayushi</span>
-                        <span class="player-rank-text" data-rank-text data-lp-value="75">Diamond I</span> 
-                    </div>
-                </div>
-                <div class="player-stats">
-                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                </div>
-            </div>
-
-            <div class="player-rank-item" data-player-id="yanny">
-                <div class="rank-number">5.</div>
-                <div class="player-info">
-                    <img src="Images/emerald.png" alt="Ikona Rangi Emerald" class="rank-icon">
-                    <div class="player-name-and-rank">
-                        <span class="player-name">Yanny</span>
-                        <span class="player-rank-text" data-rank-text data-lp-value="20">Emerald IV</span> 
-                    </div>
-                </div>
-                <div class="player-stats">
-                    <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
-                </div>
-            </div>
+        <div id="rankingLoadingMessage">Ładowanie rankingu...</div>
+        <div id="players-ranking-container" class="ranking-list" style="display: none;">
             </div>
 
     </main>
@@ -560,7 +502,40 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Twoja oryginalna konfiguracja Firebase (skopiowana z dodajmecz.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebaseapp.com",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
+
+        // Inicjalizacja Firebase z Twoją konfiguracją
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Referencja do kolekcji 'playersRanking' w Realtime Database
+        // WAŻNE: Upewnij się, że ta ścieżka istnieje i zawiera dane graczy
+        const playersRankingRef = ref(db, "playersRanking"); 
+
+        // Admin UID - WAŻNE: UPEWNIJ SIĘ, ŻE TO UID JEST PRAWIDŁOWE DLA TWOJEGO KONTA ADMINISTRATORA W FIREBASE AUTHENTICATION
+        const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
+
+        // UI Elements
+        const playersRankingContainer = document.getElementById('players-ranking-container');
+        const rankingLoadingMessage = document.getElementById('rankingLoadingMessage');
+        const loginLogoutLink = document.getElementById('loginLogoutLink');
+
         // Tablica mapująca nazwy rang do nazw plików obrazków (małe litery, bez podziału na dywizje)
         const rankImageMap = {
             'iron': 'iron.png',
@@ -576,22 +551,176 @@
         };
 
         let currentEditedPlayerItem = null; // Przechowuje aktualnie edytowany element gracza
+        let currentEditedPlayerKey = null; // Przechowuje klucz Firebase aktualnie edytowanego gracza
 
+        // Zmienna do przechowywania stanu zalogowania admina
+        let isAdminLoggedIn = false; 
+
+        // Funkcja do dynamicznego renderowania rankingu
+        function renderRanking(playersData) {
+            playersRankingContainer.innerHTML = ''; // Wyczyść obecną listę
+            let rankCounter = 1;
+
+            const sortedPlayers = Object.values(playersData).sort((a, b) => {
+                const rankOrder = {
+                    'challenger': 10, 'grandmaster': 9, 'master': 8,
+                    'diamond': 7, 'emerald': 6, 'platinum': 5,
+                    'gold': 4, 'silver': 3, 'bronze': 2, 'iron': 1
+                };
+
+                const divisionOrder = { 'I': 4, 'II': 3, 'III': 2, 'IV': 1 };
+
+                const rankA = rankOrder[a.rankName.toLowerCase()] || 0;
+                const rankB = rankOrder[b.rankName.toLowerCase()] || 0;
+
+                // Sortuj po randze (wyższa ranga to wyższy numer)
+                if (rankA !== rankB) {
+                    return rankB - rankA;
+                }
+
+                // Dla Master+, Grandmaster, Challenger sortuj po LP
+                if (['master', 'grandmaster', 'challenger'].includes(a.rankName.toLowerCase())) {
+                    const lpA = typeof a.lp === 'string' ? parseInt(a.lp.replace('LP', '')) : a.lp;
+                    const lpB = typeof b.lp === 'string' ? parseInt(b.lp.replace('LP', '')) : b.lp;
+                    if (lpA !== lpB) {
+                        return lpB - lpA; // Malejąco po LP
+                    }
+                } else {
+                    // Dla niższych rang, sortuj po dywizji (I > II > III > IV)
+                    const divA = divisionOrder[a.rankDivision] || 0;
+                    const divB = divisionOrder[b.rankDivision] || 0;
+                    if (divA !== divB) {
+                        return divB - divA; // Malejąco po dywizji (wyższa dywizja to wyższy numer)
+                    }
+                }
+                
+                // Na koniec, jeśli wszystko inne jest takie samo, sortuj alfabetycznie po nazwie
+                return a.name.localeCompare(b.name);
+            });
+
+
+            sortedPlayers.forEach(player => {
+                // Użyj unikalnego klucza z Firebase jako dataset.firebaseKey
+                const firebaseKey = player.key; 
+                const rankIconSrc = `Images/${rankImageMap[player.rankName.toLowerCase()] || 'default.png'}`; 
+                
+                let fullRankText = player.rankName;
+                if (player.rankDivision) {
+                    fullRankText += ` ${player.rankDivision}`;
+                }
+
+                const playerRankItem = document.createElement('div');
+                playerRankItem.className = 'player-rank-item';
+                playerRankItem.dataset.playerName = player.name; // Dodano dataset dla nazwy gracza
+                playerRankItem.dataset.firebaseKey = firebaseKey; // Przechowuj klucz Firebase tutaj
+
+                playerRankItem.innerHTML = `
+                    <div class="rank-number">${rankCounter}.</div>
+                    <div class="player-info">
+                        <img src="${rankIconSrc}" alt="Ikona Rangi ${player.rankName}" class="rank-icon">
+                        <div class="player-name-and-rank">
+                            <span class="player-name">${player.name}</span>
+                            <span class="player-rank-text" data-rank-text>${fullRankText}</span>
+                            <span class="player-lp-display" data-lp-text>LP: ${player.lp}</span> 
+                        </div>
+                    </div>
+                    <div class="player-stats">
+                        <button class="edit-button" onclick="openEditModal(this)">Edytuj</button>
+                    </div>
+                `;
+                playersRankingContainer.appendChild(playerRankItem);
+                rankCounter++;
+            });
+
+            // Ukryj przyciski edycji, jeśli użytkownik nie jest adminem
+            if (!isAdminLoggedIn) {
+                document.querySelectorAll('.edit-button').forEach(button => {
+                    button.style.display = 'none';
+                });
+            } else {
+                 document.querySelectorAll('.edit-button').forEach(button => {
+                    button.style.display = 'inline-block'; // Pokaż, jeśli admin zalogowany
+                });
+            }
+
+            rankingLoadingMessage.style.display = 'none'; // Ukryj komunikat ładowania
+            playersRankingContainer.style.display = 'flex'; // Pokaż kontener rankingu
+        }
+
+        // Authentication State Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === ADMIN_UID) {
+                console.log("Admin zalogowany.");
+                isAdminLoggedIn = true;
+                loginLogoutLink.textContent = 'Wyloguj';
+                loginLogoutLink.href = '#';
+                loginLogoutLink.onclick = (e) => {
+                    e.preventDefault();
+                    signOut(auth).then(() => {
+                        alert("Wylogowano pomyślnie.");
+                        window.location.reload(); // Odśwież stronę po wylogowaniu
+                    }).catch((error) => {
+                        console.error("Błąd wylogowania:", error);
+                        alert(`Wystąpił błąd podczas wylogowywania: ${error.message}`);
+                    });
+                };
+            } else {
+                console.log("Użytkownik niezalogowany lub nie jest adminem.");
+                isAdminLoggedIn = false;
+                loginLogoutLink.textContent = 'Zaloguj';
+                loginLogoutLink.href = 'login.html';
+                loginLogoutLink.onclick = null; // Usuń handler, jeśli ma prowadzić do login.html
+            }
+            // Po ustawieniu stanu admina, pobierz i wyrenderuj ranking
+            // Spowoduje to również prawidłowe ukrycie/pokazanie przycisków edycji
+            fetchAndRenderRanking(); 
+        });
+
+
+        // Funkcja do pobierania danych z Firebase i renderowania
+        function fetchAndRenderRanking() {
+            onValue(playersRankingRef, (snapshot) => {
+                const playersData = snapshot.val();
+                if (playersData) {
+                    // Dodaj klucz Firebase do każdego obiektu gracza
+                    const playersWithKeys = Object.keys(playersData).map(key => ({
+                        key: key, // To jest klucz (np. "Likht", "Weedolas")
+                        ...playersData[key]
+                    }));
+                    renderRanking(playersWithKeys);
+                } else {
+                    playersRankingContainer.innerHTML = '<p>Brak danych rankingu do wyświetlenia.</p>';
+                    rankingLoadingMessage.style.display = 'none';
+                    playersRankingContainer.style.display = 'flex';
+                }
+            }, (error) => {
+                console.error("Błąd pobierania danych rankingu z Firebase:", error);
+                rankingLoadingMessage.textContent = 'Błąd ładowania rankingu.';
+            });
+        }
+
+
+        // MODAL FUNCTIONS
         function openEditModal(buttonElement) {
+            if (!isAdminLoggedIn) {
+                alert("Brak uprawnień do edycji rankingu. Zaloguj się jako administrator.");
+                return;
+            }
+
             currentEditedPlayerItem = buttonElement.closest('.player-rank-item');
+            // Zmieniamy pobieranie klucza - teraz pochodzi z datasetu
+            currentEditedPlayerKey = currentEditedPlayerItem.dataset.firebaseKey; 
+
             const playerName = currentEditedPlayerItem.querySelector('.player-name').textContent;
             const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
-            
-            // Pobieranie LP z atrybutu data-lp-value, a nie z widocznego tekstu
-            const currentLP = currentEditedPlayerItem.querySelector('[data-rank-text]').dataset.lpValue || '0';
+            const lpDisplayElement = currentEditedPlayerItem.querySelector('[data-lp-text]');
 
-            const currentRankText = rankTextElement.textContent; // Np. "Challenger 1000LP" lub "Diamond I"
+            const currentLP = parseInt(lpDisplayElement.textContent.replace('LP: ', '')) || 0;
+            const currentRankText = rankTextElement.textContent;
 
-            // Parsowanie aktualnej rangi i LP
             let currentRankName = '';
             let currentRankDivision = '';
             
-            // Regex do wyciągania rangi i dywizji/LP. Obsługuje "Master 500LP", "Diamond I", "Challenger"
             const match = currentRankText.match(/^([a-zA-Z]+)(?:\s([IVXLCDM]+|\d+LP))?$/);
 
             if (match) {
@@ -601,58 +730,66 @@
                 }
             }
 
-
             document.getElementById('playerNameModal').value = playerName;
-            document.getElementById('playerLPModal').value = currentLP; // Używamy wartości pobranej z data-lp-value
-            document.getElementById('playerRankModal').value = currentRankName; // Ustawia wybraną rangę
-            document.getElementById('playerRankDivisionModal').value = currentRankDivision; // Ustawia dywizję
+            document.getElementById('playerLPModal').value = currentLP;
+            document.getElementById('playerRankModal').value = currentRankName;
+            document.getElementById('playerRankDivisionModal').value = currentRankDivision;
 
-            document.getElementById('editModal').style.display = 'flex'; // Pokaż modal
+            document.getElementById('editModal').style.display = 'flex';
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none'; // Ukryj modal
-            currentEditedPlayerItem = null; // Resetuj edytowany element
+            document.getElementById('editModal').style.display = 'none';
+            currentEditedPlayerItem = null;
+            currentEditedPlayerKey = null;
         }
 
-        function saveChanges() {
-            if (!currentEditedPlayerItem) return;
-
-            const newLP = document.getElementById('playerLPModal').value;
-            const newRankName = document.getElementById('playerRankModal').value; // Np. 'challenger'
-            const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim(); // Np. 'I', 'IV', '500LP'
-
-            const rankTextElement = currentEditedPlayerItem.querySelector('[data-rank-text]');
-            const rankIconElement = currentEditedPlayerItem.querySelector('.rank-icon');
-
-            // Zaktualizuj atrybut data-lp-value
-            rankTextElement.dataset.lpValue = newLP;
-
-            // Zbuduj pełny tekst rangi (np. "Challenger 1000LP" lub "Diamond I")
-            let fullRankText = newRankName.charAt(0).toUpperCase() + newRankName.slice(1); // Kapitalizuj pierwszą literę
-            if (newRankDivision) {
-                fullRankText += ` ${newRankDivision}`; // Np. "Diamond I" lub "Master 500LP"
-            } else if (['master', 'grandmaster', 'challenger'].includes(newRankName) && newLP) {
-                 // Dla Master+, Grandmaster, Challenger, jeśli nie ma dywizji, ale są LP, dodaj je do tekstu
-                 fullRankText += ` ${newLP}LP`;
+        async function saveChanges() {
+            if (!currentEditedPlayerItem || !currentEditedPlayerKey) {
+                console.error("Brak wybranego gracza do edycji lub jego klucza Firebase.");
+                alert("Wystąpił błąd: brak danych gracza do zapisu.");
+                closeEditModal();
+                return;
+            }
+            
+            if (!isAdminLoggedIn) { // Dodatkowe zabezpieczenie po stronie klienta
+                alert("Brak uprawnień do edycji rankingu.");
+                closeEditModal();
+                return;
             }
 
+            const newLP = parseInt(document.getElementById('playerLPModal').value);
+            const newRankName = document.getElementById('playerRankModal').value;
+            const newRankDivision = document.getElementById('playerRankDivisionModal').value.trim();
 
-            rankTextElement.textContent = fullRankText;
-
-
-            // Zaktualizuj ikonę rangi
-            const iconFileName = rankImageMap[newRankName.toLowerCase()];
-            if (iconFileName) {
-                rankIconElement.src = `Images/${iconFileName}`;
-                rankIconElement.alt = `Ikona Rangi ${fullRankText.split(' ')[0]}`; // Alt text z nazwą rangi
-            } else {
-                console.warn('Nie znaleziono pliku ikony dla rangi: ' + newRankName);
-                // Opcjonalnie: ustaw domyślną ikonę lub ukryj
+            if (isNaN(newLP) || newLP < 0) {
+                alert("Proszę wprowadzić prawidłową liczbę LP (nieujemną).");
+                return;
+            }
+            if (!newRankName) {
+                alert("Proszę wybrać rangę.");
+                return;
             }
 
-            closeEditModal(); // Zamknij modal po zapisaniu
+            // Utwórz referencję do konkretnego gracza w bazie danych
+            const playerToUpdateRef = ref(db, `playersRanking/${currentEditedPlayerKey}`);
+
+            try {
+                // Użyj `update` na referencji do konkretnego gracza
+                await update(playerToUpdateRef, {
+                    lp: newLP,
+                    rankName: newRankName,
+                    rankDivision: newRankDivision
+                    // Jeśli masz rankOrder i chcesz go aktualizować, dodaj tutaj logikę
+                });
+                alert("Zmiany zapisane pomyślnie w Firebase!");
+                closeEditModal();
+            } catch (error) {
+                console.error("Błąd zapisu zmian do Firebase:", error);
+                alert("Wystąpił błąd podczas zapisu zmian: " + error.message);
+            }
         }
+
 
         // Zamykanie modala po kliknięciu poza nim
         window.onclick = function(event) {
@@ -661,6 +798,13 @@
                 closeEditModal();
             }
         }
+
+        // Upewnij się, że funkcje openEditModal, closeEditModal, saveChanges są dostępne globalnie
+        // dla atrybutów onclick w HTML
+        window.openEditModal = openEditModal;
+        window.closeEditModal = closeEditModal;
+        window.saveChanges = saveChanges;
+        
     </script>
 
 </body>
