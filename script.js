@@ -5,34 +5,46 @@ const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912";
 const BASE_ACCOUNT_API_URL = "https://europe.api.riotgames.com";
 const BASE_LOL_API_URL = "https://eun1.api.riotgames.com";
 const BASE_MATCH_API_URL = "https://europe.api.riotgames.com";
-const DDRAGON_VERSION = "14.12.1";
-const DDRAGON_CDN_IMG = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img`;
 
-// --- NOWA ZMIENNA GLOBALNA I FUNKCJA DO POBIERANIA DANYCH POSTACI ---
-let championIdMap = {}; // Będzie przechowywać mapę: { 'numerID': 'nazwaPliku', ... }
+// --- ZMIENNE GLOBALNE DLA DANYCH GRY (WERSJA I OBRAZKI) ---
+let LATEST_DDRAGON_VERSION = ""; // Ta zmienna będzie przechowywać najnowszą wersję
+let DDRAGON_CDN_IMG = ""; // Ten URL będzie dynamicznie tworzony
+let championIdMap = {}; // Mapa ID postaci
 
-async function initializeChampionData() {
+// --- NOWA, ULEPSZONA FUNKCJA INICJALIZUJĄCA ---
+async function initializeGameData() {
     try {
-        const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/en_US/champion.json`);
-        if (!response.ok) throw new Error("Nie udało się pobrać listy postaci z Data Dragon.");
+        // Krok 1: Pobierz listę wszystkich wersji Data Dragon
+        const versionsResponse = await fetch(`https://ddragon.leagueoflegends.com/api/versions.json`);
+        if (!versionsResponse.ok) throw new Error("Nie udało się pobrać wersji gry.");
+        const versions = await versionsResponse.json();
+        LATEST_DDRAGON_VERSION = versions[0]; // Pierwsza pozycja to zawsze najnowsza wersja
+        console.log(`Pobrano najnowszą wersję gry: ${LATEST_DDRAGON_VERSION}`);
+
+        // Krok 2: Ustaw dynamicznie ścieżkę do obrazków
+        DDRAGON_CDN_IMG = `https://ddragon.leagueoflegends.com/cdn/${LATEST_DDRAGON_VERSION}/img`;
+
+        // Krok 3: Pobierz dane postaci używając najnowszej wersji
+        const championResponse = await fetch(`https://ddragon.leagueoflegends.com/cdn/${LATEST_DDRAGON_VERSION}/data/en_US/champion.json`);
+        if (!championResponse.ok) throw new Error("Nie udało się pobrać listy postaci.");
         
-        const json = await response.json();
+        const json = await championResponse.json();
         const champions = json.data;
         
         for (const championKey in champions) {
             const championData = champions[championKey];
-            // Tworzymy mapę z klucza numerycznego na ID tekstowe (używane w nazwach plików)
-            // np. championData.key = "9", championData.id = "Fiddlesticks"
             championIdMap[championData.key] = championData.id;
         }
-        console.log("Mapa postaci została pomyślnie załadowana.", championIdMap);
+        console.log("Mapa postaci została pomyślnie załadowana.");
+
     } catch (error) {
-        console.error("Krytyczny błąd podczas inicjalizacji danych postaci:", error);
+        console.error("Krytyczny błąd podczas inicjalizacji danych gry:", error);
         displayError("Nie można załadować podstawowych danych gry. Odśwież stronę.");
     }
 }
 
-// --- FUNKCJE POMOCNICZE ---
+
+// --- FUNKCJE POMOCNICZE (bez zmian) ---
 
 function getSpellName(spellId) {
     const spellMap = { '1': 'SummonerBoost', '3': 'SummonerExhaust', '4': 'SummonerFlash', '6': 'SummonerHaste', '7': 'SummonerHeal', '11': 'SummonerSmite', '12': 'SummonerTeleport', '13': 'SummonerMana', '14': 'SummonerDot', '21': 'SummonerBarrier' };
@@ -68,7 +80,6 @@ function createPlayerRowHtml(player, mainPlayerPuuid) {
     const items = [player.item0, player.item1, player.item2, player.item3, player.item4, player.item5, player.item6]
         .map(id => `<div class="item-slot-small">${id !== 0 ? `<img src="${DDRAGON_CDN_IMG}/item/${id}.png">` : ''}</div>`).join('');
     
-    // Używamy mapy do znalezienia poprawnej nazwy pliku obrazka
     const championFileId = championIdMap[player.championId] || player.championName;
 
     return `
@@ -89,6 +100,8 @@ function createPlayerRowHtml(player, mainPlayerPuuid) {
     `;
 }
 
+// Reszta kodu pozostaje identyczna...
+// ...
 const summonerNameInput = document.getElementById("summonerNameInput");
 const searchButton = document.getElementById("searchButton");
 const errorMessageDiv = document.getElementById("errorMessage");
@@ -184,7 +197,6 @@ function renderMatchCard(match, puuid) {
 
     const resultClass = mainPlayer.win ? 'victory' : 'defeat';
     
-    // Używamy mapy do znalezienia poprawnej nazwy pliku obrazka
     const championFileId = championIdMap[mainPlayer.championId] || mainPlayer.championName;
     const championImgUrl = `${DDRAGON_CDN_IMG}/champion/${championFileId}.png`;
     
@@ -286,6 +298,7 @@ async function displaySummonerData(gameName, tagLine) {
 
     const rankData = await getSummonerRank(summonerData.id);
     
+    // Używamy dynamicznej ścieżki do obrazków
     const profileIconUrl = `${DDRAGON_CDN_IMG}/profileicon/${summonerData.profileIconId}.png`;
     summonerHeaderContainer.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap: 15px;"><img src="${profileIconUrl}" style="width: 80px; height: 80px; border-radius: 50%;"><div class="summoner-info"><h2 style="margin:0;">${accountData.gameName}#${accountData.tagLine}</h2><p style="margin:0;">Poziom: ${summonerData.summonerLevel}</p></div></div>`;
     
@@ -304,9 +317,9 @@ async function displaySummonerData(gameName, tagLine) {
 
 // --- Główna funkcja inicjalizująca ---
 async function main() {
-    await initializeChampionData(); // Najpierw ładujemy mapę postaci
+    await initializeGameData(); // Najpierw ładujemy dane gry
 
-    // Dopiero potem podpinamy event listenery, które z niej korzystają
+    // Dopiero potem podpinamy event listenery, które mogą z nich korzystać
     searchButton.addEventListener("click", () => {
         const fullRiotId = summonerNameInput.value.trim();
         const parts = fullRiotId.split('#');
