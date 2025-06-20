@@ -6,50 +6,32 @@
     <title>Ranking Graczy - ACG</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script>
-        // Twoja konfiguracja Firebase (Zastąp XXXX swoimi danymi z Konsoli Firebase)
-        const firebaseConfig = {
-          apiKey: "YOUR_API_KEY", // np. "AIzaSyC..."
-          authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // np. "mojerangilol.firebaseapp.com"
-          projectId: "YOUR_PROJECT_ID", // np. "mojerangilol"
-          storageBucket: "YOUR_PROJECT_ID.appspot.com",
-          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-          appId: "YOUR_APP_ID"
-        };
-
-        // Inicjalizuj Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-    </script>
     <style>
-        /* General Body and Navbar styles - taken from your provided HTML */
+        /* General Body and Navbar styles */
         body {
-            background-color: #222; /* Tło strony */
-            color: #eee; /* Kolor tekstu */
+            background-color: #222;
+            color: #eee;
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Rozciągnij stronę na całą wysokość widoku */
-            overflow-y: auto; /* Pozwól na przewijanie zawartości */
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
-        /* Dopasuj navbar do oryginalnego wyglądu z index.html */
         .navbar {
-            background-color: #1a1a1a; /* Tło nawigacji */
+            background-color: #1a1a1a;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            position: fixed; /* Przyklejony do góry */
+            position: fixed;
             width: 100%;
             top: 0;
             left: 0;
-            z-index: 1000; /* Upewnij się, że jest nad innymi elementami */
+            z-index: 1000;
         }
 
         .navbar .logo-section {
@@ -58,7 +40,7 @@
         }
 
         .navbar .logo {
-            height: 40px; /* Wysokość logo */
+            height: 40px;
             margin-right: 10px;
         }
 
@@ -77,10 +59,10 @@
         }
 
         .navbar .nav-links a:hover {
-            color: #007bff; /* Kolor po najechaniu */
+            color: #007bff;
         }
 
-        /* Główna sekcja contentu dla Rankingu */
+        /* Ranking Content and List Styles */
         .ranking-content {
             padding: 100px 20px 40px 20px;
             text-align: center;
@@ -97,14 +79,13 @@
             font-size: 2.5em;
         }
 
-        /* ZMIENIONE STYLE NA FORMĘ RANKINGU (LISTY) */
         .ranking-list {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Odstęp między wierszami rankingu */
+            gap: 10px;
             width: 100%;
-            max-width: 700px; /* Maksymalna szerokość listy, nieco większa */
-            margin: 0 auto; /* Wyśrodkowanie listy */
+            max-width: 700px;
+            margin: 0 auto;
         }
 
         .player-rank-item {
@@ -114,10 +95,10 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Rozłóż elementy */
+            justify-content: space-between;
             font-size: 0.95em;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-sizing: border-box; /* Ważne dla paddingu i szerokości */
+            box-sizing: border-box;
         }
 
         .player-rank-item:hover {
@@ -129,7 +110,7 @@
             font-size: 1.5em;
             font-weight: bold;
             color: #007bff;
-            min-width: 40px; /* Stała szerokość dla numeru rankingu */
+            min-width: 40px;
             text-align: right;
             margin-right: 15px;
         }
@@ -137,34 +118,34 @@
         .player-info {
             display: flex;
             align-items: center;
-            flex-grow: 1; /* Pozwól zająć dostępną przestrzeń */
+            flex-grow: 1;
             gap: 10px;
-            text-align: left; /* Wyrównaj tekst do lewej */
+            text-align: left;
         }
 
         .rank-icon {
-            width: 40px; /* Mniejsza ikona */
+            width: 40px;
             height: 40px;
             border-radius: 50%;
             border: 2px solid #007bff;
-            flex-shrink: 0; /* Zapobiegaj zmniejszaniu ikony */
+            flex-shrink: 0;
         }
 
         .player-name-and-rank {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            flex-grow: 1; /* Pozwól na rozciąganie */
-            min-width: 100px; /* Minimalna szerokość, żeby się nie łamało za wcześnie */
+            flex-grow: 1;
+            min-width: 100px;
         }
         .player-name {
             font-size: 1.1em;
             font-weight: 600;
             color: #eee;
             line-height: 1.2;
-            white-space: nowrap; /* Zapobiegaj łamaniu nazwy */
+            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Dodaj trzy kropki, jeśli nazwa jest za długa */
+            text-overflow: ellipsis;
         }
         .player-rank-text {
             font-size: 0.8em;
@@ -175,10 +156,10 @@
         .player-stats {
             display: flex;
             flex-direction: column;
-            align-items: flex-end; /* Wyrównaj statystyki do prawej */
+            align-items: flex-end;
             font-size: 0.85em;
             color: #ccc;
-            min-width: 120px; /* Upewnij się, że jest miejsce na statystyki */
+            min-width: 120px;
             text-align: right;
             flex-shrink: 0;
         }
@@ -196,20 +177,20 @@
             color: #7fffd4;
             text-decoration: none;
             font-size: 0.75em;
-            white-space: nowrap; /* Zapobiegaj łamaniu linków */
+            white-space: nowrap;
         }
         .player-links a:hover {
             color: #00bfff;
             text-decoration: underline;
         }
 
-        /* Responsywność dla małych ekranów */
+        /* Responsiveness */
         @media (max-width: 768px) {
             .ranking-list {
                 max-width: 100%;
             }
             .player-rank-item {
-                flex-wrap: wrap; /* Zwijanie na mniejszych ekranach */
+                flex-wrap: wrap;
                 justify-content: flex-start;
                 padding: 10px;
             }
@@ -217,26 +198,26 @@
                 margin-right: 10px;
                 min-width: unset;
                 text-align: left;
-                order: 1; /* Pierwszy w kolejności */
+                order: 1;
             }
             .player-info {
                 flex-grow: unset;
-                width: calc(100% - 50px); /* Dopasuj do numeru rankingu i paddingu */
-                order: 2; /* Drugi w kolejności */
+                width: calc(100% - 50px);
+                order: 2;
             }
             .player-stats {
                 width: 100%;
                 align-items: flex-start;
                 margin-top: 5px;
-                margin-left: 50px; /* Wyrównaj pod nazwą gracza */
-                order: 3; /* Trzeci w kolejności */
+                margin-left: 50px;
+                order: 3;
             }
             .player-links {
                 width: 100%;
                 align-items: flex-start;
                 margin-top: 5px;
-                margin-left: 50px; /* Wyrównaj pod nazwą gracza */
-                order: 4; /* Czwarty w kolejności */
+                margin-left: 50px;
+                order: 4;
             }
         }
         @media (max-width: 480px) {
@@ -260,8 +241,7 @@
             }
         }
 
-
-        /* Styl dla sekcji linków na dole (byłe footer2) */
+        /* Footer links */
         .footer-bottom-links {
             background-color: #1a1a1a;
             padding: 15px 20px;
@@ -271,7 +251,7 @@
             flex-wrap: wrap;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
             width: 100%;
-            margin-top: auto; /* Pcha stopkę na dół */
+            margin-top: auto;
         }
 
         .footer-bottom-links a {
@@ -302,7 +282,7 @@
             border-color: #007bff;
         }
 
-        /* Główna stopka */
+        /* Main footer */
         footer {
             background-color: #111;
             color: #aaa;
@@ -332,8 +312,91 @@
         <h1>Ranking Graczy ACG</h1>
         
         <div id="players-ranking-container" class="ranking-list">
-          <p>Ładowanie rankingu...</p>
-        </div>
+            <div class="player-rank-item">
+                <div class="rank-number">1.</div>
+                <div class="player-info">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-diamond.png" alt="Ikona Rangi Likht" class="rank-icon">
+                    <div class="player-name-and-rank">
+                        <span class="player-name">Likht</span>
+                        <span class="player-rank-text">Diamond I</span> </div>
+                </div>
+                <div class="player-stats">
+                    <span>LP: 75</span> <span>WR: 55%</span>
+                    <span>W/L: 150W / 120L</span>
+                </div>
+                <div class="player-links">
+                    <a href="https://op.gg/pl/lol/summoners/eune/likht-EUNE" target="_blank">OP.GG</a>
+                </div>
+            </div>
+
+            <div class="player-rank-item">
+                <div class="rank-number">2.</div>
+                <div class="player-info">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-platinum.png" alt="Ikona Rangi Weedolas" class="rank-icon">
+                    <div class="player-name-and-rank">
+                        <span class="player-name">Weedolas</span>
+                        <span class="player-rank-text">Platinum II</span> </div>
+                </div>
+                <div class="player-stats">
+                    <span>LP: 50</span> <span>WR: 52%</span>
+                    <span>W/L: 100W / 90L</span>
+                </div>
+                <div class="player-links">
+                    <a href="https://op.gg/pl/lol/summoners/eune/Weedolas-4WB" target="_blank">OP.GG</a>
+                </div>
+            </div>
+
+            <div class="player-rank-item">
+                <div class="rank-number">3.</div>
+                <div class="player-info">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-emerald.png" alt="Ikona Rangi reap777" class="rank-icon">
+                    <div class="player-name-and-rank">
+                        <span class="player-name">reap777</span>
+                        <span class="player-rank-text">Emerald IV</span> </div>
+                </div>
+                <div class="player-stats">
+                    <span>LP: 99</span> <span>WR: 58%</span>
+                    <span>W/L: 200W / 145L</span>
+                </div>
+                <div class="player-links">
+                    <a href="https://op.gg/pl/lol/summoners/eune/pizza%20fanboy-EUNE" target="_blank">OP.GG</a>
+                </div>
+            </div>
+
+            <div class="player-rank-item">
+                <div class="rank-number">4.</div>
+                <div class="player-info">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-gold.png" alt="Ikona Rangi Kohayushi" class="rank-icon">
+                    <div class="player-name-and-rank">
+                        <span class="player-name">Kohayushi</span>
+                        <span class="player-rank-text">Gold III</span> </div>
+                </div>
+                <div class="player-stats">
+                    <span>LP: 30</span> <span>WR: 49%</span>
+                    <span>W/L: 80W / 85L</span>
+                </div>
+                <div class="player-links">
+                    <a href="https://op.gg/pl/lol/summoners/eune/kohayushi-acg" target="_blank">OP.GG</a>
+                </div>
+            </div>
+
+            <div class="player-rank-item">
+                <div class="rank-number">5.</div>
+                <div class="player-info">
+                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/emblem-silver.png" alt="Ikona Rangi Yanny" class="rank-icon">
+                    <div class="player-name-and-rank">
+                        <span class="player-name">Yanny</span>
+                        <span class="player-rank-text">Silver II</span> </div>
+                </div>
+                <div class="player-stats">
+                    <span>LP: 20</span> <span>WR: 45%</span>
+                    <span>W/L: 60W / 75L</span>
+                </div>
+                <div class="player-links">
+                    <a href="#" target="_blank">OP.GG</a> 
+                </div>
+            </div>
+            </div>
 
     </main>
 
@@ -364,95 +427,5 @@
         <p>2025 &copy; ACG - AC GDAŃSK</p>
     </footer>
 
-    <script>
-        // Funkcja do pobierania danych i aktualizowania interfejsu
-        async function loadPlayerRanks() {
-            const playersRankingContainer = document.getElementById('players-ranking-container');
-            playersRankingContainer.innerHTML = '<p>Ładowanie rankingu...</p>';
-
-            try {
-                // Pobierz dane z Firestore i posortuj je
-                const snapshot = await db.collection('playerRanks').get();
-                let players = [];
-                snapshot.forEach(doc => {
-                    players.push(doc.data());
-                });
-
-                // Sortowanie graczy: najpierw po randze, potem po dywizji, potem po LP
-                const rankOrder = {
-                    'Challenger': 9, 'Grandmaster': 8, 'Master': 7,
-                    'Diamond': 6, 'Emerald': 5, 'Platinum': 4,
-                    'Gold': 3, 'Silver': 2, 'Bronze': 1, 'Iron': 0, 'Unranked': -1
-                };
-
-                players.sort((a, b) => {
-                    const aRankName = a.rank ? a.rank.split(' ')[0] : 'Unranked';
-                    const bRankName = b.rank ? b.rank.split(' ')[0] : 'Unranked';
-                    // Konwersja dywizji rzymskiej na int, obsługuje brak dywizji (np. Master, Grandmaster, Challenger)
-                    const aDivision = a.rank && a.rank.split(' ')[1] ? romanToInt(a.rank.split(' ')[1]) : 0;
-                    const bDivision = b.rank && b.rank.split(' ')[1] ? romanToInt(b.rank.split(' ')[1]) : 0;
-
-                    // 1. Sortuj po głównej randze (np. Diamond vs Platinum)
-                    if (rankOrder[bRankName] !== rankOrder[aRankName]) {
-                        return rankOrder[bRankName] - rankOrder[aRankName];
-                    }
-                    // 2. Jeśli rangi są takie same, sortuj po dywizji (I > II > III > IV)
-                    //   Mniejsza liczba rzymska to lepsza dywizja (np. I=1, II=2), więc a-b
-                    if (aDivision !== bDivision) {
-                        return aDivision - bDivision;
-                    }
-                    // 3. Jeśli ranga i dywizja są takie same, sortuj po LP (więcej LP jest lepsze)
-                    return b.lp - a.lp;
-                });
-
-                // Funkcja pomocnicza do konwersji rzymskich cyfr na int (dla dywizji)
-                function romanToInt(roman) {
-                    const map = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4 };
-                    return map[roman] || 0; // Zwraca 0, jeśli nie znaleziono (np. dla unranked, master bez dywizji)
-                }
-
-                let playersHtml = '';
-                if (players.length === 0) {
-                    playersHtml = '<p>Brak danych o graczach w bazie. Upewnij się, że funkcja Cloud Function działa poprawnie.</p>';
-                } else {
-                    players.forEach((data, index) => {
-                        const rankNumber = index + 1; // Numeracja od 1
-                        // Dzielenie nazwy rangi na część tekstową (np. Diamond) i dywizję (np. IV)
-                        const rankBaseName = data.rank ? data.rank.split(' ')[0].toLowerCase() : 'unranked';
-                        // Upewnij się, że nazwa rangi do pliku grafiki jest poprawna (np. 'master' zamiast 'Master')
-                        const emblemFileName = `emblem-${rankBaseName}.png`;
-
-                        playersHtml += `
-                            <div class="player-rank-item">
-                                <div class="rank-number">${rankNumber}.</div>
-                                <div class="player-info">
-                                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/${emblemFileName}" alt="Ikona Rangi ${data.name}" class="rank-icon">
-                                    <div class="player-name-and-rank">
-                                        <span class="player-name">${data.name}</span>
-                                        <span class="player-rank-text">${data.rank}</span>
-                                    </div>
-                                </div>
-                                <div class="player-stats">
-                                    <span>LP: ${data.lp}</span>
-                                    <span>WR: ${data.winRate}%</span>
-                                    <span>W/L: ${data.wins}W / ${data.losses}L</span>
-                                </div>
-                                <div class="player-links">
-                                    <a href="https://zeal.gg/profile/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">Zeal.gg</a>
-                                    <a href="https://op.gg/pl/lol/summoners/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">OP.GG</a>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                playersRankingContainer.innerHTML = playersHtml;
-            } catch (error) {
-                console.error("Błąd podczas pobierania danych z Firestore:", error);
-                playersRankingContainer.innerHTML = '<p>Wystąpił błąd podczas ładowania rankingu. Sprawdź konsolę, aby uzyskać szczegóły.</p>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadPlayerRanks);
-    </script>
 </body>
 </html>
