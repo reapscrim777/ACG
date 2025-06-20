@@ -1,241 +1,321 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Historia Scrimów</title>
-    <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Graczy - ACG</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script>
+        // Twoja konfiguracja Firebase (Zastąp XXXX swoimi danymi z Konsoli Firebase)
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY", // np. "AIzaSyC..."
+          authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // np. "mojerangilol.firebaseapp.com"
+          projectId: "YOUR_PROJECT_ID", // np. "mojerangilol"
+          storageBucket: "YOUR_PROJECT_ID.appspot.com",
+          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+
+        // Inicjalizuj Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
     <style>
-        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
-        .champion-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 2px;
-            vertical-align: middle;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-        }
-        .champion-icons-container {
+        /* General Body and Navbar styles - taken from your provided HTML */
+        body {
+            background-color: #222; /* Tło strony */
+            color: #eee; /* Kolor tekstu */
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
-            gap: 2px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            min-height: 100vh; /* Rozciągnij stronę na całą wysokość widoku */
+            overflow-y: auto; /* Pozwól na przewijanie zawartości */
         }
-        .win {
-            color: green;
-            font-weight: bold;
-        }
-        .lose {
-            color: red;
-            font-weight: bold;
-        }
-        /* Style dla tabeli scrimów */
-        .scrim-history table {
+
+        /* Dopasuj navbar do oryginalnego wyglądu z index.html */
+        .navbar {
+            background-color: #1a1a1a; /* Tło nawigacji */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: fixed; /* Przyklejony do góry */
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
+            top: 0;
+            left: 0;
+            z-index: 1000; /* Upewnij się, że jest nad innymi elementami */
         }
 
-        .scrim-history th, .scrim-history td {
-            border: 1px solid #333;
-            padding: 10px;
-            text-align: left;
-            vertical-align: middle;
+        .navbar .logo-section {
+            display: flex;
+            align-items: center;
         }
 
-        .scrim-history th {
-            background-color: #007bff;
-            color: white;
+        .navbar .logo {
+            height: 40px; /* Wysokość logo */
+            margin-right: 10px;
+        }
+
+        .navbar .site-name {
+            color: #fff;
+            font-size: 1.5em;
             font-weight: 600;
         }
 
-        .scrim-history tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-        .scrim-history tbody tr:nth-child(odd) {
-            background-color: #2a2a2a;
-        }
-
-        .scrim-history tbody tr:nth-child(even) {
-            background-color: #1e1e1e;
-        }
-
-        .scrim-history tbody tr:hover {
-            background-color: #3a3a3a;
-        }
-
-        /* Styl dla klikalnego wiersza meczu */
-        .match-row {
-            cursor: pointer;
-        }
-
-        /* Ukryta sekcja ze statystykami graczy */
-        .player-stats-detail-row {
-            display: none; /* Domyślnie ukryte */
-            background-color: #252525;
-        }
-
-        /* Kontener dla obu tabel, żeby je ładnie ułożyć obok siebie lub pod sobą */
-        .player-stats-container {
-            display: flex; /* Użyj flexboxa */
-            flex-wrap: wrap; /* Pozwól na zawijanie elementów, jeśli brakuje miejsca */
-            gap: 20px; /* Odstęp między tabelami */
-            justify-content: space-around; /* Wyśrodkowanie i rozłożenie tabel */
-            padding: 10px;
-        }
-
-        /* Styl dla rozwijalnej tabeli graczy (obu: naszej i przeciwnika) */
-        .player-stats-detail-table {
-            flex: 1; /* Pozwól tabelom rosnąć i kurczyć się */
-            min-width: 300px; /* Minimalna szerokość tabeli, żeby się nie ściskały za bardzo */
-            border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            color: #ccc;
-        }
-
-        .player-stats-detail-table h4 {
-            text-align: center;
-            color: #f0f0f0;
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-
-        /* Nowy styl dla wyświetlania sumy złota */
-        .gold-summary {
-            text-align: center;
-            color: #ffcc00 !important; /* Złoty kolor - z !important */
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .player-stats-detail-table th {
-            border: 1px solid #444;
-            padding: 8px;
-            text-align: left; /* Nagłówki kolumn nadal wyrównane do lewej */
-            background-color: #333;
-            color: #f0f0f0;
+        .navbar .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 25px;
             font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        /* Zmiana tutaj: wszystkie komórki td wewnątrz player-stats-detail-table będą wyśrodkowane */
-        .player-stats-detail-table td {
-            border: 1px solid #444;
-            padding: 8px;
-            text-align: center; /* Wyrównanie wszystkich komórek danych do środka */
+        .navbar .nav-links a:hover {
+            color: #007bff; /* Kolor po najechaniu */
         }
 
-        /* Specyficzne style, które mogą nadpisać ogólne, jeśli potrzebne (np. dla ikony+nicka) */
-        .player-stats-detail-table td:first-child {
-            text-align: left; /* Pierwsza kolumna (postać/gracz) z powrotem do lewej */
-        }
-
-
-        .player-stats-detail-table .player-kda {
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-        .player-stats-detail-table .player-minions {
-            color: #88d0ff; /* Jakiś fajny kolor dla minionów */
-        }
-        .player-stats-detail-table .player-gold {
-            color: #ffcc00; /* Złoty kolor dla golda */
-        }
-        .player-stats-detail-table .player-champion-icon {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin-right: 5px;
-            border-radius: 2px;
-            border: 1px solid #555;
-        }
-
-        /* Przycisk usuwania */
-        .delete-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 0.85em;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        /* Style for the custom message box */
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #2a2a2a;
-            border: 1px solid #007bff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            color: #f0f0f0;
+        /* Główna sekcja contentu dla Rankingu */
+        .ranking-content {
+            padding: 100px 20px 40px 20px;
             text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
         }
 
-        .message-box p {
-            margin-bottom: 15px;
+        .ranking-content h1 {
+            color: #007bff;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        /* ZMIENIONE STYLE NA FORMĘ RANKINGU (LISTY) */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Odstęp między wierszami rankingu */
+            width: 100%;
+            max-width: 700px; /* Maksymalna szerokość listy, nieco większa */
+            margin: 0 auto; /* Wyśrodkowanie listy */
+        }
+
+        .player-rank-item {
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Rozłóż elementy */
+            font-size: 0.95em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box; /* Ważne dla paddingu i szerokości */
+        }
+
+        .player-rank-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .rank-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+            min-width: 40px; /* Stała szerokość dla numeru rankingu */
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1; /* Pozwól zająć dostępną przestrzeń */
+            gap: 10px;
+            text-align: left; /* Wyrównaj tekst do lewej */
+        }
+
+        .rank-icon {
+            width: 40px; /* Mniejsza ikona */
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #007bff;
+            flex-shrink: 0; /* Zapobiegaj zmniejszaniu ikony */
+        }
+
+        .player-name-and-rank {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex-grow: 1; /* Pozwól na rozciąganie */
+            min-width: 100px; /* Minimalna szerokość, żeby się nie łamało za wcześnie */
+        }
+        .player-name {
             font-size: 1.1em;
+            font-weight: 600;
+            color: #eee;
+            line-height: 1.2;
+            white-space: nowrap; /* Zapobiegaj łamaniu nazwy */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Dodaj trzy kropki, jeśli nazwa jest za długa */
+        }
+        .player-rank-text {
+            font-size: 0.8em;
+            color: #bbb;
+            white-space: nowrap;
         }
 
-        .message-box button {
-            padding: 8px 15px;
-            margin: 0 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s ease;
+        .player-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Wyrównaj statystyki do prawej */
+            font-size: 0.85em;
+            color: #ccc;
+            min-width: 120px; /* Upewnij się, że jest miejsce na statystyki */
+            text-align: right;
+            flex-shrink: 0;
         }
 
-        .message-box .confirm-button, .message-box .ok-button, .message-box .success-button {
-            background-color: #007bff;
-            color: white;
+        .player-links {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-left: 15px;
+            flex-shrink: 0;
+            text-align: right;
         }
 
-        .message-box .confirm-button:hover, .message-box .ok-button:hover, .message-box .success-button:hover {
-            background-color: #0056b3;
+        .player-links a {
+            color: #7fffd4;
+            text-decoration: none;
+            font-size: 0.75em;
+            white-space: nowrap; /* Zapobiegaj łamaniu linków */
+        }
+        .player-links a:hover {
+            color: #00bfff;
+            text-decoration: underline;
         }
 
-        .message-box .cancel-button {
-            background-color: #6c757d;
-            color: white;
+        /* Responsywność dla małych ekranów */
+        @media (max-width: 768px) {
+            .ranking-list {
+                max-width: 100%;
+            }
+            .player-rank-item {
+                flex-wrap: wrap; /* Zwijanie na mniejszych ekranach */
+                justify-content: flex-start;
+                padding: 10px;
+            }
+            .rank-number {
+                margin-right: 10px;
+                min-width: unset;
+                text-align: left;
+                order: 1; /* Pierwszy w kolejności */
+            }
+            .player-info {
+                flex-grow: unset;
+                width: calc(100% - 50px); /* Dopasuj do numeru rankingu i paddingu */
+                order: 2; /* Drugi w kolejności */
+            }
+            .player-stats {
+                width: 100%;
+                align-items: flex-start;
+                margin-top: 5px;
+                margin-left: 50px; /* Wyrównaj pod nazwą gracza */
+                order: 3; /* Trzeci w kolejności */
+            }
+            .player-links {
+                width: 100%;
+                align-items: flex-start;
+                margin-top: 5px;
+                margin-left: 50px; /* Wyrównaj pod nazwą gracza */
+                order: 4; /* Czwarty w kolejności */
+            }
+        }
+        @media (max-width: 480px) {
+            .ranking-content h1 {
+                font-size: 2em;
+            }
+            .rank-number {
+                font-size: 1.3em;
+            }
+            .player-name {
+                font-size: 1em;
+            }
+            .player-rank-text {
+                font-size: 0.75em;
+            }
+            .player-stats span {
+                font-size: 0.8em;
+            }
+            .player-links a {
+                font-size: 0.7em;
+            }
         }
 
-        .message-box .cancel-button:hover {
-            background-color: #5a6268;
+
+        /* Styl dla sekcji linków na dole (byłe footer2) */
+        .footer-bottom-links {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            margin-top: auto; /* Pcha stopkę na dół */
         }
 
-        .message-box .error-button {
-            background-color: #dc3545;
-            color: white;
+        .footer-bottom-links a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .message-box .error-button:hover {
-            background-color: #c82333;
+        .footer-bottom-links a:hover {
+            color: #007bff;
+        }
+
+        .footer-bottom-links img {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .footer-bottom-links a:hover img {
+            border-color: #007bff;
+        }
+
+        /* Główna stopka */
+        footer {
+            background-color: #111;
+            color: #aaa;
+            text-align: center;
+            padding: 15px 20px;
+            font-size: 0.8em;
         }
     </style>
 </head>
 <body>
     <header class="navbar">
         <div class="logo-section">
-            <img src="logo.png" alt="Logo" class="logo" />
+            <img src="logo.png" alt="Logo" class="logo">
             <span class="site-name"></span>
         </div>
         <nav class="nav-links">
@@ -243,516 +323,136 @@
             <a href="historia.html">HISTORIA GIER</a>
             <a href="statystyki.html">STATYSTYKI</a>
             <a href="soloq.html">SOLOQ</a>
+            <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
     </header>
 
-    <main>
-        <h1>Historia Scrimów</h1>
+    <main class="ranking-content">
+        <h1>Ranking Graczy ACG</h1>
+        
+        <div id="players-ranking-container" class="ranking-list">
+          <p>Ładowanie rankingu...</p>
+        </div>
 
-        <section class="stats-summary">
-            <div class="stats-item">Ilość scrimów: <span id="totalScrims">0</span></div>
-            <div class="stats-item">Wygrane: <span id="wins">0</span></div>
-            <div class="stats-item">Przegrane: <span id="losses">0</span></div>
-            <div class="stats-item">% zwycięstw: <span id="winRate">0%</span></div>
-        </section>
-
-        <section class="scrim-history">
-            <h2>Poprzednie Scrimy</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Wynik</th>
-                        <th>Czas Gry</th>
-                        <th>Nasze Postacie</th>
-                        <th>Postacie Przeciwników</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody id="scrimTableBody"></tbody>
-            </table>
-        </section>
     </main>
 
+    <footer2 class="footer-bottom-links">
+        <a href="https://op.gg/pl/lol/summoners/eune/likht-EUNE" target="_blank">
+            <img src="top.png" alt="Ikona 1">
+            <span>LIKHT</span>
+        </a>
+        <a href="https://op.gg/pl/lol/summoners/eune/Weedolas-4WB" target="_blank">
+            <img src="jg.png" alt="Ikona 2">
+            <span>WEEDOLAS</span>
+        </a>
+        <a href="https://op.gg/pl/lol/summoners/eune/pizza%20fanboy-EUNE" target="_blank">
+            <img src="mid.png" alt="Ikona 3">
+            <span>REAP</span>
+        </a>
+        <a href="https://op.gg/pl/lol/summoners/eune/kohayushi-acg" target="_blank">
+            <img src="bot.png" alt="Ikona 4">
+            <span>KOHAYUSHI</span>
+        </a>
+        <a href="strona5.html" target="_blank">
+            <img src="sup.png" alt="Ikona 5">
+            <span>NONE</span>
+        </a>
+    </footer2>
+
     <footer>
-        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
+        <p>2025 &copy; ACG - AC GDAŃSK</p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            onValue,
-            remove,
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
-        // DODAJ IMPORT AUTORYZACJI
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    <script>
+        // Funkcja do pobierania danych i aktualizowania interfejsu
+        async function loadPlayerRanks() {
+            const playersRankingContainer = document.getElementById('players-ranking-container');
+            playersRankingContainer.innerHTML = '<p>Ładowanie rankingu...</p>';
 
-
-        // Firebase config (nie zmieniony)
-        const firebaseConfig = {
-            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
-            authDomain: "acg-skrimy.firebaseapp.com",
-            databaseURL:
-                "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebasestorage.app",
-            messagingSenderId: "78237268518",
-            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
-            measurementId: "G-6VDFPFX560",
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getDatabase(app);
-        const auth = getAuth(app); // Pobierz instancję autoryzacji
-        const scrimsRef = ref(db, "scrims");
-
-        const scrimTableBody = document.getElementById("scrimTableBody");
-
-        const totalScrimsSpan = document.getElementById("totalScrims");
-        const winsSpan = document.getElementById("wins");
-        const lossesSpan = document.getElementById("losses");
-        const winRateSpan = document.getElementById("winRate");
-
-        let scrimsData = [];
-        let currentUser = null; // Zmienna do przechowywania stanu użytkownika
-
-        // Nasłuchuj zmian stanu autoryzacji
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            // Tutaj możesz zaktualizować interfejs użytkownika na podstawie stanu zalogowania
-            // np. ukryć/pokazać przycisk "Usuń" lub "Zaloguj się"
-            console.log("Stan autoryzacji: ", currentUser ? currentUser.email : "Niezalogowany");
-            renderTable(); // Odśwież tabelę po zmianie stanu zalogowania, aby uwzględnić widoczność przycisku
-        });
-
-        // Config do ikon League of Legends
-        const DDRAGON_VERSION = "15.12.1"; // Zaktualizowana wersja DDragon
-        const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
-
-        function getChampionIconUrl(championName) {
-            if (!championName) return FALLBACK_ICON_URL;
-            let cleanedName = championName
-                .trim()
-                .toLowerCase()
-                .replace(/[.'-]/g, "")
-                .replace(/\s+/g, "");
-
-            const nameMap = {
-                "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu", "mummy": "Amumu",
-                "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
-                "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar",
-                "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", "corki": "Corki", "darius": "Darius",
-                "diana": "Diana", "drankz": "DrMundo", "drmundo": "DrMundo", "draven": "Draven", "ekko": "Ekko", "elise": "Elise",
-                "evelynn": "Evelynn", "ezreal": "Ezreal", "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio",
-                "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen",
-                "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern",
-                "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx", "kaisa": "Kaisa",
-                "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle",
-                "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw",
-                "ksante": "KSante", "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra",
-                "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux", "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai",
-                "masteryi": "MasterYi", "milio": "Milio", "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing",
-                "mordekaiser": "Mordekaiser", "morgana": "Morgana", "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus",
-                "neeko": "Neeko", "nidalee": "Nidalee", "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf",
-                "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana",
-                "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renata": "RenataGlasc",
-                "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze", "samira": "Samira",
-                "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen",
-                "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder",
-                "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra", "tahmkench": "TahmKench",
-                "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh", "tristana": "Tristana",
-                "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch", "udyr": "Udyr",
-                "urgot": "Urgot", "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi",
-                "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear", "warwick": "Warwick", "xayah": "Xayah",
-                "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone", "yorick": "Yorick", "yuumi": "Yuumi",
-                "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean", "zoe": "Zoe", "zyra": "Zyra",
-                "ambessa": "Ambessa",
-            };
-
-            let dataDragonName = nameMap[cleanedName];
-            if (!dataDragonName && cleanedName.length > 0) {
-                dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
-            }
-            return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
-        }
-
-        /**
-         * Updates the overall scrim statistics displayed at the top of the page.
-         */
-        function updateStats() {
-            const total = scrimsData.length;
-            const wins = scrimsData.filter((s) => s.result === "WIN").length;
-            const losses = total - wins;
-            const winRate = total === 0 ? 0 : Math.round((wins / total) * 100);
-
-            totalScrimsSpan.textContent = total;
-            winsSpan.textContent = wins;
-            lossesSpan.textContent = losses;
-            winRateSpan.textContent = `${winRate}%`;
-        }
-
-        /**
-         * Finds a player's data object within an array of players based on their champion name.
-         * @param {Array<Object>} playersArray - An array of player objects from a match.
-         * @param {string} championName - The champion name to search for.
-         * @returns {Object|undefined} The player object if found, otherwise undefined.
-         */
-        function findPlayerByChampionName(playersArray, championName) {
-            return playersArray.find(player => player.champion && player.champion.trim().toLowerCase() === championName.trim().toLowerCase());
-        }
-
-        /**
-         * Renders the main scrim history table, including expandable player details.
-         */
-        function renderTable() {
-            scrimTableBody.innerHTML = "";
-
-            scrimsData.forEach((scrim) => {
-                // Główny wiersz meczu
-                const mainRow = document.createElement("tr");
-                mainRow.classList.add("match-row");
-                mainRow.dataset.matchId = scrim.id;
-
-                // Data
-                const dateTd = document.createElement("td");
-                if (scrim.date) {
-                    const [year, month, day] = scrim.date.split('-');
-                    dateTd.textContent = `${day}-${month}-${year}`;
-                } else {
-                    dateTd.textContent = "";
-                }
-                mainRow.appendChild(dateTd);
-
-                // Wynik
-                const resultTd = document.createElement("td");
-                resultTd.textContent = scrim.result || "";
-                resultTd.className = scrim.result === "WIN" ? "win" : "lose";
-                mainRow.appendChild(resultTd);
-
-                // Czas gry
-                const timeTd = document.createElement("td");
-                timeTd.textContent = scrim.time || "";
-                mainRow.appendChild(timeTd);
-
-                // Nasze postacie z ikonami
-                const ourTd = document.createElement("td");
-                const ourContainer = document.createElement("div");
-                ourContainer.className = "champion-icons-container";
-                let ourChampsToDisplay = Array.isArray(scrim.ourChamps) ? scrim.ourChamps : [];
-                ourChampsToDisplay.forEach((champ) => {
-                    const trimmedChampName = champ.trim();
-                    const img = document.createElement("img");
-                    img.className = "champion-icon";
-                    img.src = getChampionIconUrl(trimmedChampName);
-                    img.title = trimmedChampName;
-                    img.alt = trimmedChampName;
-                    img.onerror = function() { this.onerror=null; this.src=FALLBACK_ICON_URL; };
-                    ourContainer.appendChild(img);
-                });
-                ourTd.appendChild(ourContainer);
-                mainRow.appendChild(ourTd);
-
-                // Postacie przeciwników z ikonami
-                const enemyTd = document.createElement("td");
-                const enemyContainer = document.createElement("div");
-                enemyContainer.className = "champion-icons-container";
-                let enemyChampsToDisplay = Array.isArray(scrim.enemyChamps) ? scrim.enemyChamps : [];
-                enemyChampsToDisplay.forEach((champ) => {
-                    const trimmedChampName = champ.trim();
-                    const img = document.createElement("img");
-                    img.className = "champion-icon";
-                    img.src = getChampionIconUrl(trimmedChampName);
-                    img.title = trimmedChampName;
-                    img.alt = trimmedChampName;
-                    img.onerror = function() { this.onerror=null; this.src=FALLBACK_ICON_URL; };
-                    enemyContainer.appendChild(img);
-                });
-                enemyTd.appendChild(enemyContainer);
-                mainRow.appendChild(enemyTd);
-
-                // Akcje - Usuń
-                const actionsTd = document.createElement("td");
-                const deleteBtn = document.createElement("button");
-                deleteBtn.textContent = "Usuń";
-                deleteBtn.className = "delete-btn";
-                // Dodajemy warunek wyświetlania przycisku i logikę kliknięcia
-                if (currentUser) { // Jeśli użytkownik jest zalogowany, pokaż przycisk
-                    deleteBtn.style.display = 'block'; // Lub 'inline-block' w zależności od potrzeb
-                    deleteBtn.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        // Zastąpienie alert() i confirm() własnym MessageBoxem
-                        showMessageBox(
-                            `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`,
-                            'confirm', // Typ wiadomości dla potwierdzenia
-                            async () => { await deleteScrim(scrim.id); } // Callback po potwierdzeniu
-                        );
-                    });
-                } else { // Jeśli użytkownik nie jest zalogowany, ukryj przycisk i dodaj obsługę kliknięcia z komunikatem
-                    deleteBtn.style.display = 'block'; // Nadal widoczny, ale zmieni się jego zachowanie
-                    deleteBtn.addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        showMessageBox(
-                            "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
-                            'info', // Typ wiadomości informacyjnej
-                            () => { window.location.href = "login.html"; } // Callback po zamknięciu
-                        );
-                    });
-                }
-                actionsTd.appendChild(deleteBtn);
-                mainRow.appendChild(actionsTd);
-
-                scrimTableBody.appendChild(mainRow);
-
-                // --- Rozwijalny wiersz ze statystykami graczy ---
-                const detailRow = document.createElement("tr");
-                detailRow.classList.add("player-stats-detail-row");
-                detailRow.dataset.matchId = scrim.id;
-
-                const detailCell = document.createElement("td");
-                detailCell.colSpan = mainRow.children.length;
-
-                const playerStatsContainer = document.createElement("div");
-                playerStatsContainer.classList.add("player-stats-container");
-
-                // Posortowanie naszych graczy zgodnie z kolejnością championów
-                const sortedOurPlayers = ourChampsToDisplay
-                    .map(champName => scrim.players?.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
-                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
-
-                // Obliczanie sumy złota dla naszej drużyny
-                let totalOurGold = 0;
-                const ourPlayersRows = sortedOurPlayers
-                    .map(player => {
-                        const championName = player.champion;
-                        // TUTAJ ZMIANA: Wyświetlanie "Zmiennik" jeśli gracz był zmiennikiem
-                        const displayPlayerName = player.substitute === true ? 'Zmiennik' : player.name;
-                        const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
-                        const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
-                        const displayGold = player && player.gold !== undefined ? player.gold : 'N/A';
-
-                        if (typeof player?.gold === 'number') {
-                            totalOurGold += player.gold;
-                        }
-
-                        return `
-                            <tr>
-                                <td>
-                                    <img src="${getChampionIconUrl(championName)}" class="player-champion-icon" alt="${championName}" onerror="this.onerror=null;this.src='${FALLBACK_ICON_URL}';">
-                                    ${displayPlayerName}
-                                </td>
-                                <td class="player-kda">${displayKDA}</td>
-                                <td class="player-minions">${displayMinions}</td>
-                                <td class="player-gold">${displayGold}</td>
-                            </tr>
-                        `;
-                    })
-                    .join('');
-
-                // Tabela dla naszych graczy
-                const ourPlayersTable = document.createElement("table");
-                ourPlayersTable.classList.add("player-stats-detail-table");
-                ourPlayersTable.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th colspan="4"><h4>Nasi Gracze</h4></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4" class="gold-summary">Team Gold: ${totalOurGold.toLocaleString()}</th>
-                        </tr>
-                        <tr>
-                            <th>Postać / Gracz</th>
-                            <th>KDA</th>
-                            <th>Miniony</th>
-                            <th>Gold</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${ourPlayersRows}
-                    </tbody>
-                `;
-                playerStatsContainer.appendChild(ourPlayersTable);
-
-                // Posortowanie graczy przeciwnika zgodnie z kolejnością championów
-                const sortedEnemyPlayers = enemyChampsToDisplay
-                    .map(champName => scrim.enemyPlayers?.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
-                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
-
-
-                // Obliczanie sumy złota dla graczy przeciwnika
-                let totalEnemyGold = 0;
-                const enemyPlayersRows = sortedEnemyPlayers
-                    .map(player => {
-                        const championName = player.champion;
-                        const displayPlayerName = player ? player.name : 'N/A';
-                        const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
-                        const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
-                        const displayGold = player && player.gold !== undefined ? player.gold : 'N/A';
-
-                        if (typeof player?.gold === 'number') {
-                            totalEnemyGold += player.gold;
-                        }
-
-                        return `
-                            <tr>
-                                <td>
-                                    <img src="${getChampionIconUrl(championName)}" class="player-champion-icon" alt="${championName}" onerror="this.onerror=null;this.src='${FALLBACK_ICON_URL}';">
-                                    ${displayPlayerName}
-                                </td>
-                                <td class="player-kda">${displayKDA}</td>
-                                <td class="player-minions">${displayMinions}</td>
-                                <td class="player-gold">${displayGold}</td>
-                            </tr>
-                        `;
-                    })
-                    .join('');
-
-
-                // Tabela dla graczy przeciwnika
-                const enemyPlayersTable = document.createElement("table");
-                enemyPlayersTable.classList.add("player-stats-detail-table");
-                enemyPlayersTable.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th colspan="4"><h4>Gracze Przeciwnika</h4></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4" class="gold-summary">Team Gold: ${totalEnemyGold.toLocaleString()}</th>
-                        </tr>
-                        <tr>
-                            <th>Postać / Gracz</th>
-                            <th>KDA</th>
-                            <th>Miniony</th>
-                            <th>Gold</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${enemyPlayersRows}
-                    </tbody>
-                `;
-                playerStatsContainer.appendChild(enemyPlayersTable);
-
-
-                detailCell.appendChild(playerStatsContainer);
-                detailRow.appendChild(detailCell);
-                scrimTableBody.appendChild(detailRow);
-
-
-                // Obsługa kliknięcia dla rozwijania/zwijania
-                mainRow.addEventListener('click', () => {
-                    // Zwiń wszystkie inne rozwinięte wiersze
-                    document.querySelectorAll('.player-stats-detail-row').forEach(row => {
-                        if (row !== detailRow && row.style.display === 'table-row') {
-                            row.style.display = 'none';
-                        }
-                    });
-
-                    // Przełącz widoczność bieżącego wiersza
-                    if (detailRow.style.display === 'table-row') {
-                        detailRow.style.display = 'none';
-                    } else {
-                        detailRow.style.display = 'table-row';
-                    }
-                });
-            });
-
-            updateStats();
-        }
-
-        /**
-         * Displays a custom message box for alerts or confirmations instead of native browser pop-ups.
-         * @param {string} message - The message to display.
-         * @param {string} type - Type of message ('success', 'error', 'info', 'confirm').
-         * @param {function} [onConfirm] - Callback function to execute on confirmation (only for 'confirm' type).
-         * @param {function} [onClose] - Callback function to execute when the message box is closed (for all types).
-         */
-        function showMessageBox(message, type, onConfirm = null, onClose = null) {
-            const messageBox = document.createElement('div');
-            messageBox.className = 'message-box';
-            
-            let buttonsHtml = '';
-            if (type === 'confirm') {
-                buttonsHtml = `
-                    <button class="confirm-button">Tak</button>
-                    <button class="cancel-button">Nie</button>
-                `;
-            } else {
-                let buttonClass = '';
-                if (type === 'success') buttonClass = 'success-button';
-                else if (type === 'error') buttonClass = 'error-button';
-                else buttonClass = 'ok-button'; // Default for info
-
-                buttonsHtml = `<button class="${buttonClass}">OK</button>`;
-            }
-
-            messageBox.innerHTML = `
-                <p>${message}</p>
-                <div>${buttonsHtml}</div>
-            `;
-            document.body.appendChild(messageBox);
-
-            if (type === 'confirm') {
-                messageBox.querySelector('.confirm-button').addEventListener('click', () => {
-                    messageBox.remove();
-                    if (onConfirm) onConfirm();
-                    if (onClose) onClose();
-                });
-                messageBox.querySelector('.cancel-button').addEventListener('click', () => {
-                    messageBox.remove();
-                    if (onClose) onClose();
-                });
-            } else {
-                messageBox.querySelector('button').addEventListener('click', () => {
-                    messageBox.remove();
-                    if (onClose) onClose();
-                });
-            }
-        }
-
-        // Usuwanie scrimu z Firebase
-        async function deleteScrim(id) {
-            if (!currentUser) {
-                showMessageBox(
-                    "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
-                    'info',
-                    null, // Brak onConfirm
-                    () => { window.location.href = "login.html"; } // Callback po zamknięciu
-                );
-                return; // Zatrzymaj dalsze wykonywanie funkcji
-            }
             try {
-                await remove(ref(db, `scrims/${id}`));
-                console.log(`Scrim ${id} usunięty pomyślnie.`);
-                showMessageBox("Scrim usunięty pomyślnie!", 'success');
-            } catch (err) {
-                console.error("Błąd podczas usuwania scrimu:", err);
-                showMessageBox(`Błąd podczas usuwania scrimu: ${err.message}`, 'error');
+                // Pobierz dane z Firestore i posortuj je
+                const snapshot = await db.collection('playerRanks').get();
+                let players = [];
+                snapshot.forEach(doc => {
+                    players.push(doc.data());
+                });
+
+                // Sortowanie graczy: najpierw po randze, potem po dywizji, potem po LP
+                const rankOrder = {
+                    'Challenger': 9, 'Grandmaster': 8, 'Master': 7,
+                    'Diamond': 6, 'Emerald': 5, 'Platinum': 4,
+                    'Gold': 3, 'Silver': 2, 'Bronze': 1, 'Iron': 0, 'Unranked': -1
+                };
+
+                players.sort((a, b) => {
+                    const aRankName = a.rank ? a.rank.split(' ')[0] : 'Unranked';
+                    const bRankName = b.rank ? b.rank.split(' ')[0] : 'Unranked';
+                    // Konwersja dywizji rzymskiej na int, obsługuje brak dywizji (np. Master, Grandmaster, Challenger)
+                    const aDivision = a.rank && a.rank.split(' ')[1] ? romanToInt(a.rank.split(' ')[1]) : 0;
+                    const bDivision = b.rank && b.rank.split(' ')[1] ? romanToInt(b.rank.split(' ')[1]) : 0;
+
+                    // 1. Sortuj po głównej randze (np. Diamond vs Platinum)
+                    if (rankOrder[bRankName] !== rankOrder[aRankName]) {
+                        return rankOrder[bRankName] - rankOrder[aRankName];
+                    }
+                    // 2. Jeśli rangi są takie same, sortuj po dywizji (I > II > III > IV)
+                    //   Mniejsza liczba rzymska to lepsza dywizja (np. I=1, II=2), więc a-b
+                    if (aDivision !== bDivision) {
+                        return aDivision - bDivision;
+                    }
+                    // 3. Jeśli ranga i dywizja są takie same, sortuj po LP (więcej LP jest lepsze)
+                    return b.lp - a.lp;
+                });
+
+                // Funkcja pomocnicza do konwersji rzymskich cyfr na int (dla dywizji)
+                function romanToInt(roman) {
+                    const map = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4 };
+                    return map[roman] || 0; // Zwraca 0, jeśli nie znaleziono (np. dla unranked, master bez dywizji)
+                }
+
+                let playersHtml = '';
+                if (players.length === 0) {
+                    playersHtml = '<p>Brak danych o graczach w bazie. Upewnij się, że funkcja Cloud Function działa poprawnie.</p>';
+                } else {
+                    players.forEach((data, index) => {
+                        const rankNumber = index + 1; // Numeracja od 1
+                        // Dzielenie nazwy rangi na część tekstową (np. Diamond) i dywizję (np. IV)
+                        const rankBaseName = data.rank ? data.rank.split(' ')[0].toLowerCase() : 'unranked';
+                        // Upewnij się, że nazwa rangi do pliku grafiki jest poprawna (np. 'master' zamiast 'Master')
+                        const emblemFileName = `emblem-${rankBaseName}.png`;
+
+                        playersHtml += `
+                            <div class="player-rank-item">
+                                <div class="rank-number">${rankNumber}.</div>
+                                <div class="player-info">
+                                    <img src="https://raw.githubusercontent.com/davidmlester/league-ranked-emblems/master/images/${emblemFileName}" alt="Ikona Rangi ${data.name}" class="rank-icon">
+                                    <div class="player-name-and-rank">
+                                        <span class="player-name">${data.name}</span>
+                                        <span class="player-rank-text">${data.rank}</span>
+                                    </div>
+                                </div>
+                                <div class="player-stats">
+                                    <span>LP: ${data.lp}</span>
+                                    <span>WR: ${data.winRate}%</span>
+                                    <span>W/L: ${data.wins}W / ${data.losses}L</span>
+                                </div>
+                                <div class="player-links">
+                                    <a href="https://zeal.gg/profile/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">Zeal.gg</a>
+                                    <a href="https://op.gg/pl/lol/summoners/${data.region}/${encodeURIComponent(data.summonerName)}" target="_blank">OP.GG</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                playersRankingContainer.innerHTML = playersHtml;
+            } catch (error) {
+                console.error("Błąd podczas pobierania danych z Firestore:", error);
+                playersRankingContainer.innerHTML = '<p>Wystąpił błąd podczas ładowania rankingu. Sprawdź konsolę, aby uzyskać szczegóły.</p>';
             }
         }
 
-        // Ładowanie scrimów z Firebase
-        function loadScrimsFromFirebase() {
-            onValue(scrimsRef, (snapshot) => {
-                const data = snapshot.val() || {};
-                const allScrims = Object.entries(data).map(([key, value]) => ({
-                    id: key,
-                    ...value,
-                }));
-
-                // Sortowanie scrimsData od najnowszego do najstarszego (opcjonalne, ale często przydatne)
-                scrimsData = allScrims.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
-                renderTable();
-            });
-        }
-
-        // Wywołaj funkcję ładowania danych przy starcie
-        loadScrimsFromFirebase();
+        document.addEventListener('DOMContentLoaded', loadPlayerRanks);
     </script>
 </body>
 </html>
