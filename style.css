@@ -10,6 +10,11 @@ body {
     color: #f0f0f0;
 }
 
+/* NOWA REGUŁA: Ukrywa pasek przewijania tylko na stronie z klasą .homepage */
+body.homepage {
+    overflow: hidden;
+}
+
 main {
     --background-color: rgba(255, 255, 255, 0.85);
     padding: 375px;
@@ -67,9 +72,54 @@ footer {
     font-size: 14px;
     position: relative;
     width: 100%;
-    margin-top: 40px;
+    margin-top: auto;
 }
 footer p { margin: 0; font-family: 'Poppins', sans-serif; color: #f0f0f0; }
+
+.logo-center {
+    text-align: center;
+}
+
+.logo2 {
+    max-width: 400px;
+    height: auto;
+}
+
+.footer2-links {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: -95px;
+    padding-top: 0px;
+    width: 100%;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.footer2-links a {
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+
+.footer2-links a:hover {
+    transform: scale(1.1);
+}
+
+.footer2-links img {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 5px;
+    box-sizing: border-box;
+}
+
+.footer2-links span {
+    display: block; /* Zmieniono z flex na block */
+}
+
 
 /* === STYLE DLA SEKCJI Z ZAWARTOŚCIĄ === */
 .info-box, .stats-summary, .add-scrim-form, .scrim-history, .player-list-section.compact, .player-stats-detail, .search-section, .player-profile-section {
@@ -164,7 +214,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 .match-card-adapted .kda-score { font-size: 1.1em; font-weight: 700; }
 .match-card-adapted .kda-score .deaths { color: #e74c3c; }
 .match-card-adapted .kda-ratio { font-size: 0.9em; color: #bbbbbb; font-weight: 500; }
-/* ZWIĘKSZONO MARGINES DLA WIĘKSZEJ PRZERWY */
 .match-card-adapted .items { display: grid; grid-template-columns: repeat(4, 34px); gap: 2px; width: 142px; margin-left: 40px; }
 .match-card-adapted .item-slot { width: 32px; height: 32px; background-color: #1a1a1a; border-radius: 4px; }
 .match-card-adapted .item-slot img { width: 100%; height: 100%; border-radius: 4px;}
@@ -199,6 +248,34 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 .items-cell { display: flex; gap: 3px; align-items: center; }
 .item-slot-small { width: 24px; height: 24px; background-color: #1a1a1a; border-radius: 3px; }
 .item-slot-small img { width: 100%; height: 100%; border-radius: 3px; }
+
+/* === STYLE DLA STRONY RANKINGU (ranking.html) === */
+.ranking-list { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 850px; margin: 0 auto; }
+.player-rank-item { background-color: #333; border-radius: 10px; padding: 15px 25px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: space-between; font-size: 1.1em; transition: transform 0.2s ease, box-shadow 0.2s ease; box-sizing: border-box; }
+.player-rank-item:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); }
+.rank-number { font-size: 1.8em; font-weight: bold; color: #007bff; min-width: 50px; text-align: right; margin-right: 20px; }
+.player-info { display: flex; align-items: center; flex-grow: 1; gap: 15px; text-align: left; }
+.rank-icon { width: 50px; height: 50px; flex-shrink: 0; object-fit: contain; }
+.player-name-and-rank { display: flex; flex-direction: column; align-items: flex-start; flex-grow: 1; min-width: 120px; }
+.player-name { font-size: 1.3em; font-weight: 600; color: #eee; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player-rank-text { font-size: 1em; color: #bbb; white-space: nowrap; }
+.player-lp-display { font-size: 0.9em; color: #7fffd4; margin-top: 5px; white-space: nowrap; }
+.player-stats { display: flex; align-items: center; justify-content: flex-end; min-width: 80px; flex-shrink: 0; }
+.edit-button { background-color: #007bff; color: white; border: none; border-radius: 5px; padding: 8px 15px; font-size: 0.9em; cursor: pointer; transition: background-color 0.3s ease; white-space: nowrap; display: none; }
+.edit-button:hover { background-color: #0056b3; }
+.modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+.modal-content { background-color: #333; margin: auto; padding: 25px; border: 1px solid #888; border-radius: 10px; width: 85%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); color: #eee; position: relative; }
+.modal-content h2 { color: #007bff; margin-top: 0; margin-bottom: 25px; text-align: center; font-size: 1.8em; }
+.modal-content label { display: block; margin-bottom: 10px; font-weight: 500; font-size: 1.1em; }
+.modal-content input[type="text"], .modal-content input[type="number"], .modal-content select { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 20px; border: 1px solid #555; border-radius: 6px; background-color: #444; color: #eee; font-size: 1.1em; }
+.modal-buttons { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
+.modal-buttons button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1em; font-weight: 600; transition: background-color 0.3s ease; }
+.modal-buttons .save-button { background-color: #28a745; color: white; }
+.modal-buttons .save-button:hover { background-color: #218838; }
+.modal-buttons .cancel-button { background-color: #dc3545; color: white; }
+.modal-buttons .cancel-button:hover { background-color: #c82333; }
+.close-button { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 32px; font-weight: bold; cursor: pointer; }
+.close-button:hover, .close-button:focus { color: #eee; text-decoration: none; }
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {

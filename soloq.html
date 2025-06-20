@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wyszukiwarka Graczy SoloQ</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body class="soloq-page">
 
-    <header>
-        <nav class="navbar">
-            <div class="logo-section">
-                <img src="logo.png" alt="Logo gry" class="logo">
-                <span class="site-name">eSport Stats</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Strona Główna</a>
-                <a href="soloq.html">SoloQ</a>
-                <a href="historia.html">Historia Scrimów</a>
-                <a href="gracze.html">Gracze</a>
-            </div>
+    <header class="navbar">
+        <div class="logo-section">
+            <img src="logo.png" alt="Logo" class="logo">
+            <span class="site-name"></span>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">STRONA GŁÓWNA</a>
+            <a href="historia.html">HISTORIA GIER</a>
+            <a href="statystyki.html">STATYSTYKI</a>
+            <a href="soloq.html">SOLOQ</a>
+            <a href="ranking.html">RANKING</a>
+            <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
     </header>
 
@@ -52,7 +52,8 @@
 
             <section id="matchHistorySection" class="match-history-section" style="display: none;">
                 <h3>Ostatnie Mecze</h3>
-                <div id="matchesContainer" class="matches-container"></div>
+                <div id="matchesContainer" class="matches-container">
+                    </div>
                 <button id="loadMoreMatchesButton" class="load-more-button" style="display: none;">Załaduj Więcej Meczy</button>
             </section>
         </section>
