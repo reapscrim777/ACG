@@ -9,14 +9,14 @@
   
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0e0e0e"/>
-  </head>
+</head>
 <body class="homepage">
   <header class="navbar">
     <div class="logo-section">
         <img src="logo.png" alt="Logo" class="logo" />
         <span class="site-name"></span>
     </div>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-links">
         <a href="index.html">STRONA GŁÓWNA</a>
         <a href="historia.html">HISTORIA GIER</a>
         <a href="statystyki.html">STATYSTYKI</a>
@@ -24,6 +24,9 @@
         <a href="ranking.html">RANKING</a>
         <a href="dodajmecz.html">DODAJ MECZ</a>
     </nav>
+    <button class="hamburger" id="hamburger-button">
+        &#9776;
+    </button>
   </header>
 
   <main>
@@ -43,7 +46,7 @@
                                        transition: background-color 0.3s ease;">
         Zainstaluj aplikację ACG Scrims
     </button>
-    </main>
+  </main>
   
   <div id="player-status-container" class="player-status-container">
       <h2>W grze</h2>
@@ -69,5 +72,5 @@
     }
   </script>
   <script src="main.js"></script> 
-  </body>
+</body>
 </html>
