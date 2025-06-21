@@ -1,5 +1,6 @@
 // --- KONFIGURACJA ---
-const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // PAMIĘTAJ O WYMIANIE KLUCZA
+// PAMIĘTAJ, ABY WSTAWIAĆ TUTAJ SWÓJ AKTUALNY KLUCZ API
+const RIOT_API_KEY = "TWÓJ_KLUCZ_API";
 const REFRESH_INTERVAL_MS = 120000; // 120,000 ms = 2 minuty
 
 // Lista graczy do śledzenia statusu
@@ -30,11 +31,14 @@ async function getPuuid(riotId, tagLine) {
 
 // ZMODYFIKOWANA funkcja sprawdzająca aktywną grę po PUUID
 async function checkActiveGame(puuid) {
+    // ZMIANA: Endpoint odpytuje teraz o grę po puuid i używa wersji v5 API
     const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-puuid/${puuid}?api_key=${RIOT_API_KEY}`;
     try {
         const response = await fetch(url);
+        // Jeśli status to 200 OK - gracz jest w grze
         return response.ok; 
     } catch (error) {
+        // Każdy błąd (w tym 404 Not Found) oznacza, że nie ma aktywnej gry
         return false;
     }
 }
@@ -45,7 +49,9 @@ async function checkActiveGame(puuid) {
 async function getPlayerStatus(player) {
     try {
         const puuid = await getPuuid(player.riotId, player.tagLine);
-        await delay(API_CALL_DELAY_MS);
+        await delay(API_CALL_DELAY_MS); // Zachowujemy opóźnienie
+        // ZMIANA: Usunięto zbędny krok pobierania SummonerID.
+        // Od razu sprawdzamy grę, przekazując `puuid`.
         const isInGame = await checkActiveGame(puuid);
         
         return {
