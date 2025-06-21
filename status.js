@@ -1,10 +1,16 @@
 // ========================================================================
 // FINALNA WERSJA SKRYPTU DLA SPRAWDZANIA STATUSU GRACZY W GRZE
+// Używa PUUID bezpośrednio w Spectator API (tak jak podałeś, że działa ręcznie)
 // ========================================================================
 
-// WAŻNE: Pamiętaj, aby regularnie aktualizować ten klucz API.
+// Twój klucz API Riot Games - PAMIĘTAJ O JEGO REGULARNEJ WYMIANIE
 // Jest on wrażliwy i widoczny w kodzie klienta.
 const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912";
+
+// Stałe API - skopiowane z script.js dla spójności
+const BASE_ACCOUNT_API_URL = "https://europe.api.riotgames.com";
+const BASE_LOL_API_URL = "https://eun1.api.riotgames.com"; // Nadal potrzebne dla endpointów regionalnych, mimo że nie używamy go dla Spectator
+
 
 // Lista graczy do sprawdzenia. Upewnij się, że riotId i tagLine są poprawne.
 const playersToCheck = [
@@ -18,171 +24,171 @@ const playersToCheck = [
 // Interwał odświeżania statusu w milisekundach (np. 120000 ms = 2 minuty)
 const REFRESH_INTERVAL_MS = 120000;
 // Opóźnienie między kolejnymi wywołaniami API dla uniknięcia limitów rate-limit (w milisekundach)
-const API_CALL_DELAY_MS = 1500;
+const API_CALL_DELAY_MS = 1500; 
 
-// --- Elementy DOM (pobrane z index.html) ---
-const playerStatusList = document.getElementById('player-status-list'); // Lista do wyświetlania statusu graczy
-const lastUpdatedP = document.getElementById('status-last-updated'); // Paragraf do wyświetlania czasu ostatniej aktualizacji
-const refreshStatusButton = document.getElementById('refreshStatusButton'); // NOWA ZMIENNA DLA PRZYCISKU ODSWIEZANIA
+// --- Elementy DOM ---
+const playerStatusList = document.getElementById('player-status-list');
+const lastUpdatedP = document.getElementById('status-last-updated');
+const refreshStatusButton = document.getElementById('refreshStatusButton');
 
-// --- GŁÓWNA LOGIKA ---
+// --- Funkcje pomocnicze API ---
 
 /**
- * Funkcja do wykonywania zapytań HTTP z dodanym nagłówkiem X-Riot-Token.
- * Jest to preferowana metoda autoryzacji w Riot API.
- * @param {string} url Adres URL do pobrania.
- * @returns {Promise<Object|null>} Zwraca dane JSON lub null, jeśli nie ma zawartości.
- * @throws {Error} Wyrzuca błąd w przypadku problemów z siecią lub niepowodzenia API (innego niż 404).
+ * Wykonuje zapytanie HTTP GET do Riot API, dodając klucz API jako parametr URL.
+ * Obsługuje błędy 404 (brak zasobu) zwracając null i loguje inne błędy.
+ * @param {string} baseUrl - Bazowy URL endpointu (np. BASE_ACCOUNT_API_URL).
+ * @param {string} path - Ścieżka do zasobu (np. "/riot/account/v1/accounts/by-riot-id/...").
+ * @returns {Promise<Object|null>} - Dane JSON z odpowiedzi lub null w przypadku 404.
+ * @throws {Error} - Wyrzuca błąd w przypadku problemów z siecią lub innych błędów API.
  */
-async function fetchWithHeaders(url) {
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            "X-Riot-Token": RIOT_API_KEY // Użycie klucza API w nagłówku
-        },
-        mode: 'cors', // Wymagane dla zapytań cross-origin
-        cache: 'no-cache' // Zawsze pobieraj świeże dane
-    };
-
-    const response = await fetch(url, requestOptions);
-
-    if (response.status === 404) {
-        // Specjalna obsługa dla 404: oznacza to, że zasób nie istnieje (np. gracz nie jest w grze)
-        // Zwracamy null, co zostanie zinterpretowane jako "nie w grze".
-        return null;
-    }
-
-    if (!response.ok) {
-        // Rzuć błąd dla wszystkich innych nieudanych odpowiedzi (np. 403 Forbidden, 500 Internal Server Error)
-        throw new Error(`Błąd API: Status ${response.status} - ${response.statusText}`);
-    }
-
-    // Spróbuj sparsować JSON. Niektóre odpowiedzi (np. puste 204) mogą nie mieć JSON.
+async function fetchRiotApi(baseUrl, path) {
+    const url = `${baseUrl}${path}?api_key=${RIOT_API_KEY}`; // Dodaj klucz jako parametr URL
+    
     try {
-        return await response.json();
-    } catch (e) {
-        console.warn(`Odpowiedź z ${url} nie jest prawidłowym JSON:`, e);
-        return null; // Zwróć null, jeśli nie można sparsować JSON
-    }
-}
+        const response = await fetch(url);
 
-/**
- * KROK 1: Pobiera PUUID gracza na podstawie Riot ID i Tagline.
- * @param {Object} player Obiekt gracza zawierający riotId i tagLine.
- * @returns {Promise<string>} Zwraca PUUID gracza.
- * @throws {Error} Wyrzuca błąd, jeśli nie uda się pobrać PUUID.
- */
-async function getPuuidForPlayer(player) {
-    // Endpoint do pobierania konta Riot Account (region europe dla wszystkich kont)
-    const url = `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(player.riotId)}/${encodeURIComponent(player.tagLine)}`;
-    const data = await fetchWithHeaders(url);
-    if (!data || !data.puuid) {
-        throw new Error(`Nie udało się pobrać PUUID dla ${player.displayName}. Sprawdź Riot ID i Tagline.`);
-    }
-    return data.puuid;
-}
+        if (response.status === 404) {
+            // Zasób nie znaleziony (np. gracz nie w grze, brak Summoner ID dla PUUID/konto nie istnieje)
+            return null;
+        }
 
-/**
- * KROK 2: Sprawdza status gry gracza za pomocą PUUID.
- * @param {string} puuid PUUID gracza.
- * @returns {Promise<boolean>} Zwraca true, jeśli gracz jest w grze, false w przeciwnym razie.
- * @throws {Error} Wyrzuca błąd, jeśli wystąpi problem z API inny niż 404 (gracz nie w grze).
- */
-async function checkGameStatusByPuuid(puuid) {
-    // Endpoint do sprawdzania aktywnych gier (region serwera gracza, np. eun1 dla EUNE)
-    // UWAGA: Zakładam, że wszyscy gracze są na EUNE. Jeśli są na innych serwerach,
-    // potrzebny byłby dodatkowy logic, aby określić region summonera.
-    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-puuid/${puuid}`;
-    try {
-        const gameData = await fetchWithHeaders(url);
-        // Jeśli gameData jest null (z powodu 404) lub puste, gracz nie jest w grze.
-        return gameData !== null;
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`Błąd API dla URL: ${url}`);
+            console.error(`Status: ${response.status} - ${response.statusText}`);
+            console.error(`Odpowiedź: ${errorBody}`);
+            throw new Error(`Błąd API: ${response.status} ${response.statusText} - ${errorBody}`);
+        }
+
+        // Próba sparsowania JSON, obsługa pustej odpowiedzi
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
+
     } catch (error) {
-        // Wszystkie inne błędy (np. błąd serwera Riot, problem z kluczem API)
+        console.error(`Błąd podczas pobierania danych z ${url}:`, error);
         throw error; // Przekazujemy błąd dalej
     }
 }
 
 /**
- * Przetwarza status pojedynczego gracza: pobiera PUUID, a następnie sprawdza status gry.
- * Zawiera mechanizm opóźnienia, aby nie przekraczać limitów Riot API.
- * @param {Object} player Obiekt gracza.
- * @returns {Promise<Object>} Obiekt z nazwą gracza i jego statusem ('online', 'offline', 'error').
+ * KROK 1: Pobiera PUUID gracza na podstawie Riot ID i Tagline.
+ * Używa BASE_ACCOUNT_API_URL z script.js.
+ * @param {string} riotId - GameName gracza.
+ * @param {string} tagLine - Tagline gracza.
+ * @returns {Promise<string|null>} - PUUID gracza lub null, jeśli nie znaleziono.
  */
-async function processSinglePlayer(player) {
+async function getPuuid(riotId, tagLine) {
+    const path = `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(riotId)}/${encodeURIComponent(tagLine)}`;
+    const data = await fetchRiotApi(BASE_ACCOUNT_API_URL, path);
+    if (data && data.puuid) {
+        console.log(`Pobrano PUUID dla ${riotId}#${tagLine}: ${data.puuid}`);
+        return data.puuid;
+    }
+    console.warn(`Nie znaleziono PUUID dla ${riotId}#${tagLine}.`);
+    return null;
+}
+
+/**
+ * KROK 2: Sprawdza status aktywnej gry gracza za pomocą PUUID.
+ * Używa BASE_LOL_API_URL z script.js i endpointu /by-puuid/.
+ * @param {string} puuid - PUUID gracza.
+ * @returns {Promise<boolean>} - True, jeśli gracz jest w grze, false w przeciwnym razie.
+ */
+async function isPlayerInGame(puuid) {
+    if (!puuid) {
+        console.warn('isPlayerInGame: Brak PUUID.');
+        return false;
+    }
+    // Używamy endpointu /by-puuid/ dla Spectator API, który podałeś jako działający ręcznie.
+    const path = `/lol/spectator/v5/active-games/by-puuid/${puuid}`;
+    console.log(`Próba sprawdzenia statusu gry dla PUUID: ${puuid}`); // Loguj PUUID przed zapytaniem
+    const data = await fetchRiotApi(BASE_LOL_API_URL, path); // Spectator API jest regionalne!
+    const isInGame = data !== null; // Null oznacza 404 lub brak danych = nie w grze
+    console.log(`Gracz z PUUID ${puuid} jest w grze: ${isInGame}`);
+    return isInGame;
+}
+
+// --- Główna logika aktualizacji statusów ---
+
+/**
+ * Przetwarza status pojedynczego gracza, wykonując sekwencyjnie zapytania API.
+ * @param {Object} player - Obiekt gracza z displayName, riotId, tagLine.
+ * @returns {Promise<Object>} - Obiekt z nazwą gracza i jego statusem ('online', 'offline', 'error').
+ */
+async function processSinglePlayerStatus(player) {
     try {
-        // Pobierz PUUID
-        const puuid = await getPuuidForPlayer(player);
-        // Poczekaj przed kolejnym wywołaniem API
-        await new Promise(resolve => setTimeout(resolve, API_CALL_DELAY_MS));
-        // Sprawdź status gry
-        const isInGame = await checkGameStatusByPuuid(puuid);
-        return { name: player.displayName, status: isInGame ? 'online' : 'offline' };
+        console.log(`Rozpoczynam przetwarzanie gracza: ${player.displayName}`);
+
+        const puuid = await getPuuid(player.riotId, player.tagLine);
+        if (!puuid) {
+            console.warn(`Zakończono przetwarzanie ${player.displayName}: Brak PUUID.`);
+            return { name: player.displayName, status: 'offline' };
+        }
+
+        await new Promise(resolve => setTimeout(resolve, API_CALL_DELAY_MS)); // Opóźnienie
+
+        // Sprawdzamy status gry bezpośrednio z PUUID
+        const inGame = await isPlayerInGame(puuid);
+        return { name: player.displayName, status: inGame ? 'online' : 'offline' };
+
     } catch (error) {
-        // Zaloguj błąd do konsoli dla celów debugowania
-        console.error(`Błąd podczas przetwarzania gracza ${player.displayName}: ${error.message}`);
-        return { name: player.displayName, status: 'error' }; // Zwróć status błędu dla tego gracza
+        console.error(`Błąd podczas przetwarzania gracza ${player.displayName}:`, error.message);
+        return { name: player.displayName, status: 'error' };
     }
 }
 
 /**
- * Renderuje (wyświetla) statusy graczy na stronie.
- * @param {Array<Object>} statuses Tablica obiektów statusu graczy.
+ * Renderuje statusy graczy na stronie.
+ * @param {Array<Object>} statuses - Tablica obiektów statusu graczy.
  */
-function renderStatus(statuses) {
-    playerStatusList.innerHTML = ''; // Wyczyść bieżącą listę
+function renderPlayerStatuses(statuses) {
+    playerStatusList.innerHTML = ''; // Wyczyść listę
     statuses.forEach(player => {
         const listItem = document.createElement('li');
-        listItem.className = 'player-status-item'; // Użyj istniejącej klasy CSS
-        // Ustaw klasę dla kropki statusu na podstawie stanu gracza
-        let dotClass = 'offline'; // Domyślnie offline
+        listItem.className = 'player-status-item';
+        let dotClass = 'offline';
         if (player.status === 'online') {
             dotClass = 'online';
         } else if (player.status === 'error') {
             dotClass = 'error'; // Możesz dodać styl dla statusu błędu w style.css
         }
-        listItem.innerHTML = `<span>${player.name}</span><span class="status-dot ${dotClass}"></span>`; // Generuj HTML
-        playerStatusList.appendChild(listItem); // Dodaj element do listy
+        listItem.innerHTML = `<span>${player.name}</span><span class="status-dot ${dotClass}"></span>`;
+        playerStatusList.appendChild(listItem);
     });
 }
 
 /**
- * Główna funkcja aktualizująca statusy wszystkich graczy.
- * Uruchamia przetwarzanie dla każdego gracza i aktualizuje interfejs użytkownika.
+ * Główna funkcja wywołująca aktualizację statusów wszystkich graczy.
+ * Obsługuje stany ładowania i czas ostatniej aktualizacji.
  */
 async function updateAllStatuses() {
-    // Wyświetl wiadomość o aktualizacji, aby użytkownik wiedział, że coś się dzieje
     playerStatusList.innerHTML = '<li>Aktualizowanie statusu...</li>';
     lastUpdatedP.textContent = `Ostatnia aktualizacja: Ładowanie...`;
 
-    // Dezaktywuj przycisk podczas ładowania
     if (refreshStatusButton) {
         refreshStatusButton.disabled = true;
         refreshStatusButton.textContent = 'Odświeżanie...';
     }
 
-    const statusPromises = playersToCheck.map(processSinglePlayer); // Utwórz tablicę Promise'ów
-    const statuses = await Promise.all(statusPromises); // Czekaj na wszystkie Promise'y
+    const statuses = await Promise.all(
+        playersToCheck.map(player => processSinglePlayerStatus(player))
+    );
 
-    renderStatus(statuses); // Wyświetl zaktualizowane statusy
-    // Zaktualizuj czas ostatniej aktualizacji
+    renderPlayerStatuses(statuses);
     lastUpdatedP.textContent = `Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}`;
 
-    // Aktywuj przycisk ponownie po zakończeniu ładowania
     if (refreshStatusButton) {
         refreshStatusButton.disabled = false;
         refreshStatusButton.textContent = 'Odśwież Status';
     }
 }
 
-// Nasłuchuj zdarzenia DOMContentLoaded, aby upewnić się, że DOM jest w pełni załadowany
+// --- Inicjalizacja skryptu ---
 document.addEventListener('DOMContentLoaded', () => {
-    updateAllStatuses(); // Wykonaj pierwszą aktualizację od razu po załadowaniu strony
-    // Ustaw interwał dla cyklicznych aktualizacji
-    setInterval(updateAllStatuses, REFRESH_INTERVAL_MS);
+    updateAllStatuses(); // Pierwsza aktualizacja przy ładowaniu strony
+    setInterval(updateAllStatuses, REFRESH_INTERVAL_MS); // Ustawienie automatycznego odświeżania
 
-    // DODAJ OSLUCHIWACZ DLA NOWEGO PRZYCISKU
     if (refreshStatusButton) {
-        refreshStatusButton.addEventListener('click', updateAllStatuses);
+        refreshStatusButton.addEventListener('click', updateAllStatuses); // Obsługa przycisku
     }
 });
