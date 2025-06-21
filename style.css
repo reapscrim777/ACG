@@ -1,3 +1,8 @@
+/* === DODANA REGUŁA - DOBRA PRAKTYKA ZAPOBIEGAJĄCA BŁĘDOM UKŁADU === */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* === PODSTAWOWE STYLE STRONY === */
 body {
     margin: 0;
@@ -16,7 +21,8 @@ body.homepage {
 
 main {
     --background-color: rgba(255, 255, 255, 0.85);
-    padding: 375px;
+    /* === ZMIENIONO WARTOŚĆ PADDING Z 375px NA 20px === */
+    padding: 20px;
     margin: 20px;
     border-radius: 8px;
     max-width: 1000px;
@@ -400,16 +406,15 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         flex-direction: column;
     }
     
-    /* ZAKTUALIZOWANA, BARDZIEJ NIEZAWODNA POPRAWKA DLA KART W SOLOQ */
     .match-card-adapted {
-        display: block; /* Wymuś układ blokowy, aby sekcje układały się pionowo */
+        display: block;
     }
     .match-summary-view {
-        display: block; /* Upewnij się, że ten kontener też jest blokowy */
+        display: block;
     }
     .match-stats-left, .match-stats-right {
-        flex-wrap: wrap; /* Pozwól wewnętrznym elementom się zawijać */
-        margin-bottom: 15px; /* Dodaj odstęp między sekcjami lewą i prawą */
+        flex-wrap: wrap;
+        margin-bottom: 15px;
     }
     
     .match-details-table-container {
