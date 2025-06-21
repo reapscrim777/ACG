@@ -10,7 +10,6 @@ body {
     color: #f0f0f0;
 }
 
-/* NOWA REGUŁA: Ukrywa pasek przewijania tylko na stronie z klasą .homepage */
 body.homepage {
     overflow: hidden;
 }
@@ -117,7 +116,7 @@ footer p { margin: 0; font-family: 'Poppins', sans-serif; color: #f0f0f0; }
 }
 
 .footer2-links span {
-    display: block; /* Zmieniono z flex na block */
+    display: block;
 }
 
 
@@ -277,6 +276,69 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 .close-button { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 32px; font-weight: bold; cursor: pointer; }
 .close-button:hover, .close-button:focus { color: #eee; text-decoration: none; }
 
+/* === STYLE DLA STATUSU GRACZY (index.html) === */
+.player-status-container {
+    background-color: rgba(14, 14, 14, 0.7);
+    backdrop-filter: blur(5px);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    /* NOWA, POPRAWIONA SEKCJA POZYCJONOWANIA */
+    position: fixed;
+    left: 50px; /* Odstęp od lewej krawędzi */
+    top: 50%; /* Wyrównanie do połowy wysokości ekranu */
+    transform: translateY(-50%); /* Precyzyjne wyśrodkowanie w pionie */
+}
+.player-status-container h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #ccc;
+}
+.player-status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.player-status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2em;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+.player-status-item:last-child {
+    border-bottom: none;
+}
+.status-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+.status-dot.online {
+    background-color: #2ecc71;
+    box-shadow: 0 0 10px #2ecc71;
+}
+.status-dot.offline {
+    background-color: #e74c3c;
+}
+.status-dot.error {
+    background-color: #f39c12;
+}
+.status-last-updated {
+    text-align: center;
+    color: #777;
+    font-size: 0.8em;
+    margin-top: 20px;
+}
+
+
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
     .nav-links { display: none; }
@@ -295,6 +357,11 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     .match-card-adapted.defeat { border-color: #e74c3c; }
     .match-details-table .damage-cell, .match-details-table .cs-cell { display: none; }
     .match-details-table thead th:nth-child(3), .match-details-table thead th:nth-child(4) { display: none; }
+    
+    /* Ukrycie tabelki statusu na urządzeniach mobilnych, bo zajmuje za dużo miejsca */
+    .player-status-container {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {

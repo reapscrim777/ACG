@@ -190,11 +190,11 @@
         }
 
         #playerStatsSection {
-            background-color: #1a1a1a; /* Tło przeniesione z #playerStatsSection na main */
+            background-color: #1a1a1a; 
             padding: 20px;
             border-radius: 8px;
-            margin-top: 0; /* Usunięto górny margines, bo sekcja "Wybierz Zawodnika" ma dolny */
-            width: 100%; /* Zmieniono z 90% aby lepiej wypełnić main */
+            margin-top: 0; 
+            width: 100%; 
             max-width: 1000px;
             color: #f0f0f0;
             display: none;
@@ -209,18 +209,16 @@
             color: #f0f0f0;
         }
 
-        /* Sekcja podsumowania statystyk gracza (teraz w main będzie ukryta) */
         .player-summary-stats {
-            display: none; /* Ta sekcja będzie teraz wyświetlana w panelu bocznym */
+            display: none;
         }
 
-        /* NOWE STYLE DLA ZAKŁADEK */
         .tabs-container {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
             gap: 10px;
-            flex-wrap: wrap; /* Pozwala zakładkom zawijać się na mniejszych ekranach */
+            flex-wrap: wrap;
         }
 
         .tab-button {
@@ -249,14 +247,11 @@
         .tab-button.active-tab:hover {
             background-color: #0056b3;
         }
-        /* KONIEC NOWYCH STYLÓW DLA ZAKŁADEK */
-
-
-        /* Nowe style dla tabeli statystyk championów */
+        
         #championStatsTable {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0; /* Usunięto górny margines, bo zakładki już oddzielają */
+            margin-top: 0; 
             margin-bottom: 20px;
         }
         #championStatsTable th, #championStatsTable td {
@@ -278,11 +273,11 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            cursor: pointer; /* Dodaj kursor wskazujący, że można kliknąć */
+            cursor: pointer;
             transition: color 0.2s ease;
         }
         #championStatsTable td.champion-col:hover {
-            color: #007bff; /* Podkreślenie wizualne przy najechaniu */
+            color: #007bff;
         }
         #championStatsTable .champion-icon {
             width: 28px;
@@ -292,14 +287,14 @@
             transition: border-color 0.2s ease;
         }
         #championStatsTable td.champion-col.selected .champion-icon {
-            border-color: #007bff; /* Ramka dla wybranej postaci */
+            border-color: #007bff;
         }
 
 
         #playerScrimsTable {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0; /* Usunięto górny margines, bo zakładki już oddzielają */
+            margin-top: 0; 
         }
         #playerScrimsTable th, #playerScrimsTable td {
             border: 1px solid #444;
@@ -325,7 +320,6 @@
             font-weight: bold;
         }
 
-        /* Style dla ikon championów */
         .champion-icon {
             width: 24px;
             height: 24px;
@@ -341,7 +335,6 @@
             align-items: center;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .main-content-wrapper {
                 flex-direction: column;
@@ -353,7 +346,7 @@
                 width: 100%;
             }
 
-            .sidebar-left { /* Pokaż pasek boczny również na małych ekranach */
+            .sidebar-left {
                 display: block !important;
             }
         }
@@ -476,7 +469,7 @@
             authDomain: "acg-skrimy.firebaseapp.com",
             databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "acg-skrimy",
-            storageBucket: "acg-skrimy.firebaseapp.com",
+            storageBucket: "acg-skrimy.firebasestorage.app",
             messagingSenderId: "78237268518",
             appId: "1:78237268518:web:6b02118d081b4a49b384e7",
             measurementId: "G-6VDFPFX560",
@@ -493,7 +486,6 @@
         const playerScrimsTableBody = document.getElementById("playerScrimsTableBody");
         const noPlayerScrimsMessage = document.getElementById("noPlayerScrimsMessage");
 
-        // Elementy dla podsumowania statystyk (teraz w panelu bocznym)
         const playerSpecificStatsSidebar = document.getElementById("playerSpecificStatsSidebar");
         const sidebarPlayerName = document.getElementById("sidebarPlayerName");
         const sidebarTotalGames = document.getElementById("sidebarTotalGames");
@@ -503,7 +495,6 @@
         const sidebarAverageKDA = document.getElementById("sidebarAverageKDA");
         const sidebarAverageCSOverall = document.getElementById("sidebarAverageCSOverall");
 
-        // Statystyki konkretnej postaci w sidebarze
         const championSpecificStatsSection = document.getElementById("championSpecificStatsSection");
         const sidebarChampionNameTitle = document.getElementById("sidebarChampionNameTitle");
         const sidebarChampionIcon = document.getElementById("sidebarChampionIcon");
@@ -516,12 +507,10 @@
         const sidebarChampAverageGold = document.getElementById("sidebarChampAverageGold");
         const sidebarChampAverageCS = document.getElementById("sidebarChampAverageCS");
 
-        const championStatsTable = document.getElementById("championStatsTable"); // Dodano
-        const championStatsTableBody = document.getElementById("championStatsTableBody"); // Dodano
-        const noChampionStatsMessage = document.getElementById("noChampionStatsMessage"); // Dodano
+        const championStatsTable = document.getElementById("championStatsTable");
+        const championStatsTableBody = document.getElementById("championStatsTableBody");
+        const noChampionStatsMessage = document.getElementById("noChampionStatsMessage");
 
-
-        // Zakładki
         const tabsContainer = document.querySelector(".tabs-container");
         let currentActiveTab = 'champion-stats';
 
@@ -530,146 +519,46 @@
         let allMatchesData = [];
         let currentPlayerChampionStats = {};
 
-        // ZMIANA: Usunięto "None" i dodano "Yanny"
+        // ZAKTUALIZOWANA LISTA GRACZY
         const playersList = [
             "Likht", "Weedolas", "reap777", "Kohayushi", "Yanny"
         ];
 
-        const DDRAGON_VERSION = "14.12.1"; // Zaktualizuj do najbardziej aktualnej wersji, jeśli to konieczne. Możesz sprawdzić na https://ddragon.leagueoflegends.com/api/versions.json
+        const DDRAGON_VERSION = "14.12.1";
         const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
-        const FALLBACK_ICON_URL = "https://via.placeholder.com/28x28?text=N/A"; // Domyślna ikona w razie błędu ładowania
+        const FALLBACK_ICON_URL = "https://via.placeholder.com/28x28?text=N/A";
 
-        /**
-         * Mapa do normalizacji nazw championów z bazy danych do formatu DDragon.
-         * Klucze powinny być znormalizowanymi (małe litery, bez spacji, apostrofów, myślników) nazwami z bazy.
-         * Wartości to nazwy DDragon (Case-Sensitive, np. "Kaisa", "DrMundo", "ChoGath", "MonkeyKing").
-         *
-         * WAŻNE: Dodaj tutaj wszystkie wariacje, które pojawiają się w Twojej bazie danych dla championów,
-         * zwłaszcza tych problematycznych jak Kai'Sa, Cho'Gath, Dr. Mundo, itp.
-         */
-        const championNameNormalizationMap = {
-            "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu",
-            "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
-            "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar",
-            "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", // "Cho'Gath"
-            "corki": "Corki", "darius": "Darius", "diana": "Diana", "drmundo": "DrMundo", // "Dr. Mundo"
-            "draven": "Draven", "ekko": "Ekko", "elise": "Elise", "evelynn": "Evelynn", "ezreal": "Ezreal",
-            "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio",
-            "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen",
-            "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern",
-            "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx",
-            "kaisa": "Kaisa", // KLUCZOWA ZMIANA: Zapewniamy, że każda forma "Kai'Sa" zostanie znormalizowana do "kaisa"
-            "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle",
-            "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw",
-            "ksante": "KSante",
-            "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra",
-            "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux",
-            "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai", "masteryi": "MasterYi", "milio": "Milio",
-            "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing", // Wukong jest MonkeyKing w DDragon
-            "mordekaiser": "Mordekaiser", "morgana": "Morgana",
-            "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus", "neeko": "Neeko", "nidalee": "Nidalee",
-            "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf",
-            "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana",
-            "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renataglasc": "RenataGlasc",
-            "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze",
-            "samira": "Samira", "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen",
-            "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder",
-            "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra",
-            "tahmkench": "TahmKench", "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh",
-            "tristana": "Tristana", "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch",
-            "udyr": "Udyr", "urgot": "Urgot",
-            "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi",
-            "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear",
-            "warwick": "Warwick", "xayah": "Xayah", "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone",
-            "yorick": "Yorick", "yuumi": "Yuumi", "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean",
-            "zoe": "Zoe", "zyra": "Zyra",
-            // Dodaj tutaj inne wariacje, jeśli masz np. "Kaisa" z dużej litery w bazie
-            "kaisa": "Kaisa",
-            "kai'sa": "Kaisa", // To będzie kluczowe dla problemu z Kai'Sa
-            "chogath": "ChoGath",
-            "cho'gath": "ChoGath",
-            "dr.mundo": "DrMundo",
-            "dr mundo": "DrMundo",
-            "wukong": "MonkeyKing"
-        };
+        const championNameNormalizationMap = { "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu", "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir", "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar", "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", "corki": "Corki", "darius": "Darius", "diana": "Diana", "drmundo": "DrMundo", "draven": "Draven", "ekko": "Ekko", "elise": "Elise", "evelynn": "Evelynn", "ezreal": "Ezreal", "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio", "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen", "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern", "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx", "kaisa": "Kaisa", "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle", "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw", "ksante": "KSante", "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra", "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux", "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai", "masteryi": "MasterYi", "milio": "Milio", "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing", "mordekaiser": "Mordekaiser", "morgana": "Morgana", "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus", "neeko": "Neeko", "nidalee": "Nidalee", "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf", "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana", "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renataglasc": "RenataGlasc", "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze", "samira": "Samira", "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen", "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder", "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra", "tahmkench": "TahmKench", "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh", "tristana": "Tristana", "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch", "udyr": "Udyr", "urgot": "Urgot", "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi", "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear", "warwick": "Warwick", "xayah": "Xayah", "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone", "yorick": "Yorick", "yuumi": "Yuumi", "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean", "zoe": "Zoe", "zyra": "Zyra", "kaisa": "Kaisa", "kai'sa": "Kaisa", "chogath": "ChoGath", "cho'gath": "ChoGath", "dr.mundo": "DrMundo", "dr mundo": "DrMundo", "wukong": "MonkeyKing" };
 
-
-        /**
-         * Normalizuje nazwę championa, usuwając spacje, apostrofy, myślniki i konwertując na małe litery,
-         * a następnie mapuje na nazwę zgodną z DDragon.
-         * @param {string} rawChampionName - Surowa nazwa championa z bazy danych.
-         * @returns {string} Znormalizowana nazwa championa zgodna z DDragon (np. "Kaisa", "ChoGath").
-         */
         function normalizeChampionName(rawChampionName) {
             if (!rawChampionName) return "Nieznany";
-            let cleanedName = rawChampionName
-                .trim()
-                .toLowerCase()
-                .replace(/[.'-]/g, "") // Usuwa apostrofy, kropki i myślniki
-                .replace(/\s+/g, ""); // Usuwa spacje
-
-            // Spróbuj znaleźć w mapie normalizacyjnej
+            let cleanedName = rawChampionName.trim().toLowerCase().replace(/[.'-]/g, "").replace(/\s+/g, "");
             let normalized = championNameNormalizationMap[cleanedName];
-
-            // Jeśli nie znaleziono w mapie, spróbuj standardowej konwersji (pierwsza litera duża)
-            // To jest fallback, jeśli nowa postać nie jest w mapie lub nazwa jest prosta
             if (!normalized && cleanedName.length > 0) {
                 normalized = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
             }
-
-            // Jeśli nadal nie ma nazwy, zwróć "Nieznany"
             return normalized || "Nieznany";
         }
 
-
-        /**
-         * Pobiera URL ikony championa z DDragon, używając znormalizowanej nazwy.
-         * @param {string} championName - ZNORMALIZOWANA nazwa championa (zwrócona przez normalizeChampionName).
-         * @returns {string} URL ikony championa lub URL ikony awaryjnej.
-         */
         function getChampionIconUrl(championName) {
             if (!championName || championName === "Nieznany") return FALLBACK_ICON_URL;
             return `${CHAMPION_IMAGE_BASE_URL}${championName}.png`;
         }
 
-        // --- Funkcje pomocnicze ---
-        /**
-         * Normalizuje nazwę gracza, usuwając spacje, kropki i konwertując na małe litery.
-         * Dodatkowo, jeśli znormalizowana nazwa to "none", to również zostanie obsłużona.
-         * @param {string} name - Nazwa gracza.
-         * @returns {string} Znormalizowana nazwa.
-         */
         function normalizePlayerName(name) {
-            if (!name) return ""; // Zwróć pusty string dla null/undefined
+            if (!name) return "";
             let normalized = name.trim().replace(/\s/g, '').replace(/\./g, '').toLowerCase();
-            // Jeśli "none" miałoby się pojawić w danych, upewniamy się, że nie jest brane pod uwagę
-            if (normalized === 'none') {
-                return ''; // Lub inną wartość, która zasygnalizuje pominięcie
-            }
+            if (normalized === 'none') return '';
             return normalized;
         }
 
-        /**
-         * Oblicza KDA.
-         * @param {number} kills - Liczba zabójstw.
-         * @param {number} deaths - Liczba śmierci.
-         * @param {number} assists - Liczba asyst.
-         * @returns {string} Obliczone KDA, sformatowane do dwóch miejsc po przecinku.
-         */
         function calculateKDA(kills, deaths, assists) {
-            if (deaths === 0) {
-                return (kills + assists).toFixed(2);
-            }
+            if (deaths === 0) return (kills + assists).toFixed(2);
             return ((kills + assists) / deaths).toFixed(2);
         }
 
-        // --- Generowanie linków graczy ---
-        /**
-         * Generuje i wyświetla linki do wyboru graczy.
-         */
         function populatePlayerLinks() {
             playerLinksContainer.innerHTML = '';
-            // Przechodzimy po playersList, która już nie zawiera "None"
             playersList.forEach(player => {
                 const link = document.createElement('a');
                 link.classList.add('player-link-item');
@@ -679,411 +568,229 @@
             });
         }
 
-        /**
-         * Przełącza aktywną zakładkę i wyświetla odpowiednią tabelę.
-         * @param {string} tabName - Nazwa zakładki ('champion-stats' lub 'match-history').
-         */
         function switchTab(tabName) {
             currentActiveTab = tabName;
-
-            // Deaktywuj wszystkie zakładki i ukryj wszystkie panele
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active-tab');
-            });
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active-tab'));
             championStatsTable.style.display = 'none';
             playerScrimsTable.style.display = 'none';
             noChampionStatsMessage.style.display = 'none';
             noPlayerScrimsMessage.style.display = 'none';
 
-            // Aktywuj wybraną zakładkę i pokaż odpowiedni panel
             const activeButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active-tab');
-            }
+            if (activeButton) activeButton.classList.add('active-tab');
 
             if (tabName === 'champion-stats') {
-                if (championStatsTableBody.children.length > 0) {
-                    championStatsTable.style.display = 'table';
-                    noChampionStatsMessage.style.display = 'none';
-                } else {
-                    championStatsTable.style.display = 'none';
-                    noChampionStatsMessage.style.display = 'block';
-                }
+                if (championStatsTableBody.children.length > 0) championStatsTable.style.display = 'table';
+                else noChampionStatsMessage.style.display = 'block';
             } else if (tabName === 'match-history') {
-                if (playerScrimsTableBody.children.length > 0) {
-                    playerScrimsTable.style.display = 'table';
-                    noPlayerScrimsMessage.style.display = 'none';
-                } else {
-                    playerScrimsTable.style.display = 'none';
-                    noPlayerScrimsMessage.style.display = 'block';
-                }
+                if (playerScrimsTableBody.children.length > 0) playerScrimsTable.style.display = 'table';
+                else noPlayerScrimsMessage.style.display = 'block';
             }
         }
 
-
-        // --- Funkcje wyświetlania i logiki ---
-        /**
-         * Wyświetla statystyki dla wybranego gracza, filtrując mecze, w których był zmiennikiem.
-         * @param {string} playerName - Nazwa wybranego gracza.
-         */
         function displayPlayerStats(playerName) {
             playerScrimsTableBody.innerHTML = "";
             championStatsTableBody.innerHTML = "";
-
-            // Zresetuj statystyki dla postaci
             currentSelectedChampion = null;
-            displayChampionSpecificStats(null); // Ukryj sekcję statystyk postaci w sidebarze
+            displayChampionSpecificStats(null);
 
             const normalizedPlayerName = normalizePlayerName(playerName);
-
-            // ZMIANA: Jeśli normalizedPlayerName jest pusty (czyli był "none"), nie przetwarzaj statystyk
             if (normalizedPlayerName === '') {
-                sidebarPlayerName.textContent = `Statystyki dla: ${playerName}`;
-                sidebarTotalGames.textContent = "0";
-                sidebarTotalWins.textContent = "0";
-                sidebarTotalLosses.textContent = "0";
-                sidebarTotalWinRate.textContent = "0%";
-                sidebarAverageKDA.textContent = "N/A";
-                sidebarAverageCSOverall.textContent = "N/A";
                 playerSpecificStatsSidebar.style.display = 'none';
-                noPlayerScrimsMessage.textContent = "Brak dostępnych meczów dla tego zawodnika.";
                 noPlayerScrimsMessage.style.display = 'block';
                 playerScrimsTable.style.display = 'none';
-                noChampionStatsMessage.textContent = "Brak statystyk dla postaci tego zawodnika.";
                 noChampionStatsMessage.style.display = 'block';
                 championStatsTable.style.display = 'none';
                 return;
             }
 
-
-            let totalKills = 0;
-            let totalDeaths = 0;
-            let totalAssists = 0;
-            let totalGames = 0;
-            let totalWinsCount = 0;
-            let totalLossesCount = 0;
-            let totalCsOverall = 0; // Suma CSów dla wszystkich meczów gracza
-
+            let totalKills = 0, totalDeaths = 0, totalAssists = 0, totalGames = 0;
+            let totalWinsCount = 0, totalLossesCount = 0, totalCsOverall = 0;
             const championStats = {};
-            currentPlayerChampionStats = {}; // Zresetuj globalny obiekt statystyk championów
-
-            let hasScrims = false;
-            let hasChampionStats = false;
+            currentPlayerChampionStats = {};
+            let hasScrims = false, hasChampionStats = false;
 
             allMatchesData.forEach(match => {
                 if (match.players && Array.isArray(match.players)) {
                     const playerMatchData = match.players.find(p => normalizePlayerName(p.name) === normalizedPlayerName);
-
-                    // Sprawdzamy, czy gracz był zmiennikiem w tym meczu.
-                    // Jeśli tak, POMIJAMY TEN MECZ w obliczeniach statystyk i historii.
-                    if (playerMatchData && playerMatchData.substitute === true) {
-                        console.log(`Mecz ${match.id} pominięty dla gracza ${playerName}, ponieważ był zmiennikiem.`);
-                        return; // Pomijamy ten mecz i przechodzimy do następnego
-                    }
-
-                    if (playerMatchData) {
+                    if (playerMatchData && playerMatchData.substitute !== true) {
                         hasScrims = true;
-
-                        const k = playerMatchData.kda ? playerMatchData.kda.k : 0;
-                        const d = playerMatchData.kda ? playerMatchData.kda.d : 0;
-                        const a = playerMatchData.kda ? playerMatchData.kda.a : 0;
-                        const gold = playerMatchData.gold ? parseFloat(playerMatchData.gold) : 0;
-                        const cs = playerMatchData.minions ? parseFloat(playerMatchData.minions) : 0;
-
-
-                        totalKills += k;
-                        totalDeaths += d;
-                        totalAssists += a;
-                        totalGames++;
-                        totalCsOverall += cs; // Dodaj CSy z obecnego meczu do sumy ogólnej
-
-
-                        if (match.result && match.result.toLowerCase() === 'win') {
-                            totalWinsCount++;
-                        } else if (match.result && match.result.toLowerCase() === 'lose') {
-                            totalLossesCount++;
-                        }
-
-                        // ZMIANA: Normalizuj nazwę championa PRZED użyciem jej jako klucza w championStats
+                        const k = playerMatchData.kda?.k || 0, d = playerMatchData.kda?.d || 0, a = playerMatchData.kda?.a || 0;
+                        const gold = parseFloat(playerMatchData.gold) || 0, cs = parseFloat(playerMatchData.minions) || 0;
+                        totalKills += k; totalDeaths += d; totalAssists += a;
+                        totalGames++; totalCsOverall += cs;
+                        if (match.result?.toLowerCase() === 'win') totalWinsCount++; else if (match.result?.toLowerCase() === 'lose') totalLossesCount++;
+                        
                         const playerChampion = normalizeChampionName(playerMatchData.champion);
                         if (playerChampion !== 'Nieznany') {
                             hasChampionStats = true;
                             if (!championStats[playerChampion]) {
-                                championStats[playerChampion] = {
-                                    games: 0, wins: 0, kills: 0, deaths: 0, assists: 0,
-                                    totalGold: 0, totalCs: 0
-                                };
+                                championStats[playerChampion] = { games: 0, wins: 0, kills: 0, deaths: 0, assists: 0, totalGold: 0, totalCs: 0 };
                             }
-                            championStats[playerChampion].games++;
-                            championStats[playerChampion].kills += k;
-                            championStats[playerChampion].deaths += d;
-                            championStats[playerChampion].assists += a;
-                            championStats[playerChampion].totalGold += gold;
-                            championStats[playerChampion].totalCs += cs;
-
-                            if (match.result && match.result.toLowerCase() === 'win') {
-                                championStats[playerChampion].wins++;
-                            }
+                            const stats = championStats[playerChampion];
+                            stats.games++; stats.kills += k; stats.deaths += d; stats.assists += a;
+                            stats.totalGold += gold; stats.totalCs += cs;
+                            if (match.result?.toLowerCase() === 'win') stats.wins++;
                         }
-
-                        // Dodawanie wiersza do historii meczów
+                        
                         const row = playerScrimsTableBody.insertRow();
-                        const dateCell = row.insertCell();
-                        if (match.date) {
-                            const [year, month, day] = match.date.split('-');
-                            dateCell.textContent = `${day}-${month}-${year}`;
-                        } else {
-                            dateCell.textContent = "N/A";
-                        }
+                        const [year, month, day] = match.date ? match.date.split('-') : [];
+                        row.insertCell().textContent = match.date ? `${day}-${month}-${year}` : "N/A";
                         const resultCell = row.insertCell();
                         resultCell.textContent = match.result || "N/A";
-                        resultCell.classList.add(match.result && match.result.toLowerCase());
-                        const timeCell = row.insertCell();
-                        timeCell.textContent = match.time || "N/A";
+                        resultCell.className = match.result?.toLowerCase() || '';
+                        row.insertCell().textContent = match.time || "N/A";
                         const championCell = row.insertCell();
                         const championIconContainer = document.createElement("div");
                         championIconContainer.className = "champion-icons-container";
-
-                        // ZMIANA: Użyj znormalizowanej nazwy championa do wyświetlania ikon
                         if (playerChampion !== 'Nieznany') {
                             const img = document.createElement("img");
                             img.className = "champion-icon";
-                            const iconUrl = getChampionIconUrl(playerChampion); // Użyj znormalizowanej nazwy
-                            img.src = iconUrl;
+                            img.src = getChampionIconUrl(playerChampion);
                             img.title = playerChampion;
                             img.alt = playerChampion;
-                            img.onerror = function() {
-                                this.onerror = null;
-                                this.src = FALLBACK_ICON_URL;
-                            };
+                            img.onerror = function() { this.src = FALLBACK_ICON_URL; };
                             championIconContainer.appendChild(img);
                         } else {
                             championIconContainer.textContent = 'N/A';
                         }
                         championCell.appendChild(championIconContainer);
-
-                        const kdaCell = row.insertCell();
-                        kdaCell.textContent = `${k}/${d}/${a}`;
+                        row.insertCell().textContent = `${k}/${d}/${a}`;
                     }
                 }
             });
 
-            // Zapisz statystyki championów do globalnej zmiennej
             currentPlayerChampionStats = championStats;
-
-            // Aktualizacja statystyk w panelu bocznym (ogólne statystyki gracza)
             if (totalGames > 0) {
-                const avgKDAValue = calculateKDA(totalKills, totalDeaths, totalAssists);
-                const winRateValue = ((totalWinsCount / totalGames) * 100).toFixed(2);
-                const averageCSOverallValue = (totalCsOverall / totalGames).toFixed(1); // Oblicz średnie CS dla gracza
-
                 sidebarPlayerName.textContent = `Statystyki dla: ${playerName}`;
                 sidebarTotalGames.textContent = totalGames;
                 sidebarTotalWins.textContent = totalWinsCount;
                 sidebarTotalLosses.textContent = totalLossesCount;
-                sidebarTotalWinRate.textContent = `${winRateValue}%`;
-                sidebarAverageKDA.textContent = avgKDAValue;
-                sidebarAverageCSOverall.textContent = averageCSOverallValue; // Ustaw średnie CS gracza
-                playerSpecificStatsSidebar.style.display = 'block'; // Pokaż panel boczny
+                sidebarTotalWinRate.textContent = `${((totalWinsCount / totalGames) * 100).toFixed(2)}%`;
+                sidebarAverageKDA.textContent = calculateKDA(totalKills, totalDeaths, totalAssists);
+                sidebarAverageCSOverall.textContent = (totalCsOverall / totalGames).toFixed(1);
+                playerSpecificStatsSidebar.style.display = 'block';
             } else {
-                sidebarPlayerName.textContent = `Statystyki dla: ${playerName}`;
-                sidebarTotalGames.textContent = "0";
-                sidebarTotalWins.textContent = "0";
-                sidebarTotalLosses.textContent = "0";
-                sidebarTotalWinRate.textContent = "0%";
-                sidebarAverageKDA.textContent = "N/A";
-                sidebarAverageCSOverall.textContent = "N/A"; // Zresetuj średnie CS gracza
-                playerSpecificStatsSidebar.style.display = 'none'; // Ukryj panel boczny, jeśli brak danych
+                playerSpecificStatsSidebar.style.display = 'none';
             }
 
-            // Wypełnianie tabeli statystyk championów
             if (hasChampionStats) {
-                // Sortowanie po liczbie gier malejąco
-                const sortedChampions = Object.keys(championStats).sort((a, b) => championStats[b].games - championStats[a].games);
-
-                sortedChampions.forEach(champName => {
+                Object.keys(championStats).sort((a, b) => championStats[b].games - championStats[a].games).forEach(champName => {
                     const stats = championStats[champName];
                     const champRow = championStatsTableBody.insertRow();
-                    champRow.dataset.championName = champName; // Dodaj atrybut data
-
+                    champRow.dataset.championName = champName;
                     const champNameCell = champRow.insertCell();
                     const champIconContainer = document.createElement("div");
-                    champIconContainer.className = "champion-col"; // Użyj tej klasy do klikania
-
+                    champIconContainer.className = "champion-col";
                     const img = document.createElement("img");
                     img.className = "champion-icon";
-                    img.src = getChampionIconUrl(champName); // Użyj znormalizowanej nazwy
+                    img.src = getChampionIconUrl(champName);
                     img.title = champName;
                     img.alt = champName;
-                    img.onerror = function() {
-                        this.onerror = null;
-                        this.src = FALLBACK_ICON_URL;
-                    };
+                    img.onerror = function() { this.src = FALLBACK_ICON_URL; };
                     champIconContainer.appendChild(img);
-
                     const nameSpan = document.createElement("span");
                     nameSpan.textContent = champName;
                     champIconContainer.appendChild(nameSpan);
                     champNameCell.appendChild(champIconContainer);
-
-                    const gamesCell = champRow.insertCell();
-                    gamesCell.textContent = stats.games;
-
-                    const winRateCell = champRow.insertCell();
-                    const champWinRate = ((stats.wins / stats.games) * 100).toFixed(2);
-                    winRateCell.textContent = `${champWinRate}%`;
-
-                    const avgKDAChampCell = champRow.insertCell();
-                    const avgKDAChamp = calculateKDA(stats.kills, stats.deaths, stats.assists);
-                    avgKDAChampCell.textContent = avgKDAChamp;
+                    champRow.insertCell().textContent = stats.games;
+                    champRow.insertCell().textContent = `${((stats.wins / stats.games) * 100).toFixed(2)}%`;
+                    champRow.insertCell().textContent = calculateKDA(stats.kills, stats.deaths, stats.assists);
                 });
             }
-
-            // Po wygenerowaniu wszystkich danych, przełącz na domyślną zakładkę
             switchTab(currentActiveTab);
         }
 
-        /**
-         * Wyświetla szczegółowe statystyki dla wybranego championa w panelu bocznym.
-         * @param {string} championName - Nazwa wybranego championa (JUŻ ZNORMALIZOWANA).
-         */
         function displayChampionSpecificStats(championName) {
             if (!championName || !currentPlayerChampionStats[championName]) {
                 championSpecificStatsSection.style.display = 'none';
                 return;
             }
-
             const stats = currentPlayerChampionStats[championName];
-            const avgKDAValue = calculateKDA(stats.kills, stats.deaths, stats.assists);
-            const winRateValue = ((stats.wins / stats.games) * 100).toFixed(2);
-
-            // Oblicz średnie Gold i Miniony
-            const averageGold = stats.games > 0 ? (stats.totalGold / stats.games).toFixed(0) : 'N/A';
-            const averageCs = stats.games > 0 ? (stats.totalCs / stats.games).toFixed(1) : 'N/A';
-
-
             sidebarChampionName.textContent = championName;
-            sidebarChampionIcon.src = getChampionIconUrl(championName); // Użyj znormalizowanej nazwy
+            sidebarChampionIcon.src = getChampionIconUrl(championName);
             sidebarChampionIcon.style.display = 'inline-block';
-            sidebarChampionIcon.onerror = function() {
-                this.onerror = null;
-                this.src = FALLBACK_ICON_URL;
-            };
-
+            sidebarChampionIcon.onerror = function() { this.src = FALLBACK_ICON_URL; };
             sidebarChampTotalGames.textContent = stats.games;
             sidebarChampTotalWins.textContent = stats.wins;
-            sidebarChampTotalLosses.textContent = stats.games - stats.wins; // Oblicz przegrane
-            sidebarChampWinRate.textContent = `${winRateValue}%`;
-            sidebarChampAverageKDA.textContent = avgKDAValue;
-            sidebarChampAverageGold.textContent = averageGold;
-            sidebarChampAverageCS.textContent = averageCs;
-
+            sidebarChampTotalLosses.textContent = stats.games - stats.wins;
+            sidebarChampWinRate.textContent = `${((stats.wins / stats.games) * 100).toFixed(2)}%`;
+            sidebarChampAverageKDA.textContent = calculateKDA(stats.kills, stats.deaths, stats.assists);
+            sidebarChampAverageGold.textContent = stats.games > 0 ? (stats.totalGold / stats.games).toFixed(0) : 'N/A';
+            sidebarChampAverageCS.textContent = stats.games > 0 ? (stats.totalCs / stats.games).toFixed(1) : 'N/A';
             championSpecificStatsSection.style.display = 'block';
         }
 
-
-        /**
-         * Ładuje wszystkie mecze z Firebase Realtime Database.
-         */
         function loadAllMatchesFromFirebase() {
             onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
                 allMatchesData = Object.entries(data).map(([key, value]) => ({
-                    id: key,
-                    ...value,
-                    // Upewnij się, że 'players' to zawsze tablica, nawet jeśli w Firebase jest obiekt.
-                    // To jest szczególnie ważne, jeśli dane graczy są indeksowane numerycznie, ale nie są faktycznie tablicą w Firebase.
-                    players: Array.isArray(value.players) ? value.players :
-                                (value.players && typeof value.players === 'object' ? Object.values(value.players) : []),
+                    id: key, ...value,
+                    players: Array.isArray(value.players) ? value.players : (value.players && typeof value.players === 'object' ? Object.values(value.players) : []),
                     type: value.type || 'general'
                 })).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                console.log("Załadowane dane meczów (Statystyki):", allMatchesData);
-
-                // Po załadowaniu danych, jeśli jest wybrany gracz, zaktualizuj statystyki
                 if (currentSelectedPlayer) {
                     displayPlayerStats(currentSelectedPlayer);
-                    // Po załadowaniu statystyk gracza, jeśli była wybrana postać, zaktualizuj jej statystyki
                     if (currentSelectedChampion) {
                         displayChampionSpecificStats(currentSelectedChampion);
                     }
                 } else {
-                    // Jeśli żaden gracz nie jest wybrany, upewnij się, że panel boczny jest ukryty
                     playerSpecificStatsSidebar.style.display = 'none';
                 }
-                championSpecificStatsSection.style.display = 'none'; // Na początku zawsze ukryj sekcję statystyk championa
-                switchTab(currentActiveTab); // Upewnij się, że zakładka jest prawidłowo wyświetlana po załadowaniu danych
+                championSpecificStatsSection.style.display = 'none';
+                switchTab(currentActiveTab);
             }, (error) => {
-                console.error("Błąd podczas ładowania danych z Firebase:", error);
-                noPlayerScrimsMessage.textContent = "Błąd podczas ładowania danych. Spróbuj odświeżyć stronę.";
+                console.error("Błąd ładowania z Firebase:", error);
+                noPlayerScrimsMessage.textContent = "Błąd ładowania danych. Spróbuj odświeżyć stronę.";
                 noPlayerScrimsMessage.style.display = 'block';
-                playerScrimsTable.style.display = 'none'; // Ukryj tabelę w razie błędu
-                noChampionStatsMessage.textContent = "Błąd podczas ładowania statystyk championów.";
+                playerScrimsTable.style.display = 'none';
+                noChampionStatsMessage.textContent = "Błąd ładowania statystyk.";
                 noChampionStatsMessage.style.display = 'block';
-                championStatsTable.style.display = 'none'; // Ukryj tabelę w razie błędu
-                playerSpecificStatsSidebar.style.display = 'none'; // Ukryj panel boczny w razie błędu
-                championSpecificStatsSection.style.display = 'none'; // Ukryj również sekcję postaci
+                championStatsTable.style.display = 'none';
+                playerSpecificStatsSidebar.style.display = 'none';
+                championSpecificStatsSection.style.display = 'none';
             });
         }
 
-        // Obsługa kliknięcia na linki graczy
         playerLinksContainer.addEventListener("click", (event) => {
             const target = event.target;
             if (target.classList.contains("player-link-item")) {
-                document.querySelectorAll('.player-link-item').forEach(link => {
-                    link.classList.remove('active');
-                });
+                document.querySelectorAll('.player-link-item').forEach(link => link.classList.remove('active'));
                 target.classList.add('active');
-
                 const playerName = target.dataset.playerName;
                 currentSelectedPlayer = playerName;
-                currentSelectedChampion = null; // Zresetuj wybraną postać przy zmianie gracza
-
+                currentSelectedChampion = null;
                 currentPlayerStatsTitle.textContent = `Statystyki dla: ${playerName}`;
                 playerStatsSection.style.display = 'block';
-                playerSpecificStatsSidebar.style.display = 'block'; // Upewnij się, że panel boczny jest widoczny
-
+                playerSpecificStatsSidebar.style.display = 'block';
                 displayPlayerStats(playerName);
-                switchTab(currentActiveTab); // Upewnij się, że wyświetlana jest właściwa zakładka
+                switchTab(currentActiveTab);
             }
         });
 
-        // Obsługa kliknięcia na zakładki
         tabsContainer.addEventListener('click', (event) => {
-            const target = event.target;
-            if (target.classList.contains('tab-button')) {
-                const tabName = target.dataset.tab;
-                switchTab(tabName);
+            if (event.target.classList.contains('tab-button')) {
+                switchTab(event.target.dataset.tab);
             }
         });
 
-
-        // Obsługa kliknięcia na wiersz w tabeli statystyk championów
         championStatsTableBody.addEventListener('click', (event) => {
             const targetCell = event.target.closest('.champion-col');
             if (targetCell) {
-                // Usuń klasę 'selected' ze wszystkich wierszy
-                document.querySelectorAll('#championStatsTableBody .champion-col').forEach(cell => {
-                    cell.classList.remove('selected');
-                });
-
-                // ZMIANA: Pobierz znormalizowaną nazwę championa z datasetu wiersza (którą tam umieściliśmy)
-                // lub z elementu span, który wyświetla znormalizowaną nazwę.
-                const championName = targetCell.querySelector('span').textContent; // Pobierze to, co jest wyświetlane
-
-                currentSelectedChampion = championName; // Ustaw aktualnie wybraną postać
-                targetCell.classList.add('selected'); // Dodaj klasę 'selected' do klikniętej postaci
-
+                document.querySelectorAll('#championStatsTableBody .champion-col').forEach(cell => cell.classList.remove('selected'));
+                const championName = targetCell.querySelector('span').textContent;
+                currentSelectedChampion = championName;
+                targetCell.classList.add('selected');
                 displayChampionSpecificStats(championName);
             }
         });
 
-        // Inicjalizacja: ładuj scrimy z Firebase i generuj linki graczy
         document.addEventListener("DOMContentLoaded", () => {
             populatePlayerLinks();
             loadAllMatchesFromFirebase();
-            playerStatsSection.style.display = 'none'; // Ukryj sekcję statystyk na start
-            playerSpecificStatsSidebar.style.display = 'none'; // Ukryj panel boczny na start
+            playerStatsSection.style.display = 'none';
+            playerSpecificStatsSidebar.style.display = 'none';
         });
     </script>
 </body>

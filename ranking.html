@@ -31,10 +31,6 @@
         <p id="last-updated" style="text-align: center; color: #888; margin-top: 20px;"></p>
     </main>
 
-    <footer>
-        <p>2025 &copy; ACG - AC GDAŃSK</p>
-    </footer>
-
     <script>
         // --- KONFIGURACJA ---
         const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // PAMIĘTAJ O WYMIANIE KLUCZA
@@ -146,17 +142,17 @@
                 const playerItem = document.createElement('div');
                 playerItem.className = 'player-rank-item';
                 playerItem.innerHTML = `
-                    <div class="rank-number">${rankNumber}.</div>
-                    <div class="player-info">
-                        <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon">
-                        <div class="player-name-and-rank">
-                            <span class="player-name">${player.name}</span>
-                            <span class="player-rank-text">${fullRankText}</span>
-                            <span class="player-lp-display">LP: ${player.lp}</span>
+                        <div class="rank-number">${rankNumber}.</div>
+                        <div class="player-info">
+                            <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon">
+                            <div class="player-name-and-rank">
+                                <span class="player-name">${player.name}</span>
+                                <span class="player-rank-text">${fullRankText}</span>
+                                <span class="player-lp-display">LP: ${player.lp}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="player-stats">
-                        </div>
+                        <div class="player-stats">
+                            </div>
                 `;
                 playersContainer.appendChild(playerItem);
             });

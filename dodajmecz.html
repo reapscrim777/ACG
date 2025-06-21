@@ -7,7 +7,243 @@
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
-        /* Twoje style inline pozostają bez zmian */
+        /* Minimalne style żeby ikony i tabela ładnie wyglądały */
+        .champion-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 2px;
+            vertical-align: middle;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .champion-icons-container {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+        .win {
+            color: green;
+            font-weight: bold;
+        }
+        .lose {
+            color: red;
+            font-weight: bold;
+        }
+        /* Style formularza specyficzne dla dodajmecz.html */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        main h1 {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            margin-bottom: 20px !important;
+            text-align: center;
+            color: #f0f0f0;
+            width: 100%;
+        }
+        .add-scrim-form {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 800px;
+            color: #f0f0f0;
+        }
+
+        .add-scrim-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #f0f0f0;
+        }
+
+        .team-champions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .team-champions input {
+            flex: 1;
+            min-width: 100px;
+            max-width: calc(20% - 8px); /* 5 inputów w rzędzie */
+        }
+        
+        .player-stats-section {
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #2a2a2a;
+        }
+        .player-stats-section h3 {
+            margin-top: 0;
+            color: #f0f0f0;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .player-entry {
+            display: grid;
+            /* Zmieniona siatka: Etykieta, Champion, K, D, A, Miniony, Gold, Zmiennik */
+            grid-template-columns: 1fr 1.5fr 0.5fr 0.5fr 0.5fr 0.8fr 0.8fr 0.8fr; /* Dodano 8. kolumnę dla Zmiennika */
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .player-entry label {
+            text-align: right; /* Wyrównaj nazwę gracza do prawej */
+            padding-right: 5px;
+        }
+        .player-entry input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #444;
+            color: #f0f0f0;
+            box-sizing: border-box;
+        }
+        /* Dopasowanie szerokości pól KDA, Minions, Gold */
+        .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+            max-width: 100%; /* Pozwól im wypełniać komórkę w siatce */
+            text-align: center;
+        }
+
+        .add-scrim-form button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .add-scrim-form button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsywność dla mniejszych ekranów */
+        @media (max-width: 768px) {
+            .player-entry {
+                /* Zmień na układ kolumnowy dla małych ekranów, aby uniknąć ściskania */
+                grid-template-columns: 1fr; /* Wszystkie elementy w jednej kolumnie */
+                text-align: center;
+            }
+            .player-entry label {
+                text-align: center;
+            }
+            .player-entry input {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            .player-kda-input, .player-minions-input, .player-gold-input { /* Dodano .player-gold-input */
+                max-width: unset; /* Usuń ograniczenia szerokości */
+            }
+        }
+
+        /* Ukryj formularz domyślnie, dopóki użytkownik nie zostanie zweryfikowany */
+        #protectedContent {
+            display: none;
+            width: 100%; /* Ensure it takes full width when visible */
+            align-items: center; /* Center content vertically */
+            flex-direction: column;
+        }
+
+        #loadingMessage {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 1.2em;
+            color: #aaa;
+        }
+        /* Style dla niestandardowych okienek wiadomości */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #333;
+            max-width: 90%;
+        }
+        .message-box button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+        }
+        .message-box button.ok-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .message-box button.ok-button:hover {
+            background-color: #0056b3;
+        }
+        .message-box button.error-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        .message-box button.error-button:hover {
+            background-color: #c82333;
+        }
+        .message-box button.success-button {
+            background-color: #28a745;
+            color: white;
+        }
+        .message-box button.success-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -35,7 +271,55 @@
 
             <section class="add-scrim-form">
                 <form id="matchForm">
-                    </form>
+                    <div class="form-group">
+                        <label for="matchDate">Data:</label>
+                        <input type="date" id="matchDate" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="matchResult">Wynik:</label>
+                        <select id="matchResult" required>
+                            <option value="">Wybierz wynik</option>
+                            <option value="WIN">WIN</option>
+                            <option value="LOSE">LOSE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="matchTime">Czas Gry:</label>
+                        <input type="text" id="matchTime" placeholder="np. 35:12" required />
+                    </div>
+
+                    <h3>Teamcomp Ogólny (Nasza Drużyna)</h3>
+                    <div class="form-group team-champions">
+                        <input type="text" class="our-champion-input" placeholder="Top" required />
+                        <input type="text" class="our-champion-input" placeholder="Jungle" required />
+                        <input type="text" class="our-champion-input" placeholder="Mid" required />
+                        <input type="text" class="our-champion-input" placeholder="Adc" required />
+                        <input type="text" class="our-champion-input" placeholder="Support" required />
+                    </div>
+
+                    <h3>Teamcomp Ogólny (Przeciwnicy)</h3>
+                    <div class="form-group team-champions">
+                        <input type="text" class="enemy-champion-input" placeholder="Top" required />
+                        <input type="text" class="enemy-champion-input" placeholder="Jungle" required />
+                        <input type="text" class="enemy-champion-input" placeholder="Mid" required />
+                        <input type="text" class="enemy-champion-input" placeholder="Adc" required />
+                        <input type="text" class="enemy-champion-input" placeholder="Support" required />
+                    </div>
+
+                    <div class="player-stats-section">
+                        <h3>Statystyki Zawodników (Nasza Drużyna)</h3>
+                        <div id="ourPlayerStatsContainer">
+                        </div>
+                    </div>
+
+                    <div class="player-stats-section">
+                        <h3>Statystyki Zawodników (Przeciwnicy)</h3>
+                        <div id="enemyPlayerStatsContainer">
+                        </div>
+                    </div>
+
+                    <button type="submit">Dodaj Mecz</button>
+                </form>
             </section>
         </div>
     </main>
@@ -45,7 +329,194 @@
     </footer>
 
     <script type="module">
-        // Twój skrypt Firebase bez zmian
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            push,
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Twoja oryginalna konfiguracja Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
+            authDomain: "acg-skrimy.firebaseapp.com",
+            databaseURL: "https://acg-skrimy-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "acg-skrimy",
+            storageBucket: "acg-skrimy.firebasestorage.app",
+            messagingSenderId: "78237268518",
+            appId: "1:78237268518:web:6b02118d081b4a49b384e7",
+            measurementId: "G-6VDFPFX560",
+        };
+
+        // Inicjalizacja Firebase z Twoją konfiguracją
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Referencja do kolekcji 'scrims' w Realtime Database
+        const scrimsRef = ref(db, "scrims"); 
+
+        // Admin UID
+        const ADMIN_UID = "OOiK1fxmfmZSpsTR05bWfK7a3V23";
+
+        // UI Elements
+        const protectedContent = document.getElementById('protectedContent');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loginLogoutLink = document.getElementById('loginLogoutLink');
+        const matchForm = document.getElementById("matchForm");
+        const matchDateInput = document.getElementById("matchDate");
+        const matchResultInput = document.getElementById("matchResult");
+        const matchTimeInput = document.getElementById("matchTime");
+        const ourChampionInputs = document.querySelectorAll(".our-champion-input");
+        const enemyChampionInputs = document.querySelectorAll(".enemy-champion-input");
+        const ourPlayerStatsContainer = document.getElementById("ourPlayerStatsContainer");
+        const enemyPlayerStatsContainer = document.getElementById("enemyPlayerStatsContainer");
+
+        // ZAKTUALIZOWANA LISTA GRACZY
+        const ourPlayersList = [
+            "Likht", "Weedolas", "reap777", "Kohayushi", "Yanny"
+        ];
+        const enemyPlayersList = [
+            "Enemy 1", "Enemy 2", "Enemy 3", "Enemy 4", "Enemy 5"
+        ];
+
+        function showMessageBox(message, type, onClose, buttonText = 'OK', redirectUrl = null) {
+            const messageBox = document.createElement('div');
+            messageBox.className = 'message-box';
+            let buttonClass = '';
+            if (type === 'success') buttonClass = 'success-button';
+            else if (type === 'error') buttonClass = 'error-button';
+            else buttonClass = 'ok-button';
+
+            messageBox.innerHTML = `<p>${message}</p><button class="${buttonClass}">${buttonText}</button>`;
+            document.body.appendChild(messageBox);
+
+            messageBox.querySelector('button').addEventListener('click', () => {
+                messageBox.remove();
+                if (onClose) onClose();
+                if (redirectUrl) window.location.href = redirectUrl;
+            });
+        }
+
+        function generatePlayerInputs(containerElement, playersArray, playerTypePrefix) {
+            containerElement.innerHTML = ''; 
+            playersArray.forEach((player, index) => {
+                const playerEntryDiv = document.createElement("div");
+                playerEntryDiv.className = "player-entry";
+                
+                let playerHTML = `
+                    <label for="${playerTypePrefix}-champion-${index}">${player}:</label>
+                    <input type="text" id="${playerTypePrefix}-champion-${index}" class="player-champion-input" placeholder="Postać" data-player-type="${playerTypePrefix}" data-player-id="${index}" required />
+                    <input type="number" id="${playerTypePrefix}-kda-k-${index}" class="player-kda-input" placeholder="K" data-kda-part="k" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-kda-d-${index}" class="player-kda-input" placeholder="D" data-kda-part="d" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-kda-a-${index}" class="player-kda-input" placeholder="A" data-kda-part="a" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-minions-${index}" class="player-minions-input" placeholder="Miniony" data-minions-part="cs" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                    <input type="number" id="${playerTypePrefix}-gold-${index}" class="player-gold-input" placeholder="Gold" data-gold-part="gold" data-player-type="${playerTypePrefix}" data-player-id="${index}" min="0" required />
+                `;
+
+                if (playerTypePrefix === 'our') {
+                    playerHTML += `
+                        <div style="display: flex; align-items: center; justify-content: flex-start;">
+                            <input type="checkbox" id="our-substitute-${index}" data-sub-id="${index}" title="Zaznacz, jeśli grał zmiennik" style="width: auto; margin-right: 5px;">
+                            <label for="our-substitute-${index}" style="font-weight: normal; text-align: left; margin-bottom: 0;">Zmiennik</label>
+                        </div>
+                    `;
+                } else {
+                    playerHTML += `<div></div>`;
+                }
+
+                playerEntryDiv.innerHTML = playerHTML;
+                containerElement.appendChild(playerEntryDiv);
+            });
+        }
+
+        function getPlayerDataFromForm(playersArray, containerElement, playerTypePrefix) {
+            const data = [];
+            playersArray.forEach((player, index) => {
+                const championInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][class*="player-champion-input"]`);
+                const kInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="k"]`);
+                const dInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="d"]`);
+                const aInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-kda-part="a"]`);
+                const minionsInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-minions-part="cs"]`);
+                const goldInput = containerElement.querySelector(`input[data-player-type="${playerTypePrefix}"][data-player-id="${index}"][data-gold-part="gold"]`);
+
+                const playerData = {
+                    name: player,
+                    champion: championInput ? championInput.value.trim() : '',
+                    kda: {
+                        k: parseInt(kInput ? kInput.value : '0'),
+                        d: parseInt(dInput ? dInput.value : '0'),
+                        a: parseInt(aInput ? aInput.value : '0'),
+                    },
+                    minions: parseInt(minionsInput ? minionsInput.value : '0'),
+                    gold: parseInt(goldInput ? goldInput.value : '0')
+                };
+
+                if (playerTypePrefix === 'our') {
+                    const substituteCheckbox = containerElement.querySelector(`#our-substitute-${index}`);
+                    playerData.substitute = substituteCheckbox ? substituteCheckbox.checked : false;
+                }
+                
+                data.push(playerData);
+            });
+            return data;
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === ADMIN_UID) {
+                loadingMessage.style.display = 'none';
+                protectedContent.style.display = 'flex';
+                generatePlayerInputs(ourPlayerStatsContainer, ourPlayersList, 'our');
+                generatePlayerInputs(enemyPlayerStatsContainer, enemyPlayersList, 'enemy');
+                
+                loginLogoutLink.textContent = 'Wyloguj';
+                loginLogoutLink.href = '#';
+                loginLogoutLink.onclick = (e) => { 
+                    e.preventDefault();
+                    signOut(auth).then(() => {
+                        showMessageBox("Wylogowano pomyślnie.", 'success', () => { window.location.href = 'index.html'; });
+                    }).catch((error) => {
+                        showMessageBox(`Wystąpił błąd: ${error.message}`, 'error');
+                    });
+                };
+            } else {
+                loadingMessage.style.display = 'none';
+                protectedContent.style.display = 'none';
+                showMessageBox("Brak uprawnień.", 'error', null, "Przejdź do logowania", 'login.html');
+            }
+        });
+
+        matchForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+                showMessageBox("Brak uprawnień do dodawania meczów.", 'error');
+                return;
+            }
+
+            const newMatch = {
+                date: matchDateInput.value,
+                result: matchResultInput.value,
+                time: matchTimeInput.value,
+                ourChamps: Array.from(ourChampionInputs).map(i => i.value.trim()).filter(Boolean),
+                enemyChamps: Array.from(enemyChampionInputs).map(i => i.value.trim()).filter(Boolean),
+                players: getPlayerDataFromForm(ourPlayersList, ourPlayerStatsContainer, 'our'),
+                enemyPlayers: getPlayerDataFromForm(enemyPlayersList, enemyPlayerStatsContainer, 'enemy'),
+                type: "general"
+            };
+
+            try {
+                await push(scrimsRef, newMatch);
+                showMessageBox("Mecz dodany pomyślnie!", 'success');
+                matchForm.reset();
+            } catch (err) {
+                showMessageBox(`Wystąpił błąd: ${err.message}`, 'error');
+            }
+        });
     </script>
 </body>
 </html>
