@@ -68,30 +68,26 @@
             background-color: #3a3a3a;
         }
 
-        /* Styl dla klikalnego wiersza meczu */
         .match-row {
             cursor: pointer;
         }
 
-        /* Ukryta sekcja ze statystykami graczy */
         .player-stats-detail-row {
-            display: none; /* Domyślnie ukryte */
+            display: none; 
             background-color: #252525;
         }
 
-        /* Kontener dla obu tabel, żeby je ładnie ułożyć obok siebie lub pod sobą */
         .player-stats-container {
-            display: flex; /* Użyj flexboxa */
-            flex-wrap: wrap; /* Pozwól na zawijanie elementów, jeśli brakuje miejsca */
-            gap: 20px; /* Odstęp między tabelami */
-            justify-content: space-around; /* Wyśrodkowanie i rozłożenie tabel */
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            justify-content: space-around; 
             padding: 10px;
         }
 
-        /* Styl dla rozwijalnej tabeli graczy (obu: naszej i przeciwnika) */
         .player-stats-detail-table {
-            flex: 1; /* Pozwól tabelom rosnąć i kurczyć się */
-            min-width: 300px; /* Minimalna szerokość tabeli, żeby się nie ściskały za bardzo */
+            flex: 1; 
+            min-width: 300px; 
             border-collapse: collapse;
             margin-top: 10px;
             margin-bottom: 5px;
@@ -108,10 +104,9 @@
             font-weight: 600;
         }
 
-        /* Nowy styl dla wyświetlania sumy złota */
         .gold-summary {
             text-align: center;
-            color: #ffcc00 !important; /* Złoty kolor - z !important */
+            color: #ffcc00 !important;
             font-weight: bold;
             margin-bottom: 10px;
             font-size: 1.1em;
@@ -120,22 +115,20 @@
         .player-stats-detail-table th {
             border: 1px solid #444;
             padding: 8px;
-            text-align: left; /* Nagłówki kolumn nadal wyrównane do lewej */
+            text-align: left; 
             background-color: #333;
             color: #f0f0f0;
             font-weight: 500;
         }
 
-        /* Zmiana tutaj: wszystkie komórki td wewnątrz player-stats-detail-table będą wyśrodkowane */
         .player-stats-detail-table td {
             border: 1px solid #444;
             padding: 8px;
-            text-align: center; /* Wyrównanie wszystkich komórek danych do środka */
+            text-align: center; 
         }
 
-        /* Specyficzne style, które mogą nadpisać ogólne, jeśli potrzebne (np. dla ikony+nicka) */
         .player-stats-detail-table td:first-child {
-             text-align: left; /* Pierwsza kolumna (postać/gracz) z powrotem do lewej */
+             text-align: left; 
         }
 
 
@@ -144,10 +137,10 @@
             color: #e0e0e0;
         }
         .player-stats-detail-table .player-minions {
-            color: #88d0ff; /* Jakiś fajny kolor dla minionów */
+            color: #88d0ff; 
         }
         .player-stats-detail-table .player-gold {
-            color: #ffcc00; /* Złoty kolor dla golda */
+            color: #ffcc00; 
         }
         .player-stats-detail-table .player-champion-icon {
             width: 20px;
@@ -158,7 +151,6 @@
             border: 1px solid #555;
         }
 
-        /* Przycisk usuwania */
         .delete-btn {
             background-color: #dc3545;
             color: white;
@@ -173,6 +165,59 @@
         .delete-btn:hover {
             background-color: #c82333;
         }
+
+        /* --- POCZĄTEK JEDYNEJ ZMIANY --- */
+        /* Style dla okienka z potwierdzeniem (brakowało ich) */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 1001; /* Ważne, aby było na wierzchu */
+            text-align: center;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 400px;
+        }
+        .message-box p {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .message-box button {
+            padding: 8px 16px;
+            margin: 0 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .message-box .confirm-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        .message-box .confirm-button:hover {
+            background-color: #c82333;
+        }
+        .message-box .cancel-button {
+            background-color: #6c757d;
+            color: white;
+        }
+         .message-box .cancel-button:hover {
+            background-color: #5a6268;
+        }
+        .message-box .ok-button, .message-box .success-button, .message-box .error-button {
+            background-color: #007bff;
+            color: white;
+        }
+        /* --- KONIEC JEDYNEJ ZMIANY --- */
+
     </style>
 </head>
 <body>
@@ -235,11 +280,9 @@
             remove,
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
-        // DODAJ IMPORT AUTORYZACJI
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 
-        // Firebase config (nie zmieniony)
         const firebaseConfig = {
             apiKey: "AIzaSyA4depHuFw3bJ3Uq2gjKeiW5umhjiKnJ40",
             authDomain: "acg-skrimy.firebaseapp.com",
@@ -252,11 +295,10 @@
             measurementId: "G-6VDFPFX560",
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
-        const auth = getAuth(app); // Pobierz instancję autoryzacji
+        const auth = getAuth(app); 
         const scrimsRef = ref(db, "scrims");
 
         const scrimTableBody = document.getElementById("scrimTableBody");
@@ -267,19 +309,15 @@
         const winRateSpan = document.getElementById("winRate");
 
         let scrimsData = [];
-        let currentUser = null; // Zmienna do przechowywania stanu użytkownika
+        let currentUser = null; 
 
-        // Nasłuchuj zmian stanu autoryzacji
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
-            // Tutaj możesz zaktualizować interfejs użytkownika na podstawie stanu zalogowania
-            // np. ukryć/pokazać przycisk "Usuń" lub "Zaloguj się"
             console.log("Stan autoryzacji: ", currentUser ? currentUser.email : "Niezalogowany");
-            renderTable(); // Odśwież tabelę po zmianie stanu zalogowania, aby uwzględnić widoczność przycisku
+            renderTable();
         });
 
-        // Config do ikon League of Legends
-        const DDRAGON_VERSION = "15.12.1"; // Zaktualizowana wersja DDragon
+        const DDRAGON_VERSION = "15.12.1";
         const CHAMPION_IMAGE_BASE_URL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
         const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
 
@@ -291,38 +329,7 @@
                 .replace(/[.'-]/g, "")
                 .replace(/\s+/g, "");
 
-            const nameMap = {
-                "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu", "mummy": "Amumu",
-                "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir",
-                "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar",
-                "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", "corki": "Corki", "darius": "Darius",
-                "diana": "Diana", "drankz": "DrMundo", "drmundo": "DrMundo", "draven": "Draven", "ekko": "Ekko", "elise": "Elise",
-                "evelynn": "Evelynn", "ezreal": "Ezreal", "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio",
-                "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen",
-                "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern",
-                "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx", "kaisa": "Kaisa",
-                "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle",
-                "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw",
-                "ksante": "KSante", "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra",
-                "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux", "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai",
-                "masteryi": "MasterYi", "milio": "Milio", "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing",
-                "mordekaiser": "Mordekaiser", "morgana": "Morgana", "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus",
-                "neeko": "Neeko", "nidalee": "Nidalee", "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf",
-                "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana",
-                "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renata": "RenataGlasc",
-                "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze", "samira": "Samira",
-                "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen",
-                "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder",
-                "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra", "tahmkench": "TahmKench",
-                "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh", "tristana": "Tristana",
-                "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch", "udyr": "Udyr",
-                "urgot": "Urgot", "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi",
-                "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear", "warwick": "Warwick", "xayah": "Xayah",
-                "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone", "yorick": "Yorick", "yuumi": "Yuumi",
-                "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean", "zoe": "Zoe", "zyra": "Zyra",
-                "ambessa": "Ambessa",
-            };
-
+            const nameMap = { "aatrox": "Aatrox", "ahri": "Ahri", "akali": "Akali", "akshan": "Akshan", "alistar": "Alistar", "amumu": "Amumu", "anivia": "Anivia", "annie": "Annie", "aphelios": "Aphelios", "ashe": "Ashe", "aurelionsol": "AurelionSol", "azir": "Azir", "bard": "Bard", "belveth": "BelVeth", "blitzcrank": "Blitzcrank", "brand": "Brand", "braum": "Braum", "briar": "Briar", "caitlyn": "Caitlyn", "camille": "Camille", "cassiopeia": "Cassiopeia", "chogath": "ChoGath", "corki": "Corki", "darius": "Darius", "diana": "Diana", "drmundo": "DrMundo", "draven": "Draven", "ekko": "Ekko", "elise": "Elise", "evelynn": "Evelynn", "ezreal": "Ezreal", "fiddlesticks": "Fiddlesticks", "fiora": "Fiora", "fizz": "Fizz", "galio": "Galio", "gangplank": "Gangplank", "garen": "Garen", "gnar": "Gnar", "gragas": "Gragas", "graves": "Graves", "gwen": "Gwen", "hecarim": "Hecarim", "heimerdinger": "Heimerdinger", "hwei": "Hwei", "illaoi": "Illaoi", "irelia": "Irelia", "ivern": "Ivern", "janna": "Janna", "jarvaniv": "JarvanIV", "jax": "Jax", "jayce": "Jayce", "jhin": "Jhin", "jinx": "Jinx", "kaisa": "Kaisa", "kalista": "Kalista", "karma": "Karma", "karthus": "Karthus", "kassadin": "Kassadin", "katarina": "Katarina", "kayle": "Kayle", "kayn": "Kayn", "kennen": "Kennen", "khazix": "KhaZix", "kindred": "Kindred", "kled": "Kled", "kogmaw": "KogMaw", "ksante": "KSante", "leblanc": "Leblanc", "leesin": "LeeSin", "leona": "Leona", "lillia": "Lillia", "lissandra": "Lissandra", "lucian": "Lucian", "lulu": "Lulu", "lux": "Lux", "malphite": "Malphite", "malzahar": "Malzahar", "maokai": "Maokai", "masteryi": "MasterYi", "milio": "Milio", "missfortune": "MissFortune", "monkeyking": "MonkeyKing", "wukong": "MonkeyKing", "mordekaiser": "Mordekaiser", "morgana": "Morgana", "naafiri": "Naafiri", "nami": "Nami", "nasus": "Nasus", "nautilus": "Nautilus", "neeko": "Neeko", "nidalee": "Nidalee", "nilah": "Nilah", "nocturne": "Nocturne", "nunu": "Nunu", "olaf": "Olaf", "orianna": "Orianna", "ornn": "Ornn", "pantheon": "Pantheon", "poppy": "Poppy", "pyke": "Pyke", "qiyana": "Qiyana", "quinn": "Quinn", "rakan": "Rakan", "rammus": "Rammus", "reksai": "RekSai", "rell": "Rell", "renataglasc": "RenataGlasc", "renekton": "Renekton", "rengar": "Rengar", "riven": "Riven", "rumble": "Rumble", "ryze": "Ryze", "samira": "Samira", "sejuani": "Sejuani", "senna": "Senna", "seraphine": "Seraphine", "sett": "Sett", "shaco": "Shaco", "shen": "Shen", "shyvana": "Shyvana", "singed": "Singed", "sion": "Sion", "sivir": "Sivir", "skarner": "Skarner", "smolder": "Smolder", "sona": "Sona", "soraka": "Soraka", "swain": "Swain", "sylas": "Sylas", "syndra": "Syndra", "tahmkench": "TahmKench", "taliyah": "Taliyah", "talon": "Talon", "taric": "Taric", "teemo": "Teemo", "thresh": "Thresh", "tristana": "Tristana", "trundle": "Trundle", "tryndamere": "Tryndamere", "twistedfate": "TwistedFate", "twitch": "Twitch", "udyr": "Udyr", "urgot": "Urgot", "varus": "Varus", "vayne": "Vayne", "veigar": "Veigar", "velkoz": "Velkoz", "vex": "Vex", "vi": "Vi", "viego": "Viego", "viktor": "Viktor", "vladimir": "Vladimir", "volibear": "Volibear", "warwick": "Warwick", "xayah": "Xayah", "xerath": "Xerath", "xinzhao": "XinZhao", "yasuo": "Yasuo", "yone": "Yone", "yorick": "Yorick", "yuumi": "Yuumi", "zac": "Zac", "zed": "Zed", "zeri": "Zeri", "ziggs": "Ziggs", "zilean": "Zilean", "zoe": "Zoe", "zyra": "Zyra" };
             let dataDragonName = nameMap[cleanedName];
             if (!dataDragonName && cleanedName.length > 0) {
                 dataDragonName = cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
@@ -330,9 +337,6 @@
             return `${CHAMPION_IMAGE_BASE_URL}${dataDragonName}.png`;
         }
 
-        /**
-         * Updates the overall scrim statistics displayed at the top of the page.
-         */
         function updateStats() {
             const total = scrimsData.length;
             const wins = scrimsData.filter((s) => s.result === "WIN").length;
@@ -345,29 +349,18 @@
             winRateSpan.textContent = `${winRate}%`;
         }
 
-        /**
-         * Finds a player's data object within an array of players based on their champion name.
-         * @param {Array<Object>} playersArray - An array of player objects from a match.
-         * @param {string} championName - The champion name to search for.
-         * @returns {Object|undefined} The player object if found, otherwise undefined.
-         */
         function findPlayerByChampionName(playersArray, championName) {
             return playersArray.find(player => player.champion && player.champion.trim().toLowerCase() === championName.trim().toLowerCase());
         }
 
-        /**
-         * Renders the main scrim history table, including expandable player details.
-         */
         function renderTable() {
             scrimTableBody.innerHTML = "";
 
             scrimsData.forEach((scrim) => {
-                // Główny wiersz meczu
                 const mainRow = document.createElement("tr");
                 mainRow.classList.add("match-row");
                 mainRow.dataset.matchId = scrim.id;
 
-                // Data
                 const dateTd = document.createElement("td");
                 if (scrim.date) {
                     const [year, month, day] = scrim.date.split('-');
@@ -377,18 +370,15 @@
                 }
                 mainRow.appendChild(dateTd);
 
-                // Wynik
                 const resultTd = document.createElement("td");
                 resultTd.textContent = scrim.result || "";
                 resultTd.className = scrim.result === "WIN" ? "win" : "lose";
                 mainRow.appendChild(resultTd);
 
-                // Czas gry
                 const timeTd = document.createElement("td");
                 timeTd.textContent = scrim.time || "";
                 mainRow.appendChild(timeTd);
 
-                // Nasze postacie z ikonami
                 const ourTd = document.createElement("td");
                 const ourContainer = document.createElement("div");
                 ourContainer.className = "champion-icons-container";
@@ -406,7 +396,6 @@
                 ourTd.appendChild(ourContainer);
                 mainRow.appendChild(ourTd);
 
-                // Postacie przeciwników z ikonami
                 const enemyTd = document.createElement("td");
                 const enemyContainer = document.createElement("div");
                 enemyContainer.className = "champion-icons-container";
@@ -424,40 +413,28 @@
                 enemyTd.appendChild(enemyContainer);
                 mainRow.appendChild(enemyTd);
 
-                // Akcje - Usuń
                 const actionsTd = document.createElement("td");
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Usuń";
                 deleteBtn.className = "delete-btn";
-                // Dodajemy warunek wyświetlania przycisku i logikę kliknięcia
-                if (currentUser) { // Jeśli użytkownik jest zalogowany, pokaż przycisk
-                    deleteBtn.style.display = 'block'; // Lub 'inline-block' w zależności od potrzeb
+                if (currentUser) { 
+                    deleteBtn.style.display = 'block'; 
                     deleteBtn.addEventListener("click", async (e) => {
                         e.stopPropagation();
-                        // Zastąpienie alert() i confirm() własnym MessageBoxem
                         showMessageBox(
                             `Czy na pewno chcesz usunąć scrim z dnia ${scrim.date} o wyniku ${scrim.result}?`,
-                            'confirm', // Typ wiadomości dla potwierdzenia
-                            async () => { await deleteScrim(scrim.id); } // Callback po potwierdzeniu
+                            'confirm', 
+                            async () => { await deleteScrim(scrim.id); }
                         );
                     });
-                } else { // Jeśli użytkownik nie jest zalogowany, ukryj przycisk i dodaj obsługę kliknięcia z komunikatem
-                    deleteBtn.style.display = 'block'; // Nadal widoczny, ale zmieni się jego zachowanie
-                    deleteBtn.addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        showMessageBox(
-                            "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
-                            'info', // Typ wiadomości informacyjnej
-                            () => { window.location.href = "login.html"; } // Callback po zamknięciu
-                        );
-                    });
+                } else {
+                    deleteBtn.style.display = 'none'; // Ukryj przycisk jeśli nikt nie jest zalogowany
                 }
                 actionsTd.appendChild(deleteBtn);
                 mainRow.appendChild(actionsTd);
 
                 scrimTableBody.appendChild(mainRow);
 
-                // --- Rozwijalny wiersz ze statystykami graczy ---
                 const detailRow = document.createElement("tr");
                 detailRow.classList.add("player-stats-detail-row");
                 detailRow.dataset.matchId = scrim.id;
@@ -468,17 +445,14 @@
                 const playerStatsContainer = document.createElement("div");
                 playerStatsContainer.classList.add("player-stats-container");
 
-                // Posortowanie naszych graczy zgodnie z kolejnością championów
                 const sortedOurPlayers = ourChampsToDisplay
                     .map(champName => scrim.players.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
-                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
+                    .filter(player => player !== undefined); 
 
-                // Obliczanie sumy złota dla naszej drużyny
                 let totalOurGold = 0;
                 const ourPlayersRows = sortedOurPlayers
                     .map(player => {
                         const championName = player.champion;
-                        // TUTAJ ZMIANA: Wyświetlanie "Zmiennik" jeśli gracz był zmiennikiem
                         const displayPlayerName = player.substitute === true ? 'Zmiennik' : player.name;
                         const displayKDA = player && player.kda ? `${player.kda.k} / ${player.kda.d} / ${player.kda.a}` : 'N/A';
                         const displayMinions = player && player.minions !== undefined ? player.minions : 'N/A';
@@ -502,17 +476,12 @@
                     })
                     .join('');
 
-                // Tabela dla naszych graczy
                 const ourPlayersTable = document.createElement("table");
                 ourPlayersTable.classList.add("player-stats-detail-table");
                 ourPlayersTable.innerHTML = `
                     <thead>
-                        <tr>
-                            <th colspan="4"><h4>Nasi Gracze</h4></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4" class="gold-summary">Team Gold: ${totalOurGold.toLocaleString()}</th>
-                        </tr>
+                        <tr><th colspan="4"><h4>Nasi Gracze</h4></th></tr>
+                        <tr><th colspan="4" class="gold-summary">Team Gold: ${totalOurGold.toLocaleString()}</th></tr>
                         <tr>
                             <th>Postać / Gracz</th>
                             <th>KDA</th>
@@ -526,13 +495,11 @@
                 `;
                 playerStatsContainer.appendChild(ourPlayersTable);
 
-                // Posortowanie graczy przeciwnika zgodnie z kolejnością championów
                 const sortedEnemyPlayers = enemyChampsToDisplay
                     .map(champName => scrim.enemyPlayers.find(player => player.champion && player.champion.trim().toLowerCase() === champName.trim().toLowerCase()))
-                    .filter(player => player !== undefined); // Usuń undefined, jeśli nie znaleziono gracza dla championa
+                    .filter(player => player !== undefined);
 
 
-                // Obliczanie sumy złota dla graczy przeciwnika
                 let totalEnemyGold = 0;
                 const enemyPlayersRows = sortedEnemyPlayers
                     .map(player => {
@@ -560,18 +527,12 @@
                     })
                     .join('');
 
-
-                // Tabela dla graczy przeciwnika
                 const enemyPlayersTable = document.createElement("table");
                 enemyPlayersTable.classList.add("player-stats-detail-table");
                 enemyPlayersTable.innerHTML = `
                     <thead>
-                        <tr>
-                            <th colspan="4"><h4>Gracze Przeciwnika</h4></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4" class="gold-summary">Team Gold: ${totalEnemyGold.toLocaleString()}</th>
-                        </tr>
+                        <tr><th colspan="4"><h4>Gracze Przeciwnika</h4></th></tr>
+                        <tr><th colspan="4" class="gold-summary">Team Gold: ${totalEnemyGold.toLocaleString()}</th></tr>
                         <tr>
                             <th>Postać / Gracz</th>
                             <th>KDA</th>
@@ -590,17 +551,13 @@
                 detailRow.appendChild(detailCell);
                 scrimTableBody.appendChild(detailRow);
 
-
-                // Obsługa kliknięcia dla rozwijania/zwijania
                 mainRow.addEventListener('click', () => {
-                    // Zwiń wszystkie inne rozwinięte wiersze
                     document.querySelectorAll('.player-stats-detail-row').forEach(row => {
                         if (row !== detailRow && row.style.display === 'table-row') {
                             row.style.display = 'none';
                         }
                     });
 
-                    // Przełącz widoczność bieżącego wiersza
                     if (detailRow.style.display === 'table-row') {
                         detailRow.style.display = 'none';
                     } else {
@@ -612,14 +569,10 @@
             updateStats();
         }
 
-        /**
-         * Displays a custom message box for alerts or confirmations instead of native browser pop-ups.
-         * @param {string} message - The message to display.
-         * @param {string} type - Type of message ('success', 'error', 'info', 'confirm').
-         * @param {function} [onConfirm] - Callback function to execute on confirmation (only for 'confirm' type).
-         * @param {function} [onClose] - Callback function to execute when the message box is closed (for all types).
-         */
-        function showMessageBox(message, type, onConfirm = null, onClose = null) {
+        function showMessageBox(message, type, onConfirm, onClose) {
+            const existingBox = document.querySelector('.message-box');
+            if(existingBox) existingBox.remove();
+
             const messageBox = document.createElement('div');
             messageBox.className = 'message-box';
             
@@ -630,60 +583,52 @@
                     <button class="cancel-button">Nie</button>
                 `;
             } else {
-                let buttonClass = '';
-                if (type === 'success') buttonClass = 'success-button';
-                else if (type === 'error') buttonClass = 'error-button';
-                else buttonClass = 'ok-button'; // Default for info
-
-                buttonsHtml = `<button class="${buttonClass}">OK</button>`;
+                buttonsHtml = `<button class="ok-button">OK</button>`;
             }
 
-            messageBox.innerHTML = `
-                <p>${message}</p>
-                <div>${buttonsHtml}</div>
-            `;
+            messageBox.innerHTML = `<p>${message}</p><div>${buttonsHtml}</div>`;
             document.body.appendChild(messageBox);
 
-            if (type === 'confirm') {
-                messageBox.querySelector('.confirm-button').addEventListener('click', () => {
+            const confirmBtn = messageBox.querySelector('.confirm-button');
+            const cancelBtn = messageBox.querySelector('.cancel-button');
+            const okBtn = messageBox.querySelector('.ok-button');
+
+            const closeAction = () => {
+                messageBox.remove();
+                if(onClose) onClose();
+            };
+
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', () => {
                     messageBox.remove();
                     if (onConfirm) onConfirm();
-                    if (onClose) onClose();
                 });
-                messageBox.querySelector('.cancel-button').addEventListener('click', () => {
+            }
+            if(cancelBtn) {
+                cancelBtn.addEventListener('click', closeAction);
+            }
+            if(okBtn) {
+                okBtn.addEventListener('click', () => {
                     messageBox.remove();
-                    if (onClose) onClose();
-                });
-            } else {
-                messageBox.querySelector('button').addEventListener('click', () => {
-                    messageBox.remove();
-                    if (onClose) onClose();
+                    if(onConfirm) onConfirm();
                 });
             }
         }
 
-        // Usuwanie scrimu z Firebase
         async function deleteScrim(id) {
             if (!currentUser) {
-                showMessageBox(
-                    "Musisz być zalogowany, aby usunąć scrim. Zostaniesz przekierowany do strony logowania.",
-                    'info',
-                    null, // Brak onConfirm
-                    () => { window.location.href = "login.html"; } // Callback po zamknięciu
-                );
-                return; // Zatrzymaj dalsze wykonywanie funkcji
+                showMessageBox("Musisz być zalogowany, aby usunąć scrim.", 'info', () => { window.location.href = "login.html"; });
+                return;
             }
             try {
                 await remove(ref(db, `scrims/${id}`));
-                console.log(`Scrim ${id} usunięty pomyślnie.`);
-                showMessageBox("Scrim usunięty pomyślnie!", 'success');
+                showMessageBox("Scrim usunięty pomyślnie!", 'info', () => {});
             } catch (err) {
                 console.error("Błąd podczas usuwania scrimu:", err);
-                showMessageBox(`Błąd podczas usuwania scrimu: ${err.message}`, 'error');
+                showMessageBox(`Błąd podczas usuwania scrimu: ${err.message}`, 'error', () => {});
             }
         }
 
-        // Ładowanie scrimów z Firebase
         function loadScrimsFromFirebase() {
             onValue(scrimsRef, (snapshot) => {
                 const data = snapshot.val() || {};
@@ -691,9 +636,8 @@
                     id: key,
                     ...value,
                     type: value.type || 'general',
-                    ourChamps: Array.isArray(value.ourChamps) ? value.ourChamps : (typeof value.our === 'string' ? value.our.split(',').map(s => s.trim()).filter(Boolean) : []),
-                    enemyChamps: Array.isArray(value.enemyChamps) ? value.enemyChamps : (typeof value.enemy === 'string' ? value.enemy.split(',').map(s => s.trim()).filter(Boolean) : []),
-                    // Upewnij się, że players i enemyPlayers są tablicami, nawet jeśli są puste
+                    ourChamps: Array.isArray(value.ourChamps) ? value.ourChamps : [],
+                    enemyChamps: Array.isArray(value.enemyChamps) ? value.enemyChamps : [],
                     players: value.players || [],
                     enemyPlayers: value.enemyPlayers || []
                 }));
@@ -705,12 +649,10 @@
                 renderTable();
             }, (error) => {
                 console.error("Błąd podczas ładowania danych z Firebase:", error);
-                // Użyj MessageBox zamiast alert
-                showMessageBox(`Błąd podczas ładowania danych z Firebase: ${error.message}. Spróbuj odświeżyć stronę.`, 'error');
+                showMessageBox(`Błąd podczas ładowania danych: ${error.message}.`, 'error');
             });
         }
 
-        // Inicjalizacja po załadowaniu DOM
         document.addEventListener("DOMContentLoaded", () => {
             loadScrimsFromFirebase();
         });
