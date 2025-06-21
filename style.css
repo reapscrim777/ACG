@@ -439,8 +439,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         display: none;
     }
 
-    /* === NOWE POPRAWKI RESPONSIVE === */
-
     /* Poprawka dla tabel w historii scrimów */
     .player-stats-container {
         flex-direction: column;
@@ -464,6 +462,12 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         padding-left: 0;
         border-left: none;
         margin-top: 10px;
+    }
+    
+    /* NOWA POPRAWKA: Ukrywanie treści strony, gdy menu jest otwarte */
+    .menu-open main,
+    .menu-open footer {
+        display: none;
     }
 }
 

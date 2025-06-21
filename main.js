@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (hamburgerButton && navLinks) {
         hamburgerButton.addEventListener('click', () => {
             navLinks.classList.toggle('active');
+            // NOWA LINIA: Dodaje/usuwa klasę 'menu-open' na elemencie body
+            document.body.classList.toggle('menu-open');
         });
     }
 
