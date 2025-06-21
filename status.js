@@ -1,6 +1,6 @@
 // --- KONFIGURACJA ---
 // PAMIĘTAJ, ABY WSTAWIAĆ TUTAJ SWÓJ AKTUALNY KLUCZ API
-const RIOT_API_KEY = "TWÓJ_KLUCZ_API";
+const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912";
 const REFRESH_INTERVAL_MS = 120000; // 120,000 ms = 2 minuty
 
 // Lista graczy do śledzenia statusu
