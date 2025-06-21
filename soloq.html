@@ -6,6 +6,44 @@
     <title>Wyszukiwarka Graczy SoloQ</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="./style.css">
+    <style>
+        /* --- STYLE DODANE BEZPOŚREDNIO TUTAJ, ABY NAPRAWIĆ WYGLĄD NA TELEFONIE --- */
+        @media (max-width: 768px) {
+            /* Poprawka dla górnej części karty meczu */
+            .match-summary-view {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                width: 100%;
+            }
+            .match-stats-right {
+                width: 100%;
+            }
+            .match-card-adapted .items {
+                margin-left: 0;
+            }
+            .match-card-adapted .match-meta {
+                text-align: left;
+                padding-left: 0;
+                border-left: none;
+                margin-top: 10px;
+            }
+            .match-card-adapted .player-lists {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            /* Poprawka dla rozwijanej, szczegółowej tabeli wyników */
+            .match-details-table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .match-details-table {
+                min-width: 600px; /* Minimalna szerokość, by kolumny były czytelne */
+                white-space: nowrap;
+            }
+        }
+    </style>
 </head>
 <body class="soloq-page">
 
