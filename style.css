@@ -145,12 +145,12 @@ table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 th, td { border: 1px solid #444; padding: 12px; text-align: left; color: #ffffff; }
 th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 .scrim-history tr:nth-child(even),
-.player-stats-detail tr:nth-child(even) { 
-    background-color: #3a3a3a; 
+.player-stats-detail tr:nth-child(even) {
+    background-color: #3a3a3a;
 }
 .scrim-history tr:hover,
-.player-stats-detail tr:hover { 
-    background-color: #4a4a4a; 
+.player-stats-detail tr:hover {
+    background-color: #4a4a4a;
 }
 .win { color: #2ecc71 !important; font-weight: bold; }
 .lose { color: #e74c3c !important; font-weight: bold; }
@@ -389,49 +389,49 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     }
 
     /* Tutaj zostawiamy Twoje responsywne style dla tabel, jeśli chcesz */
-    .scrim-history table, .player-stats-detail table, 
-    .scrim-history thead, .player-stats-detail thead, 
-    .scrim-history tbody, .player-stats-detail tbody, 
-    .scrim-history th, .player-stats-detail th, 
-    .scrim-history td, .player-stats-detail td, 
-    .scrim-history tr, .player-stats-detail tr { 
-        display: block; 
+    .scrim-history table, .player-stats-detail table,
+    .scrim-history thead, .player-stats-detail thead,
+    .scrim-history tbody, .player-stats-detail tbody,
+    .scrim-history th, .player-stats-detail th,
+    .scrim-history td, .player-stats-detail td,
+    .scrim-history tr, .player-stats-detail tr {
+        display: block;
     }
-    .scrim-history thead tr, .player-stats-detail thead tr { 
-        position: absolute; 
-        top: -9999px; 
-        left: -9999px; 
+    .scrim-history thead tr, .player-stats-detail thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
     }
-    .scrim-history tr, .player-stats-detail tr { 
-        border: 1px solid #444; 
-        margin-bottom: 15px; 
-        border-radius: 8px; 
-        overflow: hidden; 
+    .scrim-history tr, .player-stats-detail tr {
+        border: 1px solid #444;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden;
     }
-    .scrim-history td, .player-stats-detail td { 
-        border: none; 
-        border-bottom: 1px solid #555; 
-        position: relative; 
-        padding-left: 50%; 
-        text-align: right; 
-        display: flex; 
-        align-items: center; 
-        justify-content: flex-end; 
-        min-height: 40px; 
+    .scrim-history td, .player-stats-detail td {
+        border: none;
+        border-bottom: 1px solid #555;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 40px;
     }
-    .scrim-history td:last-child, .player-stats-detail td:last-child { 
-        border-bottom: none; 
+    .scrim-history td:last-child, .player-stats-detail td:last-child {
+        border-bottom: none;
     }
-    .scrim-history td:before, .player-stats-detail td:before { 
-        content: attr(data-label); 
-        position: absolute; 
-        left: 10px; 
-        width: 45%; 
-        text-align: left; 
-        font-weight: bold; 
-        color: #bbb; 
-        top: 50%; 
-        transform: translateY(-50%); 
+    .scrim-history td:before, .player-stats-detail td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        text-align: left;
+        font-weight: bold;
+        color: #bbb;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     /* Ukrycie tabelki statusu na urządzeniach mobilnych */
@@ -445,4 +445,24 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     .search-box { flex-direction: column; }
     .player-select-buttons { gap: 5px; }
     .player-select-button { width: 48%; margin: 1%; }
+}
+
+/* Style for the PWA Install Button in Navbar */
+.nav-install-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    margin-left: 25px;
+    font-size: 16px;
+    padding: 6px 12px;
+    border-radius: 0px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.nav-install-button:hover {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
 }
