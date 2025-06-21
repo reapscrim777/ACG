@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Statystyki</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
@@ -359,7 +360,7 @@
             <img src="logo.png" alt="Logo" class="logo" />
             <span class="site-name"></span>
         </div>
-        <nav class="nav-links">
+        <nav class="nav-links" id="nav-links">
             <a href="index.html">STRONA GŁÓWNA</a>
             <a href="historia.html">HISTORIA GIER</a>
             <a href="statystyki.html">STATYSTYKI</a>
@@ -367,6 +368,9 @@
             <a href="ranking.html">RANKING</a>
             <a href="dodajmecz.html">DODAJ MECZ</a>
         </nav>
+        <button class="hamburger" id="hamburger-button">
+            &#9776;
+        </button>
     </header>
 
     <div class="main-content-wrapper">
@@ -793,5 +797,6 @@
             playerSpecificStatsSidebar.style.display = 'none';
         });
     </script>
+    <script src="main.js"></script>
 </body>
 </html>

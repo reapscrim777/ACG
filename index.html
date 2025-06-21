@@ -6,7 +6,10 @@
   <title>Strona Główna</title>
   <link rel="stylesheet" href="./style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0e0e0e"/>
+  </head>
 <body class="homepage">
   <header class="navbar">
     <div class="logo-section">
@@ -38,5 +41,19 @@
   </div>
 
   <script src="./status.js"></script>
-</body>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+  </body>
 </html>

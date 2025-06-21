@@ -340,25 +340,101 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 
 
 /* === RESPONSIVE DESIGN === */
+
+/* Style dla przycisku hamburgera */
+.hamburger {
+    display: none; /* Domyślnie ukryty na dużych ekranach */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
 @media (max-width: 768px) {
-    .nav-links { display: none; }
-    main, main.soloq-main { padding: 10px; }
-    .scrim-history table, .player-stats-detail table, .scrim-history thead, .player-stats-detail thead, .scrim-history tbody, .player-stats-detail tbody, .scrim-history th, .player-stats-detail th, .scrim-history td, .player-stats-detail td, .scrim-history tr, .player-stats-detail tr { display: block; }
-    .scrim-history thead tr, .player-stats-detail thead tr { position: absolute; top: -9999px; left: -9999px; }
-    .scrim-history tr, .player-stats-detail tr { border: 1px solid #444; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
-    .scrim-history td, .player-stats-detail td { border: none; border-bottom: 1px solid #555; position: relative; padding-left: 50%; text-align: right; display: flex; align-items: center; justify-content: flex-end; min-height: 40px; }
-    .scrim-history td:last-child, .player-stats-detail td:last-child { border-bottom: none; }
-    .scrim-history td:before, .player-stats-detail td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; text-align: left; font-weight: bold; color: #bbb; top: 50%; transform: translateY(-50%); }
-    .match-summary-view { flex-wrap: wrap; justify-content: center; }
-    .match-stats-left, .match-stats-right { flex-wrap: wrap; justify-content: center; }
-    .match-card-adapted .match-meta { border-left: none; padding-left: 0; margin-top: 10px; }
-    .match-card-adapted.victory, .match-card-adapted.defeat { border-left: none; border-top: 5px solid; }
-    .match-card-adapted.victory { border-color: #2ecc71; }
-    .match-card-adapted.defeat { border-color: #e74c3c; }
-    .match-details-table .damage-cell, .match-details-table .cs-cell { display: none; }
-    .match-details-table thead th:nth-child(3), .match-details-table thead th:nth-child(4) { display: none; }
-    
-    /* Ukrycie tabelki statusu na urządzeniach mobilnych, bo zajmuje za dużo miejsca */
+    /* Pokaż przycisk hamburgera na mniejszych ekranach */
+    .hamburger {
+        display: block;
+    }
+
+    /* Zmieniamy sposób ukrywania menu */
+    .nav-links {
+        position: fixed;
+        top: 70px; /* Wysokość Twojego navbaru */
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background-color: #0e0e0e;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 40px;
+        gap: 20px;
+        transform: translateX(-100%); /* Schowaj menu poza ekranem */
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* Styl dla aktywnego (widocznego) menu */
+    .nav-links.active {
+        transform: translateX(0); /* Pokaż menu */
+    }
+
+    .nav-links a {
+        font-size: 20px;
+        margin-left: 0;
+    }
+
+    main, main.soloq-main {
+        padding: 10px;
+    }
+
+    /* Tutaj zostawiamy Twoje responsywne style dla tabel, jeśli chcesz */
+    .scrim-history table, .player-stats-detail table, 
+    .scrim-history thead, .player-stats-detail thead, 
+    .scrim-history tbody, .player-stats-detail tbody, 
+    .scrim-history th, .player-stats-detail th, 
+    .scrim-history td, .player-stats-detail td, 
+    .scrim-history tr, .player-stats-detail tr { 
+        display: block; 
+    }
+    .scrim-history thead tr, .player-stats-detail thead tr { 
+        position: absolute; 
+        top: -9999px; 
+        left: -9999px; 
+    }
+    .scrim-history tr, .player-stats-detail tr { 
+        border: 1px solid #444; 
+        margin-bottom: 15px; 
+        border-radius: 8px; 
+        overflow: hidden; 
+    }
+    .scrim-history td, .player-stats-detail td { 
+        border: none; 
+        border-bottom: 1px solid #555; 
+        position: relative; 
+        padding-left: 50%; 
+        text-align: right; 
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-end; 
+        min-height: 40px; 
+    }
+    .scrim-history td:last-child, .player-stats-detail td:last-child { 
+        border-bottom: none; 
+    }
+    .scrim-history td:before, .player-stats-detail td:before { 
+        content: attr(data-label); 
+        position: absolute; 
+        left: 10px; 
+        width: 45%; 
+        text-align: left; 
+        font-weight: bold; 
+        color: #bbb; 
+        top: 50%; 
+        transform: translateY(-50%); 
+    }
+
+    /* Ukrycie tabelki statusu na urządzeniach mobilnych */
     .player-status-container {
         display: none;
     }
