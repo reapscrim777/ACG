@@ -388,8 +388,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         display: none;
     }
     
-    /* === ZAKTUALIZOWANE POPRAWKI RESPONSIVE === */
-
     .scrim-history {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -402,17 +400,23 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         flex-direction: column;
     }
     
-    .match-summary-view {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-        width: 100%;
+    /* ZAKTUALIZOWANA, BARDZIEJ NIEZAWODNA POPRAWKA DLA KART W SOLOQ */
+    .match-card-adapted {
+        display: block; /* Zmiana na block, aby wymusić pionowy układ */
+        padding: 10px;
     }
-    .match-stats-right {
-        width: 100%;
+    .match-summary-view {
+        display: block; /* Upewnij się, że ten kontener też jest blokowy */
+    }
+    .match-stats-left, .match-stats-right {
+        flex-wrap: wrap; /* Pozwól na zawijanie wewnętrznych elementów */
+        margin-bottom: 15px; /* Dodaj odstęp między sekcjami */
     }
     .match-card-adapted .items {
-        margin-left: 0;
+        margin-left: 10px; /* Dopasuj margines dla przedmiotów */
+    }
+    .match-card-adapted .player-lists {
+        gap: 20px;
     }
     .match-card-adapted .match-meta {
         text-align: left;
@@ -421,7 +425,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         margin-top: 10px;
     }
     
-    /* Poprawka dla rozwijanej tabeli w SoloQ */
     .match-details-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
