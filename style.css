@@ -286,11 +286,10 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     width: 100%;
     max-width: 400px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    /* NOWA, POPRAWIONA SEKCJA POZYCJONOWANIA */
     position: fixed;
-    left: 50px; /* Odstęp od lewej krawędzi */
-    top: 50%; /* Wyrównanie do połowy wysokości ekranu */
-    transform: translateY(-50%); /* Precyzyjne wyśrodkowanie w pionie */
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 .player-status-container h2 {
     text-align: center;
@@ -341,9 +340,8 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 
 /* === RESPONSIVE DESIGN === */
 
-/* Style dla przycisku hamburgera */
 .hamburger {
-    display: none; /* Domyślnie ukryty na dużych ekranach */
+    display: none;
     background: none;
     border: none;
     color: white;
@@ -352,15 +350,13 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
 }
 
 @media (max-width: 768px) {
-    /* Pokaż przycisk hamburgera na mniejszych ekranach */
     .hamburger {
         display: block;
     }
 
-    /* Zmieniamy sposób ukrywania menu */
     .nav-links {
         position: fixed;
-        top: 70px; /* Wysokość Twojego navbaru */
+        top: 70px;
         left: 0;
         width: 100%;
         height: calc(100vh - 70px);
@@ -370,13 +366,13 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         align-items: center;
         padding-top: 40px;
         gap: 20px;
-        transform: translateX(-100%); /* Schowaj menu poza ekranem */
+        transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
+        z-index: 1000; /* Upewnij się, że menu jest na wierzchu */
     }
 
-    /* Styl dla aktywnego (widocznego) menu */
     .nav-links.active {
-        transform: translateX(0); /* Pokaż menu */
+        transform: translateX(0);
     }
 
     .nav-links a {
@@ -388,27 +384,25 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         padding: 10px;
     }
 
-    /* Ukrycie tabelki statusu na urządzeniach mobilnych */
     .player-status-container {
         display: none;
     }
-    
-    /* === NOWE POPRAWKI RESPONSIVE === */
 
-    /* Nowa, lepsza obsługa tabeli w historii scrimów (przewijanie) */
+    /* POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
     .scrim-history {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-x: auto; /* Dodaj poziomy scrollbar gdy tabela jest za szeroka */
+        -webkit-overflow-scrolling: touch; /* Płynne przewijanie na iOS */
     }
+
     .scrim-history table {
-        min-width: 700px; /* Minimalna szerokość, aby kolumny były czytelne */
+        min-width: 650px; /* Ustaw minimalną szerokość tabeli, aby kolumny były czytelne */
         width: 100%;
     }
+    
     .player-stats-container {
         flex-direction: column;
     }
-
-    /* Poprawka dla kart meczów w SoloQ */
+    
     .match-summary-view {
         flex-direction: column;
         align-items: flex-start;
@@ -428,7 +422,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         margin-top: 10px;
     }
     
-    /* Poprawka: Ukrywanie treści strony, gdy menu jest otwarte */
     .menu-open main,
     .menu-open footer {
         display: none;
