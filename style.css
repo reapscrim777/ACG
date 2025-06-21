@@ -368,7 +368,7 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         gap: 20px;
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
-        z-index: 1000; /* Upewnij się, że menu jest na wierzchu */
+        z-index: 1000;
     }
 
     .nav-links.active {
@@ -388,21 +388,18 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         display: none;
     }
 
-    /* POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
+    /* NOWA, POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
     .scrim-history {
-        overflow-x: auto; /* Dodaj poziomy scrollbar gdy tabela jest za szeroka */
-        -webkit-overflow-scrolling: touch; /* Płynne przewijanie na iOS */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
-
     .scrim-history table {
-        min-width: 650px; /* Ustaw minimalną szerokość tabeli, aby kolumny były czytelne */
+        min-width: 650px;
         width: 100%;
     }
-    
     .player-stats-container {
         flex-direction: column;
     }
-    
     .match-summary-view {
         flex-direction: column;
         align-items: flex-start;
