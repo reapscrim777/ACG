@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acg-dynamic-cache-v1';
+const CACHE_NAME = 'acg-dynamic-cache-v3';
 const urlsToCache = [
   '/',
   '/index.html',
