@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acg-dynamic-cache-v2'; // Zwiększyłem wersję, aby wymusić aktualizację
+const CACHE_NAME = 'acg-dynamic-cache-v4'; // Zwiększyłem wersję, aby wymusić aktualizację
 const urlsToCache = [
   '/',
   '/index.html',
