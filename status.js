@@ -1,8 +1,8 @@
 // ========================================================================
-// OSTATECZNA WERSJA DIAGNOSTYCZNA
+// WERSJA MAKSYMALNIE UPROSZCZONA - ZGODNIE Z TWOIM OPISEM
 // ========================================================================
 
-const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; 
+const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // Wklej tu swój działający klucz
 
 const playersToCheck = [
     { displayName: 'Likht', riotId: 'Likht', tagLine: 'EUNE' },
@@ -12,100 +12,74 @@ const playersToCheck = [
     { displayName: 'Yanny', riotId: 'Hide on fpl', tagLine: 'eune' }
 ];
 
-const REFRESH_INTERVAL_MS = 120000;
-const API_CALL_DELAY_MS = 1500; // Lekko zwiększone opóźnienie
-
-// --- ELEMENTY DOM ---
 const playerStatusList = document.getElementById('player-status-list');
 const lastUpdatedP = document.getElementById('status-last-updated');
+const API_CALL_DELAY_MS = 1200; // Opóźnienie między zapytaniami
 
-// --- GŁÓWNA LOGIKA ---
-
-function log(message, data = '') {
-    console.log(`[STATUS] ${message}`, data);
-}
-
-async function fetchWithHeaders(url) {
-    // Dodajemy więcej opcji do zapytania, aby było jak najbardziej standardowe
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            "X-Riot-Token": RIOT_API_KEY,
-            "Accept": "application/json"
-        },
-        mode: 'cors',      // Jawne ustawienie trybu CORS
-        cache: 'no-cache'  // Nakazujemy przeglądarce, aby nie używała cache dla tego zapytania
-    };
-
-    log(`Wysyłam zapytanie do: ${url}`, requestOptions);
-    const response = await fetch(url, requestOptions);
-    
-    if (!response.ok) {
-        throw new Error(`Błąd API: Status ${response.status} dla URL: ${url}`);
-    }
-    return response.json().catch(() => null);
-}
-
-async function getPuuidForPlayer(player) {
-    const url = `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(player.riotId)}/${encodeURIComponent(player.tagLine)}`;
-    const data = await fetchWithHeaders(url);
-    if (!data || !data.puuid) {
-        throw new Error(`Nie udało się pobrać PUUID dla ${player.displayName}`);
-    }
-    return data.puuid;
-}
-
-async function checkGameStatusByPuuid(puuid) {
-    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-puuid/${puuid}`;
+// Funkcja 1: Pobiera PUUID na podstawie Riot ID
+async function getPuuid(riotId, tagLine) {
+    const url = `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(riotId)}/${encodeURIComponent(tagLine)}?api_key=${RIOT_API_KEY}`;
     try {
-        const gameData = await fetchWithHeaders(url);
-        return gameData !== null;
-    } catch (error) {
-        if (error.message.includes('404')) {
-            return false; // Gracz nie jest w grze
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`Błąd przy pobieraniu PUUID dla ${riotId}#${tagLine}: Status ${response.status}`);
+            return null; // Zwraca null w przypadku błędu
         }
-        throw error; // Rzuć dalej inne błędy (403, 500 etc.)
-    }
-}
-
-async function processSinglePlayer(player) {
-    log(`Rozpoczynam przetwarzanie gracza: ${player.displayName}`);
-    try {
-        const puuid = await getPuuidForPlayer(player);
-        await delay(API_CALL_DELAY_MS);
-        const isInGame = await checkGameStatusByPuuid(puuid);
-        log(`Zakończono! Status dla ${player.displayName}: ${isInGame ? 'W grze' : 'Offline'}`);
-        return { name: player.displayName, status: isInGame ? 'online' : 'offline' };
+        const accountData = await response.json();
+        console.log(`Pobrano PUUID dla ${riotId}: ${accountData.puuid}`);
+        return accountData.puuid;
     } catch (error) {
-        log(`BŁĄD dla ${player.displayName}: ${error.message}`);
-        return { name: player.displayName, status: 'error' };
+        console.error(`Błąd sieciowy przy pobieraniu PUUID dla ${riotId}#${tagLine}:`, error);
+        return null;
     }
 }
 
-function renderStatus(statuses) {
+// Funkcja 2: Sprawdza aktywną grę na podstawie PUUID
+async function checkGame(puuid) {
+    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-puuid/${puuid}?api_key=${RIOT_API_KEY}`;
+    try {
+        const response = await fetch(url);
+        // response.ok jest true dla statusu 200 (jest w grze), a false dla 404 (nie ma w grze)
+        console.log(`Sprawdzono grę dla PUUID ${puuid.substring(0,10)}... Status odpowiedzi: ${response.status}`);
+        return response.ok;
+    } catch (error) {
+        console.error(`Błąd sieciowy przy sprawdzaniu gry dla PUUID ${puuid.substring(0,10)}...:`, error);
+        return false;
+    }
+}
+
+// Główna funkcja, która wszystko uruchamia
+async function updateAllPlayerStatuses() {
+    console.log("--- Rozpoczynam sprawdzanie ---");
+    playerStatusList.innerHTML = '<li>Sprawdzam...</li>';
+    let finalStatuses = [];
+
+    // Używamy pętli for...of, aby zapytania szły jedno po drugim - to ułatwia debugowanie
+    for (const player of playersToCheck) {
+        const puuid = await getPuuid(player.riotId, player.tagLine);
+        
+        let status = 'error'; // Domyślnie błąd
+        if (puuid) {
+            await new Promise(resolve => setTimeout(resolve, API_CALL_DELAY_MS)); // Czekamy chwilę
+            const isInGame = await checkGame(puuid);
+            status = isInGame ? 'online' : 'offline';
+        }
+        finalStatuses.push({ name: player.displayName, status: status });
+    }
+
+    // Renderowanie wyników na stronie
     playerStatusList.innerHTML = '';
-    statuses.forEach(player => {
+    finalStatuses.forEach(player => {
         const listItem = document.createElement('li');
         listItem.className = 'player-status-item';
         const dotClass = player.status === 'online' ? 'online' : 'offline';
         listItem.innerHTML = `<span>${player.name}</span><span class="status-dot ${dotClass}"></span>`;
         playerStatusList.appendChild(listItem);
     });
-}
-
-async function updateAllStatuses() {
-    log('--- ROZPOCZYNAM PEŁNĄ AKTUALIZACJĘ ---');
-    playerStatusList.innerHTML = '<li>Aktualizowanie...</li>';
     
-    const statusPromises = playersToCheck.map(processSinglePlayer);
-    const statuses = await Promise.all(statusPromises);
-    
-    renderStatus(statuses);
     lastUpdatedP.textContent = `Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}`;
-    log('--- AKTUALIZACJA ZAKOŃCZONA ---');
+    console.log("--- Zakończono sprawdzanie ---");
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateAllStatuses();
-    setInterval(updateAllStatuses, REFRESH_INTERVAL_MS);
-});
+// Inicjalizacja po załadowaniu strony
+document.addEventListener('DOMContentLoaded', updateAllPlayerStatuses);
