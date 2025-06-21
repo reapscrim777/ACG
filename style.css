@@ -388,18 +388,22 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         display: none;
     }
 
-    /* NOWA, POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
+    /* POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
     .scrim-history {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
+
     .scrim-history table {
         min-width: 650px;
         width: 100%;
     }
+    
     .player-stats-container {
         flex-direction: column;
     }
+    
+    /* POPRAWKA DLA KART MECZÓW W SOLOQ */
     .match-summary-view {
         flex-direction: column;
         align-items: flex-start;
