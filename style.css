@@ -387,23 +387,21 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     .player-status-container {
         display: none;
     }
+    
+    /* === ZAKTUALIZOWANE POPRAWKI RESPONSIVE === */
 
-    /* POPRAWIONA OBSŁUGA TABEL NA TELEFONIE */
     .scrim-history {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-
     .scrim-history table {
         min-width: 650px;
-        width: 100%;
     }
     
     .player-stats-container {
         flex-direction: column;
     }
     
-    /* POPRAWKA DLA KART MECZÓW W SOLOQ */
     .match-summary-view {
         flex-direction: column;
         align-items: flex-start;
@@ -423,6 +421,15 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         margin-top: 10px;
     }
     
+    /* Poprawka dla rozwijanej tabeli w SoloQ */
+    .match-details-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .match-details-table {
+        min-width: 600px;
+    }
+
     .menu-open main,
     .menu-open footer {
         display: none;
