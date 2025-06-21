@@ -22,7 +22,7 @@
             display: flex;
             flex: 1; /* Pozwala mu rozciągnąć się, aby footer był na dole */
             padding: 20px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* DODANO */
             gap: 20px; /* Odstęp między panelem bocznym a główną zawartością */
             justify-content: center; /* Wyśrodkowanie zawartości wrapper'a */
             max-width: 1200px; /* Ogranicz maksymalną szerokość */
@@ -37,22 +37,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background-color: #1a1a1a; /* Przenieś tło na main lub na sekcje wewnętrzne */
+            background-color: #1a1a1a;
             padding: 20px;
             border-radius: 8px;
+            box-sizing: border-box; /* DODANO */
         }
 
         /* Nowy styl dla lewego panelu bocznego */
         .sidebar-left {
             flex: 1; /* Panel boczny zajmuje mniej miejsca */
-            background-color: #1a1a1a; /* Tło panelu bocznego */
+            background-color: #1a1a1a;
             padding: 20px;
             border-radius: 8px;
-            min-width: 250px; /* Minimalna szerokość, aby zawartość była czytelna */
-            max-width: 300px; /* Maksymalna szerokość */
-            box-sizing: border-box;
+            min-width: 250px;
+            max-width: 300px;
+            box-sizing: border-box; /* DODANO */
             color: #f0f0f0;
-            display: none; /* Domyślnie ukryte, pokażemy po wybraniu gracza */
+            display: none;
         }
 
         .sidebar-left h2 {
@@ -82,12 +83,11 @@
             color: #f0f0f0;
         }
 
-        /* Style dla sekcji statystyk konkretnej postaci w sidebarze */
         .sidebar-left .champion-specific-stats {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #444;
-            display: none; /* Domyślnie ukryte */
+            display: none;
         }
 
         .sidebar-left .champion-specific-stats h3 {
@@ -132,10 +132,10 @@
             box-sizing: border-box;
         }
 
-        .player-list-section { /* Upewnij się, że ta sekcja ma odpowiednie marginesy/padding */
+        .player-list-section {
             width: 100%;
             max-width: 900px;
-            margin: 0 auto 30px auto; /* Dodaj dolny margines, by oddzielić od statystyk */
+            margin: 0 auto 30px auto;
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 8px;
             padding: 20px;
