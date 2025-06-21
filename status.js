@@ -4,7 +4,7 @@
 
 // WAŻNE: Pamiętaj, aby regularnie aktualizować ten klucz API.
 // Jest on wrażliwy i widoczny w kodzie klienta.
-const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; 
+const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912";
 
 // Lista graczy do sprawdzenia. Upewnij się, że riotId i tagLine są poprawne.
 const playersToCheck = [
@@ -16,13 +16,14 @@ const playersToCheck = [
 ];
 
 // Interwał odświeżania statusu w milisekundach (np. 120000 ms = 2 minuty)
-const REFRESH_INTERVAL_MS = 120000; 
+const REFRESH_INTERVAL_MS = 120000;
 // Opóźnienie między kolejnymi wywołaniami API dla uniknięcia limitów rate-limit (w milisekundach)
-const API_CALL_DELAY_MS = 1500; 
+const API_CALL_DELAY_MS = 1500;
 
 // --- Elementy DOM (pobrane z index.html) ---
 const playerStatusList = document.getElementById('player-status-list'); // Lista do wyświetlania statusu graczy
 const lastUpdatedP = document.getElementById('status-last-updated'); // Paragraf do wyświetlania czasu ostatniej aktualizacji
+const refreshStatusButton = document.getElementById('refreshStatusButton'); // NOWA ZMIENNA DLA PRZYCISKU ODSWIEZANIA
 
 // --- GŁÓWNA LOGIKA ---
 
@@ -151,20 +152,37 @@ function renderStatus(statuses) {
  */
 async function updateAllStatuses() {
     // Wyświetl wiadomość o aktualizacji, aby użytkownik wiedział, że coś się dzieje
-    playerStatusList.innerHTML = '<li>Aktualizowanie statusu...</li>'; 
-    lastUpdatedP.textContent = `Ostatnia aktualizacja: Ładowanie...`; // Zaktualizuj tekst statusu
+    playerStatusList.innerHTML = '<li>Aktualizowanie statusu...</li>';
+    lastUpdatedP.textContent = `Ostatnia aktualizacja: Ładowanie...`;
+
+    // Dezaktywuj przycisk podczas ładowania
+    if (refreshStatusButton) {
+        refreshStatusButton.disabled = true;
+        refreshStatusButton.textContent = 'Odświeżanie...';
+    }
 
     const statusPromises = playersToCheck.map(processSinglePlayer); // Utwórz tablicę Promise'ów
     const statuses = await Promise.all(statusPromises); // Czekaj na wszystkie Promise'y
 
     renderStatus(statuses); // Wyświetl zaktualizowane statusy
     // Zaktualizuj czas ostatniej aktualizacji
-    lastUpdatedP.textContent = `Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}`; 
+    lastUpdatedP.textContent = `Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}`;
+
+    // Aktywuj przycisk ponownie po zakończeniu ładowania
+    if (refreshStatusButton) {
+        refreshStatusButton.disabled = false;
+        refreshStatusButton.textContent = 'Odśwież Status';
+    }
 }
 
 // Nasłuchuj zdarzenia DOMContentLoaded, aby upewnić się, że DOM jest w pełni załadowany
 document.addEventListener('DOMContentLoaded', () => {
     updateAllStatuses(); // Wykonaj pierwszą aktualizację od razu po załadowaniu strony
     // Ustaw interwał dla cyklicznych aktualizacji
-    setInterval(updateAllStatuses, REFRESH_INTERVAL_MS); 
+    setInterval(updateAllStatuses, REFRESH_INTERVAL_MS);
+
+    // DODAJ OSLUCHIWACZ DLA NOWEGO PRZYCISKU
+    if (refreshStatusButton) {
+        refreshStatusButton.addEventListener('click', updateAllStatuses);
+    }
 });
