@@ -387,13 +387,11 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     .player-status-container {
         display: none;
     }
-
-    /* Poprawka dla tabeli w historii scrimów */
+    
     .scrim-history {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-
     .scrim-history table {
         min-width: 650px;
     }
@@ -402,29 +400,16 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         flex-direction: column;
     }
     
-    /* Poprawka dla kart meczów w SoloQ */
+    /* ZAKTUALIZOWANA, BARDZIEJ NIEZAWODNA POPRAWKA DLA KART W SOLOQ */
     .match-card-adapted {
-        display: block;
-        padding: 10px;
+        display: block; /* Wymuś układ blokowy, aby sekcje układały się pionowo */
     }
     .match-summary-view {
-        display: block;
+        display: block; /* Upewnij się, że ten kontener też jest blokowy */
     }
     .match-stats-left, .match-stats-right {
-        flex-wrap: wrap;
-        margin-bottom: 15px;
-    }
-    .match-card-adapted .items {
-        margin-left: 10px;
-    }
-    .match-card-adapted .player-lists {
-        gap: 20px;
-    }
-    .match-card-adapted .match-meta {
-        text-align: left;
-        padding-left: 0;
-        border-left: none;
-        margin-top: 10px;
+        flex-wrap: wrap; /* Pozwól wewnętrznym elementom się zawijać */
+        margin-bottom: 15px; /* Dodaj odstęp między sekcjami lewą i prawą */
     }
     
     .match-details-table-container {
@@ -438,20 +423,6 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
     .menu-open main,
     .menu-open footer {
         display: none;
-    }
-
-    /* Poprawka dla strony Statystyki */
-    .main-content-wrapper {
-        flex-direction: column;
-        padding: 10px;
-        align-items: center;
-    }
-    .sidebar-left, main {
-        max-width: 100%;
-        width: 100%;
-    }
-    .sidebar-left {
-        display: block !important;
     }
 }
 
