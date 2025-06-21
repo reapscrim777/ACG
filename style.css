@@ -388,58 +388,22 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         padding: 10px;
     }
 
-    /* Tutaj zostawiamy Twoje responsywne style dla tabel, jeśli chcesz */
-    .scrim-history table, .player-stats-detail table, 
-    .scrim-history thead, .player-stats-detail thead, 
-    .scrim-history tbody, .player-stats-detail tbody, 
-    .scrim-history th, .player-stats-detail th, 
-    .scrim-history td, .player-stats-detail td, 
-    .scrim-history tr, .player-stats-detail tr { 
-        display: block; 
-    }
-    .scrim-history thead tr, .player-stats-detail thead tr { 
-        position: absolute; 
-        top: -9999px; 
-        left: -9999px; 
-    }
-    .scrim-history tr, .player-stats-detail tr { 
-        border: 1px solid #444; 
-        margin-bottom: 15px; 
-        border-radius: 8px; 
-        overflow: hidden; 
-    }
-    .scrim-history td, .player-stats-detail td { 
-        border: none; 
-        border-bottom: 1px solid #555; 
-        position: relative; 
-        padding-left: 50%; 
-        text-align: right; 
-        display: flex; 
-        align-items: center; 
-        justify-content: flex-end; 
-        min-height: 40px; 
-    }
-    .scrim-history td:last-child, .player-stats-detail td:last-child { 
-        border-bottom: none; 
-    }
-    .scrim-history td:before, .player-stats-detail td:before { 
-        content: attr(data-label); 
-        position: absolute; 
-        left: 10px; 
-        width: 45%; 
-        text-align: left; 
-        font-weight: bold; 
-        color: #bbb; 
-        top: 50%; 
-        transform: translateY(-50%); 
-    }
-
     /* Ukrycie tabelki statusu na urządzeniach mobilnych */
     .player-status-container {
         display: none;
     }
+    
+    /* === NOWE POPRAWKI RESPONSIVE === */
 
-    /* Poprawka dla tabel w historii scrimów */
+    /* Nowa, lepsza obsługa tabeli w historii scrimów (przewijanie) */
+    .scrim-history {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .scrim-history table {
+        min-width: 700px; /* Minimalna szerokość, aby kolumny były czytelne */
+        width: 100%;
+    }
     .player-stats-container {
         flex-direction: column;
     }
@@ -464,7 +428,7 @@ th { background-color: #ffffff; color: #0e0e0e; font-weight: bold; }
         margin-top: 10px;
     }
     
-    /* NOWA POPRAWKA: Ukrywanie treści strony, gdy menu jest otwarte */
+    /* Poprawka: Ukrywanie treści strony, gdy menu jest otwarte */
     .menu-open main,
     .menu-open footer {
         display: none;

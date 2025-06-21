@@ -64,7 +64,7 @@
             background-color: #1e1e1e;
         }
 
-        .scrim-history tbody tr:hover {
+        .scrim-history tbody tr.match-row:hover {
             background-color: #3a3a3a;
         }
 
@@ -280,7 +280,7 @@
 
         // Config do ikon League of Legends
         const DDRAGON_VERSION = "15.12.1"; // Zaktualizowana wersja DDragon
-        const CHAMPION_IMAGE_BASE_URL = `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
+        const CHAMPION_IMAGE_BASE_URL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/`;
         const FALLBACK_ICON_URL = "https://via.placeholder.com/24x24?text=N/A";
 
         function getChampionIconUrl(championName) {
