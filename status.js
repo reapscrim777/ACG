@@ -39,7 +39,7 @@ async function getSummonerId(puuid) {
 
 // Funkcja sprawdzająca aktywną grę
 async function checkActiveGame(summonerId) {
-    const url = `https://eun1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${RIOT_API_KEY}`;
+    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${summonerId}?api_key=${RIOT_API_KEY}`;
     try {
         const response = await fetch(url);
         // Jeśli status to 200 OK - gracz jest w grze
