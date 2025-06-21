@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acg-scrims-cache-v1';
+const CACHE_NAME = 'acg-scrims-cache-auto-v1'; // Nazwa nie musi być często zmieniana
 const urlsToCache = [
   '/',
   '/index.html',
@@ -17,29 +17,33 @@ const urlsToCache = [
   '/icons/icon-512x512.png'
 ];
 
-// Instalacja Service Workera i zapisanie zasobów w cache
+// Instalacja Service Workera i zapisanie podstawowych zasobów w cache
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
+        console.log('Opened cache for offline fallback');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Odpowiadanie z cache, gdy aplikacja jest offline
+// Strategia "Network First" - zawsze próbuj pobrać z sieci, a cache traktuj jako zapas
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Jeśli zasób jest w cache, zwróć go
-        if (response) {
-          return response;
-        }
-        // W przeciwnym wypadku, pobierz z sieci
-        return fetch(event.request);
-      }
-    )
+    // Spróbuj pobrać zasób z sieci
+    fetch(event.request)
+      .then(networkResponse => {
+        // Jeśli się udało, zapisz kopię w cache i zwróć odpowiedź z sieci
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      })
+      .catch(() => {
+        // Jeśli pobranie z sieci się nie udało (np. brak internetu),
+        // spróbuj zwrócić zasób z pamięci podręcznej
+        return caches.match(event.request);
+      })
   );
 });
