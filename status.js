@@ -28,37 +28,25 @@ async function getPuuid(riotId, tagLine) {
     return data.puuid;
 }
 
-// Funkcja do pobierania ID Summonera
-async function getSummonerId(puuid) {
-    const url = `https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API_KEY}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Nie znaleziono przywoływacza dla PUUID ${puuid}`);
-    const data = await response.json();
-    return data.id; // Zwraca zaszyfrowane ID summonera
-}
-
-// Funkcja sprawdzająca aktywną grę
-async function checkActiveGame(summonerId) {
-    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${summonerId}?api_key=${RIOT_API_KEY}`;
+// ZMODYFIKOWANA funkcja sprawdzająca aktywną grę po PUUID
+async function checkActiveGame(puuid) {
+    const url = `https://eun1.api.riotgames.com/lol/spectator/v5/active-games/by-puuid/${puuid}?api_key=${RIOT_API_KEY}`;
     try {
         const response = await fetch(url);
-        // Jeśli status to 200 OK - gracz jest w grze
         return response.ok; 
     } catch (error) {
-        // Każdy błąd (w tym 404 Not Found) oznacza, że nie ma aktywnej gry
         return false;
     }
 }
 
 // --- GŁÓWNA LOGIKA ---
 
+// ZMODYFIKOWANA, UPROSZCZONA funkcja pobierająca status gracza
 async function getPlayerStatus(player) {
     try {
         const puuid = await getPuuid(player.riotId, player.tagLine);
         await delay(API_CALL_DELAY_MS);
-        const summonerId = await getSummonerId(puuid);
-        await delay(API_CALL_DELAY_MS);
-        const isInGame = await checkActiveGame(summonerId);
+        const isInGame = await checkActiveGame(puuid);
         
         return {
             name: player.displayName,
