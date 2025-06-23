@@ -37,7 +37,7 @@
 
     <script>
         // --- KONFIGURACJA ---
-        const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // PAMIĘTAJ O WYMIANIE KLUCZA
+        const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // <-- WSTAW TUTAJ SWÓJ NOWY KLUCZ API
         const REFRESH_INTERVAL_MS = 300000; // 300,000 ms = 5 minut
 
         // Lista graczy do śledzenia w rankingu
@@ -66,7 +66,7 @@
         const lastUpdatedP = document.getElementById('last-updated');
 
 
-        // --- FUNKCJE API (skopiowane z `script.js` i uproszczone) ---
+        // --- FUNKCJE API ---
         const API_CALL_DELAY_MS = 1200;
         function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
@@ -141,14 +141,15 @@
                 const fullRankText = (player.tier === 'unranked' || player.tier === 'error') ? rankNameDisplay : `${rankNameDisplay} ${player.rank}`;
 
                 const iconFileName = rankImageMap[player.tier] || 'default.png';
-                const iconPath = `Images/${iconFileName}`;
+                // Poprawiona ścieżka - zakładając, że folder z obrazkami rang nazywa się 'Images'
+                const iconPath = `Images/${iconFileName}`; 
 
                 const playerItem = document.createElement('div');
                 playerItem.className = 'player-rank-item';
                 playerItem.innerHTML = `
                         <div class="rank-number">${rankNumber}.</div>
                         <div class="player-info">
-                            <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon">
+                            <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon" onerror="this.style.display='none'">
                             <div class="player-name-and-rank">
                                 <span class="player-name">${player.name}</span>
                                 <span class="player-rank-text">${fullRankText}</span>
@@ -164,13 +165,20 @@
             lastUpdatedP.textContent = `Ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}`;
         }
 
+        // --- POPRAWIONA FUNKCJA ---
         async function updateAllPlayerRanks() {
             console.log("Rozpoczynam aktualizację rankingu...");
             loadingMessage.style.display = 'block';
             playersContainer.innerHTML = ''; // Wyczyść stary ranking podczas ładowania
 
-            const promises = playersToTrack.map(player => fetchPlayerRank(player));
-            const playersData = await Promise.all(promises);
+            const playersData = [];
+            // Użycie pętli for...of zamiast Promise.all, aby przetwarzać graczy sekwencyjnie
+            for (const player of playersToTrack) {
+                const data = await fetchPlayerRank(player);
+                playersData.push(data);
+                // Nie ma potrzeby dodawać dodatkowego opóźnienia tutaj,
+                // ponieważ funkcja fetchPlayerRank już zawiera dwa opóźnienia po 1200ms.
+            }
 
             loadingMessage.style.display = 'none';
             renderRanking(playersData);
