@@ -1,4 +1,41 @@
-<script>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Graczy - ACG (Live)</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="./style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-section">
+            <img src="logo.png" alt="Logo" class="logo">
+            <span class="site-name"></span>
+        </div>
+        <nav class="nav-links" id="nav-links">
+            <a href="index.html">STRONA GŁÓWNA</a>
+            <a href="historia.html">HISTORIA GIER</a>
+            <a href="statystyki.html">STATYSTYKI</a>
+            <a href="soloq.html">SOLOQ</a>
+            <a href="ranking.html">RANKING</a>
+            <a href="dodajmecz.html">DODAJ MECZ</a>
+        </nav>
+        <button class="hamburger" id="hamburger-button">
+            &#9776;
+        </button>
+    </header>
+
+    <main class="soloq-main">
+        <h1>Ranking Graczy ACG (Na Żywo)</h1>
+        <div id="players-ranking-container" class="ranking-list">
+            <p id="loading-message" style="text-align: center; font-size: 1.2em;">Ładowanie rankingu, proszę czekać...</p>
+        </div>
+        <p id="last-updated" style="text-align: center; color: #888; margin-top: 20px;"></p>
+    </main>
+
+    <script>
         // --- KONFIGURACJA ---
         const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // PAMIĘTAJ O WYMIANIE KLUCZA
         const REFRESH_INTERVAL_MS = 300000; // 300,000 ms = 5 minut
@@ -147,3 +184,6 @@
         });
 
     </script>
+    <script src="main.js"></script>
+</body>
+</html>
