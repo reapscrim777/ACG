@@ -1,6 +1,6 @@
 // ========================================================================
 // FINALNA WERSJA SKRYPTU DLA SPRAWDZANIA STATUSU GRACZY W GRZE
-// Używa PUUID bezpośrednio w Spectator API (tak jak podałeś, że działa ręcznie)
+// Używa PUUID bezpośrednio w Spectator API (na podstawie Twojego potwierdzenia, że to działa)
 // ========================================================================
 
 // Twój klucz API Riot Games - PAMIĘTAJ O JEGO REGULARNEJ WYMIANIE
@@ -9,7 +9,7 @@ const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912";
 
 // Stałe API - skopiowane z script.js dla spójności
 const BASE_ACCOUNT_API_URL = "https://europe.api.riotgames.com";
-const BASE_LOL_API_URL = "https://eun1.api.riotgames.com"; // Nadal potrzebne dla endpointów regionalnych, mimo że nie używamy go dla Spectator
+const BASE_LOL_API_URL = "https://eun1.api.riotgames.com"; // Regionalna baza dla LOL (potrzebna dla Spectator)
 
 
 // Lista graczy do sprawdzenia. Upewnij się, że riotId i tagLine są poprawne.
@@ -90,7 +90,7 @@ async function getPuuid(riotId, tagLine) {
 
 /**
  * KROK 2: Sprawdza status aktywnej gry gracza za pomocą PUUID.
- * Używa BASE_LOL_API_URL z script.js i endpointu /by-puuid/.
+ * Używa BASE_LOL_API_URL (regionalna baza) i endpointu /by-puuid/ dla Spectator API.
  * @param {string} puuid - PUUID gracza.
  * @returns {Promise<boolean>} - True, jeśli gracz jest w grze, false w przeciwnym razie.
  */
@@ -99,7 +99,7 @@ async function isPlayerInGame(puuid) {
         console.warn('isPlayerInGame: Brak PUUID.');
         return false;
     }
-    // Używamy endpointu /by-puuid/ dla Spectator API, który podałeś jako działający ręcznie.
+    // Używamy endpointu /by-puuid/ dla Spectator API, który podałeś jako działający.
     const path = `/lol/spectator/v5/active-games/by-puuid/${puuid}`;
     console.log(`Próba sprawdzenia statusu gry dla PUUID: ${puuid}`); // Loguj PUUID przed zapytaniem
     const data = await fetchRiotApi(BASE_LOL_API_URL, path); // Spectator API jest regionalne!
