@@ -7,34 +7,6 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="./style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* Dodatkowe style dla przycisków wyboru kolejki */
-        .queue-selection {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .queue-button {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin: 0 5px;
-            transition: background-color 0.3s ease;
-        }
-        .queue-button:hover {
-            background-color: #555;
-        }
-        .queue-button.active-queue {
-            background-color: #007bff;
-            font-weight: bold;
-        }
-        .queue-button.active-queue:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <header class="navbar">
@@ -57,30 +29,16 @@
 
     <main class="soloq-main">
         <h1>Ranking Graczy ACG (Na Żywo)</h1>
-
-        <div class="queue-selection">
-            <button id="soloq-button" class="queue-button active-queue" data-queue-type="RANKED_SOLO_5x5">Solo/Duo</button>
-            <button id="flexq-button" class="queue-button" data-queue-type="RANKED_FLEX_SR">Flex</button>
-        </div>
-
         <div id="players-ranking-container" class="ranking-list">
             <p id="loading-message" style="text-align: center; font-size: 1.2em;">Ładowanie rankingu, proszę czekać...</p>
         </div>
         <p id="last-updated" style="text-align: center; color: #888; margin-top: 20px;"></p>
     </main>
 
-    <footer>
-        <p>&copy; 2025 ACG. Wszelkie prawa zastrzeżone.</p>
-    </footer>
-
     <script>
         // --- KONFIGURACJA ---
-        const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // <-- ZAKTUALIZUJ NA SWÓJ AKTYWNY KLUCZ!
+        const RIOT_API_KEY = "RGAPI-ceec8f6f-4325-4d64-be9d-717fe6169912"; // PAMIĘTAJ O WYMIANIE KLUCZA
         const REFRESH_INTERVAL_MS = 300000; // 300,000 ms = 5 minut
-
-        // Stałe API
-        const BASE_ACCOUNT_API_URL = "https://europe.api.riotgames.com";
-        const BASE_LOL_API_URL = "https://eun1.api.riotgames.com"; // Endpointy regionalne
 
         // Lista graczy do śledzenia w rankingu
         const playersToTrack = [
@@ -92,13 +50,13 @@
         ];
 
         // Mapy do sortowania rang
-        const rankValueMap = { 'iron': 0, 'bronze': 1, 'silver': 2, 'gold': 3, 'platinum': 4, 'emerald': 5, 'diamond': 6, 'master': 7, 'grandmaster': 8, 'challenger': 9, 'unranked': -1, 'error': -2 };
+        const rankValueMap = { 'iron': 0, 'bronze': 1, 'silver': 2, 'gold': 3, 'platinum': 4, 'emerald': 5, 'diamond': 6, 'master': 7, 'grandmaster': 8, 'challenger': 9 };
         const divisionValueMap = { 'I': 4, 'II': 3, 'III': 2, 'IV': 1 };
         const rankImageMap = {
             'iron': 'iron.png', 'bronze': 'bronze.png', 'silver': 'silver.png',
             'gold': 'gold.png', 'platinum': 'platinum.png', 'emerald': 'emerald.png',
             'diamond': 'diamond.png', 'master': 'master.png', 'grandmaster': 'grandmaster.png',
-            'challenger': 'challenger.png', 'unranked': 'unranked.png' // Dodaj unranked.png do folderu Images/
+            'challenger': 'challenger.png'
         };
 
 
@@ -106,142 +64,66 @@
         const playersContainer = document.getElementById('players-ranking-container');
         const loadingMessage = document.getElementById('loading-message');
         const lastUpdatedP = document.getElementById('last-updated');
-        const soloqButton = document.getElementById('soloq-button');
-        const flexqButton = document.getElementById('flexq-button');
 
-        let allPlayersRankData = []; // Będzie przechowywać dane dla obu kolejek dla wszystkich graczy
-        let currentQueueType = 'RANKED_SOLO_5x5'; // Domyślnie Solo/Duo
 
-        // --- FUNKCJE API (zcentralizowane i ulepszone) ---
-        const API_CALL_DELAY_MS = 1500; // Zwiększone opóźnienie dla bezpieczeństwa
-
+        // --- FUNKCJE API (skopiowane z `script.js` i uproszczone) ---
+        const API_CALL_DELAY_MS = 1200;
         function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-        /**
-         * Uniwersalna funkcja do wykonywania zapytań do Riot Games API.
-         * Obsługuje błędy i loguje je do konsoli.
-         * @param {string} baseUrl Bazowy URL API.
-         * @param {string} path Ścieżka do zasobu API.
-         * @returns {Promise<Object|null>} Dane JSON z odpowiedzi lub null w przypadku błędu/braku zasobu.
-         */
-        async function fetchRiotApi(baseUrl, path) {
-            const url = `${baseUrl}${path}?api_key=${RIOT_API_KEY}`;
-            console.log(`[API] Sending request to: ${url}`);
-            try {
-                const response = await fetch(url);
-
-                if (response.status === 404) {
-                    console.warn(`[API] Zasób nie znaleziony (404) dla URL: ${url}`);
-                    return null; 
-                }
-                if (response.status === 401 || response.status === 403) {
-                    console.error(`[API Error] ${response.status} Forbidden/Unauthorized dla URL: ${url}. Sprawdź klucz API!`);
-                    throw new Error("API Key Invalid or Expired. Please update RIOT_API_KEY.");
-                }
-                if (response.status === 429) {
-                    console.error(`[API Error] 429 Rate Limit Exceeded dla URL: ${url}. Spróbuj ponownie za chwilę.`);
-                    throw new Error("Rate Limit Exceeded.");
-                }
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error(`[API Error] Nie udało się pobrać z URL: ${url}`);
-                    console.error(`Status: ${response.status} - ${response.statusText}`);
-                    console.error(`Odpowiedź: ${errorBody}`);
-                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                }
-                const text = await response.text();
-                return text ? JSON.parse(text) : null;
-            } catch (error) {
-                console.error(`[fetchRiotApi] Ogólny błąd dla URL ${url}:`, error);
-                throw error;
-            }
-        }
-
         async function getPuuid(riotId, tagLine) {
-            const path = `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(riotId)}/${encodeURIComponent(tagLine)}`;
-            const data = await fetchRiotApi(BASE_ACCOUNT_API_URL, path);
-            return data ? data.puuid : null;
+            const url = `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(riotId)}/${encodeURIComponent(tagLine)}?api_key=${RIOT_API_KEY}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Nie znaleziono konta dla ${riotId}#${tagLine}`);
+            const data = await response.json();
+            return data.puuid;
         }
 
-        // ZMODYFIKOWANA FUNKCJA: Pobiera dane o randze dla DOWOLNEJ KOLEJKI (Solo/Duo lub Flex)
-        async function getRankDataByPuuid(puuid) {
-            if (!puuid) return null;
-            const path = `/lol/league/v4/entries/by-puuid/${puuid}`;
-            const data = await fetchRiotApi(BASE_LOL_API_URL, path);
-            // Zwracamy całą tablicę danych rankingowych (może zawierać Solo/Duo, Flex, itp.)
-            return data || []; 
+        async function getSummonerId(puuid) {
+            const url = `https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API_KEY}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Nie znaleziono przywoływacza dla PUUID ${puuid}`);
+            const data = await response.json();
+            return data.id;
+        }
+
+        async function getRankData(summonerId) {
+            const url = `https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${RIOT_API_KEY}`;
+            const response = await fetch(url);
+            if (!response.ok) return null; // Może być unranked
+            const data = await response.json();
+            return data.find(q => q.queueType === 'RANKED_SOLO_5x5') || null;
         }
 
         // --- GŁÓWNA LOGIKA ---
 
-        async function fetchPlayerFullRankInfo(player) {
-            let playerFullRankData = { // Będzie przechowywać SoloQ i Flex dla gracza
-                name: player.displayName,
-                puuid: null,
-                soloq: { tier: 'unranked', rank: '', lp: 0 },
-                flex: { tier: 'unranked', rank: '', lp: 0 }
-            };
-
+        async function fetchPlayerRank(player) {
             try {
                 const puuid = await getPuuid(player.riotId, player.tagLine);
-                if (!puuid) {
-                    console.warn(`Nie znaleziono PUUID dla ${player.displayName}.`);
-                    return playerFullRankData; // Zwróć z domyślnymi 'unranked'
-                }
-                playerFullRankData.puuid = puuid;
+                await delay(API_CALL_DELAY_MS);
+                const summonerId = await getSummonerId(puuid);
+                await delay(API_CALL_DELAY_MS);
+                const rankData = await getRankData(summonerId);
 
-                await delay(API_CALL_DELAY_MS); // Opóźnienie przed zapytaniem o rangę
-
-                const allQueueRankData = await getRankDataByPuuid(puuid); // Pobierz wszystkie dane rankingowe
-
-                if (allQueueRankData && Array.isArray(allQueueRankData)) {
-                    const soloDuoRank = allQueueRankData.find(entry => entry.queueType === "RANKED_SOLO_5x5");
-                    if (soloDuoRank) {
-                        playerFullRankData.soloq = {
-                            tier: soloDuoRank.tier.toLowerCase(),
-                            rank: soloDuoRank.rank,
-                            lp: soloDuoRank.leaguePoints,
-                            wins: soloDuoRank.wins,
-                            losses: soloDuoRank.losses
-                        };
-                    }
-
-                    const flexRank = allQueueRankData.find(entry => entry.queueType === "RANKED_FLEX_SR");
-                    if (flexRank) {
-                        playerFullRankData.flex = {
-                            tier: flexRank.tier.toLowerCase(),
-                            rank: flexRank.rank,
-                            lp: flexRank.leaguePoints,
-                            wins: flexRank.wins,
-                            losses: flexRank.losses
-                        };
-                    }
+                if (rankData) {
+                    return {
+                        name: player.displayName,
+                        tier: rankData.tier.toLowerCase(),
+                        rank: rankData.rank,
+                        lp: rankData.leaguePoints
+                    };
+                } else {
+                    return { name: player.displayName, tier: 'unranked', rank: '', lp: 0 };
                 }
             } catch (error) {
                 console.error(`Błąd podczas pobierania danych dla ${player.displayName}:`, error);
-                playerFullRankData.soloq = { tier: 'error', rank: 'Błąd', lp: 0 };
-                playerFullRankData.flex = { tier: 'error', rank: 'Błąd', lp: 0 };
+                return { name: player.displayName, tier: 'error', rank: 'Błąd', lp: 0 };
             }
-            return playerFullRankData;
         }
 
-        function renderRanking() {
+        function renderRanking(playersData) {
             playersContainer.innerHTML = ''; // Wyczyść kontener
-            loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania
 
-            // Filtrujemy i sortujemy dane dla aktualnie wybranej kolejki
-            const playersDataForCurrentQueue = allPlayersRankData.map(player => {
-                const rankInfo = player[currentQueueType === 'RANKED_SOLO_5x5' ? 'soloq' : 'flex'];
-                return {
-                    name: player.name,
-                    tier: rankInfo.tier,
-                    rank: rankInfo.rank,
-                    lp: rankInfo.lp,
-                    wins: rankInfo.wins,
-                    losses: rankInfo.losses
-                };
-            }).sort((a, b) => {
+            playersData.sort((a, b) => {
                 const rankAValue = rankValueMap[a.tier] ?? -1;
                 const rankBValue = rankValueMap[b.tier] ?? -1;
                 if (rankAValue !== rankBValue) return rankBValue - rankAValue;
@@ -253,12 +135,12 @@
                 return b.lp - a.lp;
             });
 
-            playersDataForCurrentQueue.forEach((player, index) => {
+            playersData.forEach((player, index) => {
                 const rankNumber = index + 1;
                 const rankNameDisplay = player.tier.charAt(0).toUpperCase() + player.tier.slice(1);
                 const fullRankText = (player.tier === 'unranked' || player.tier === 'error') ? rankNameDisplay : `${rankNameDisplay} ${player.rank}`;
 
-                const iconFileName = rankImageMap[player.tier] || 'unranked.png'; 
+                const iconFileName = rankImageMap[player.tier] || 'default.png';
                 const iconPath = `Images/${iconFileName}`;
 
                 const playerItem = document.createElement('div');
@@ -266,7 +148,7 @@
                 playerItem.innerHTML = `
                         <div class="rank-number">${rankNumber}.</div>
                         <div class="player-info">
-                            <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon" onerror="this.onerror=null;this.src='Images/unranked.png';">
+                            <img src="${iconPath}" alt="Ikona Rangi" class="rank-icon">
                             <div class="player-name-and-rank">
                                 <span class="player-name">${player.name}</span>
                                 <span class="player-rank-text">${fullRankText}</span>
@@ -274,8 +156,7 @@
                             </div>
                         </div>
                         <div class="player-stats">
-                            ${player.wins !== undefined && player.losses !== undefined ? `<span style="font-size: 0.9em; color: #ccc;">W/L: ${player.wins}/${player.losses}</span>` : ''}
-                        </div>
+                            </div>
                 `;
                 playersContainer.appendChild(playerItem);
             });
@@ -285,46 +166,23 @@
 
         async function updateAllPlayerRanks() {
             console.log("Rozpoczynam aktualizację rankingu...");
-            playersContainer.innerHTML = ''; // Wyczyść kontener
-            loadingMessage.style.display = 'block'; // Pokaż wiadomość ładowania
-            lastUpdatedP.textContent = `Ostatnia aktualizacja: Ładowanie...`;
+            loadingMessage.style.display = 'block';
+            playersContainer.innerHTML = ''; // Wyczyść stary ranking podczas ładowania
 
-            try {
-                const promises = playersToTrack.map(player => fetchPlayerFullRankInfo(player));
-                allPlayersRankData = await Promise.all(promises); // Zapisz pełne dane dla obu kolejek
+            const promises = playersToTrack.map(player => fetchPlayerRank(player));
+            const playersData = await Promise.all(promises);
 
-                renderRanking(); // Renderuj ranking dla aktualnie wybranej kolejki
-                console.log("Aktualizacja rankingu zakończona.");
-            } catch (error) {
-                console.error("Krytyczny błąd podczas aktualizacji rankingu:", error);
-                playersContainer.innerHTML = `<p style="text-align: center; color: red;">Wystąpił błąd podczas ładowania rankingu: ${error.message}. Sprawdź konsolę i klucz API.</p>`;
-                lastUpdatedP.textContent = `Ostatnia aktualizacja: Błąd.`;
-            } finally {
-                loadingMessage.style.display = 'none'; // Ukryj wiadomość ładowania po zakończeniu
-            }
-        }
-
-        // --- Obsługa przycisków wyboru kolejki ---
-        function handleQueueButtonClick(event) {
-            // Usuń klasę 'active-queue' ze wszystkich przycisków
-            document.querySelectorAll('.queue-button').forEach(button => {
-                button.classList.remove('active-queue');
-            });
-            // Dodaj klasę 'active-queue' do klikniętego przycisku
-            event.target.classList.add('active-queue');
-            
-            currentQueueType = event.target.dataset.queueType; // Ustaw typ kolejki
-            renderRanking(); // Ponownie wyrenderuj ranking dla nowej kolejki
+            loadingMessage.style.display = 'none';
+            renderRanking(playersData);
+            console.log("Aktualizacja rankingu zakończona.");
         }
 
         // --- INICJALIZACJA ---
         document.addEventListener('DOMContentLoaded', () => {
-            soloqButton.addEventListener('click', handleQueueButtonClick);
-            flexqButton.addEventListener('click', handleQueueButtonClick);
-
             updateAllPlayerRanks(); // Uruchom pierwszy raz po załadowaniu strony
             setInterval(updateAllPlayerRanks, REFRESH_INTERVAL_MS); // Ustaw automatyczne odświeżanie
         });
+
     </script>
     <script src="main.js"></script>
 </body>
