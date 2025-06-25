@@ -1,21 +1,21 @@
 const CACHE_NAME = 'acg-dynamic-cache-v5'; // Zwiększyłem wersję, aby wymusić aktualizację
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/historia.html',
-  '/statystyki.html',
-  '/soloq.html',
-  '/ranking.html',
-  '/style.css',
-  '/logo.png',
-  '/logo2.png',
-  '/background.png',
-  '/status.js',
-  '/script.js',
-  '/main.js',
-  '/firebase-init.js',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  './',
+  './index.html',
+  './historia.html',
+  './statystyki.html',
+  './soloq.html',
+  './ranking.html',
+  './style.css',
+  './logo.png',
+  './logo2.png',
+  './background.png',
+  './status.js',
+  './script.js',
+  './main.js',
+  './firebase-init.js',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // Instalacja Service Workera
